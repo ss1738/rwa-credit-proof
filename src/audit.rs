@@ -76,7 +76,10 @@ fn main() {
         && !forged_ok
         && !Groth16::<Bn254>::verify(&vk, &altered, &proof).unwrap_or(false)
         && public.len() == 2;
-    println!("\n{}", if pass { "AUDIT PASSED: constraints are real, soundness holds, verifier is not a no-op." }
-                     else { "AUDIT FAILED: a claim did not hold. Investigate." });
+    println!("\n{}", if pass {
+        "AUDIT PASSED (honest-prover): constraints are real, verifier is not a no-op, privacy holds.\n\
+         CAVEAT: this only exercises HONESTLY-generated proofs. The Groth16 setup uses a fixed public\n\
+         seed, so it is NOT sound against a malicious prover who knows it. See KNOWN_LIMITATIONS.md #1."
+    } else { "AUDIT FAILED: a claim did not hold. Investigate." });
     assert!(pass);
 }

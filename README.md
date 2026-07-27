@@ -88,5 +88,12 @@ Solana validator. The proof is sound (insolvent or non-compliant books are unpro
 hardware, not a production, audited system. Very large books (>10k loans) will want recursive folding
 (Nova); the current monolithic prover is measured to 10k.
 
+**Soundness caveat (read [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md)):** the Groth16 setup currently
+uses a fixed public seed, so proofs are sound only against an **honest** prover. A malicious prover who
+knows the seed could forge one. A real deployment needs a proper trusted-setup ceremony (or a
+transparent proof system). The commitment is also binding but not hiding, and the pipeline's BLOCKED
+path is a cleartext check. These are honest prototype limitations, flagged by an independent code audit,
+not fabricated results.
+
 *Figures: on-chain market size rwa.xyz; private-credit market size IMF (Apr 2024) and JPMorgan (2024);
 performance measured on Apple M4 hardware and the Solana SBF runtime.*
