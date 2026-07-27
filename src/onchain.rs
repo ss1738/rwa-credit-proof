@@ -75,10 +75,11 @@ fn main() {
     let n = 10usize;
     let collateral: Vec<u128> = (0..n as u128).map(|i| 150_000 + i * 1_000).collect();
     let performing = vec![true; n];
+    let kyc = vec![true; n];
     let total: u128 = collateral.iter().sum();
     let threshold = total - 50_000;
 
-    let (vk, proof, public) = prove_solvency(&collateral, &performing, threshold);
+    let (vk, proof, public) = prove_solvency(&collateral, &performing, &kyc, threshold);
 
     let ok = on_chain_verify(&vk, &proof, &public);
     println!("=== Solana alt_bn128 verification of the solvency proof ===");

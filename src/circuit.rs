@@ -23,18 +23,26 @@ use rand::{rngs::StdRng, SeedableRng};
 pub fn prove_solvency(
     collateral: &[u128],
     performing: &[bool],
+    kyc: &[bool],
     threshold: u128,
 ) -> (VerifyingKey<Bn254>, Proof<Bn254>, Vec<Fr>) {
     let n = collateral.len();
     let mut rng = StdRng::seed_from_u64(7);
     let (pk, vk) = Groth16::<Bn254>::circuit_specific_setup(
-        SolvencyCircuit { collateral: vec![None; n], performing: vec![None; n], threshold: None, n },
+        SolvencyCircuit {
+            collateral: vec![None; n],
+            performing: vec![None; n],
+            kyc: vec![None; n],
+            threshold: None,
+            n,
+        },
         &mut rng,
     )
     .expect("setup");
     let circuit = SolvencyCircuit {
         collateral: collateral.iter().map(|&x| Some(x)).collect(),
         performing: performing.iter().map(|&x| Some(x)).collect(),
+        kyc: kyc.iter().map(|&x| Some(x)).collect(),
         threshold: Some(threshold),
         n,
     };
@@ -46,6 +54,7 @@ pub fn prove_solvency(
 pub struct SolvencyCircuit {
     pub collateral: Vec<Option<u128>>, // private witness: per-loan collateral (minor units)
     pub performing: Vec<Option<bool>>, // private witness: 1 if the loan is performing
+    pub kyc: Vec<Option<bool>>,        // private witness: 1 if the borrower passed KYC
     pub threshold: Option<u128>,       // PUBLIC input: required collateral to back the claim
     pub n: usize,                      // book size (fixes the circuit shape)
 }
@@ -66,6 +75,11 @@ impl ConstraintSynthesizer<Fr> for SolvencyCircuit {
             let p = Boolean::<Fr>::new_witness(cs.clone(), || {
                 self.performing[i].ok_or(SynthesisError::AssignmentMissing)
             })?;
+            let k = Boolean::<Fr>::new_witness(cs.clone(), || {
+                self.kyc[i].ok_or(SynthesisError::AssignmentMissing)
+            })?;
+            // every borrower must have passed KYC: the book is UNPROVABLE otherwise
+            k.enforce_equal(&Boolean::constant(true))?;
             // performing flag selects the collateral into the sum (0 or 1)
             sum += c * FpVar::<Fr>::from(p);
         }
