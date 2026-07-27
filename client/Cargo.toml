@@ -1,0 +1,13 @@
+# Standalone workspace (host binary, not part of the SBF program build).
+[workspace]
+
+[package]
+name = "verify-client"
+version = "0.1.0"
+edition = "2021"
+description = "Sends a real solvency-proof transaction to the deployed on-chain verifier and reads the result + compute units."
+
+[dependencies]
+credit-solvency-core = { path = ".." }
+solana-client = "2"
+solana-sdk = "2"
