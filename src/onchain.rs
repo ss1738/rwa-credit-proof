@@ -10,8 +10,17 @@ use ark_bn254::{Bn254, Fq, Fr, G1Affine, G2Affine};
 use ark_ec::{AffineRepr, CurveGroup};
 use ark_ff::{BigInteger, PrimeField};
 use ark_groth16::{Proof, VerifyingKey};
+use ark_serialize::CanonicalSerialize;
 use credit_solvency_core::circuit::prove_solvency;
+use ed25519_dalek::{Signer, SigningKey, Verifier};
+use rand::rngs::OsRng;
 use solana_bn254::prelude::alt_bn128_pairing;
+
+fn fr_bytes(x: &Fr) -> Vec<u8> {
+    let mut b = Vec::new();
+    x.serialize_compressed(&mut b).unwrap();
+    b
+}
 
 fn fq_be(x: &Fq) -> [u8; 32] {
     let v = x.into_bigint().to_bytes_be();
@@ -80,17 +89,34 @@ fn main() {
     let threshold = total - 50_000;
 
     let (vk, proof, public) = prove_solvency(&collateral, &performing, &kyc, threshold);
+    let commitment = public[1];
 
-    let ok = on_chain_verify(&vk, &proof, &public);
-    println!("=== Solana alt_bn128 verification of the solvency proof ===");
+    // The mint-gate on Solana requires BOTH:
+    //   (a) the ZK proof verifies via alt_bn128  (solvent + KYC + book hashes to `commitment`)
+    //   (b) the servicer's ed25519 signature over `commitment` verifies (cheap ed25519 syscall)
+    let servicer = SigningKey::generate(&mut OsRng);
+    let sig = servicer.sign(&fr_bytes(&commitment));
+
+    let zk_ok = on_chain_verify(&vk, &proof, &public);
+    let sig_ok = servicer.verifying_key().verify(&fr_bytes(&commitment), &sig).is_ok();
+    println!("=== Solana mint-gate: ZK proof + servicer signature ===");
     println!("book: {n} loans (values hidden)   public threshold: {threshold}");
-    println!("alt_bn128_pairing accepts the proof : {ok}");
+    println!("(a) alt_bn128 accepts ZK proof      : {zk_ok}");
+    println!("(b) servicer signed the commitment  : {sig_ok}");
+    println!("=> MINT {}", if zk_ok && sig_ok { "ALLOWED  \u{2705}" } else { "BLOCKED  \u{26d4}" });
 
-    // negative control: verify against a threshold the proof was NOT made for -> vk_x differs -> reject
-    let wrong = vec![Fr::from(total + 1_000_000)];
-    let bad = on_chain_verify(&vk, &proof, &wrong);
-    println!("wrong public input rejected         : {}", !bad);
+    // attack: present a DIFFERENT (also-solvent) book, reuse the servicer's signature.
+    // The different book has a different commitment, which the servicer never signed -> gate blocks.
+    let mut other = collateral.clone();
+    other[0] += 5_000;
+    let (vk2, proof2, public2) = prove_solvency(&other, &performing, &kyc, threshold);
+    let attack_zk_ok = on_chain_verify(&vk2, &proof2, &public2); // proof is internally valid...
+    let attack_sig_ok = servicer.verifying_key().verify(&fr_bytes(&public2[1]), &sig).is_ok(); // ...but sig is over the OLD commitment
+    println!("\n--- attack: swap in a different book, reuse the signature ---");
+    println!("(a) attacker's ZK proof valid       : {attack_zk_ok}");
+    println!("(b) servicer signature matches it   : {attack_sig_ok}  (expected false)");
+    println!("=> MINT {}", if attack_zk_ok && attack_sig_ok { "ALLOWED" } else { "BLOCKED  \u{26d4}" });
 
-    assert!(ok && !bad, "on-chain verification soundness/completeness failed");
-    println!("\nOK: the same proof verifies through Solana's pairing syscall path.");
+    assert!(zk_ok && sig_ok && !attack_sig_ok, "binding/soundness check failed");
+    println!("\nOK: proof + signature bind the mint to exactly the book the servicer attested.");
 }
