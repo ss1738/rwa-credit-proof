@@ -46,5 +46,9 @@ path = "src/bench.rs"
 name = "pipeline"
 path = "src/pipeline.rs"
 
+[[bin]]
+name = "audit"
+path = "src/audit.rs"
+
 [profile.release]
 opt-level = 3
