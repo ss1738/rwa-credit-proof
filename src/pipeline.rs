@@ -9,11 +9,12 @@
 //!
 //! CSV columns: loan_id,principal,collateral_value,status(performing|defaulted),kyc_ok(true|false)
 
-use ark_bn254::Bn254;
+use ark_bn254::{Bn254, Fr};
 use ark_groth16::Groth16;
+use ark_relations::r1cs::{ConstraintSynthesizer, ConstraintSystem};
 use ark_serialize::CanonicalSerialize;
 use ark_snark::SNARK;
-use credit_solvency_core::circuit::{commit_book, prove_solvency};
+use credit_solvency_core::circuit::{commit_book, prove_solvency, SolvencyCircuit};
 use ed25519_dalek::{Signer, SigningKey, Verifier};
 use rand::rngs::OsRng;
 use std::fs;
@@ -50,17 +51,28 @@ fn main() {
     println!("  performing collateral : {performing_collateral}");
     println!("  all borrowers KYC'd   : {all_kyc}");
 
-    // A verifying proof exists ONLY if the book is genuinely solvent and fully KYC'd. An honest prover
-    // cannot produce one otherwise, so an insolvent / non-compliant tape simply cannot open the gate.
-    let provable = performing_collateral >= threshold && all_kyc;
-    if !provable {
-        println!("  => no valid proof exists for this book");
+    // Decide via the ACTUAL circuit constraints, not a cleartext check: build the circuit for this
+    // book and test satisfiability. An unsatisfiable circuit means no valid ZK proof can exist, so an
+    // insolvent / non-compliant tape genuinely cannot open the gate.
+    let commitment = commit_book(&collateral, &performing, &kyc);
+    let cs = ConstraintSystem::<Fr>::new_ref();
+    SolvencyCircuit {
+        collateral: collateral.iter().map(|&x| Some(x)).collect(),
+        performing: performing.iter().map(|&x| Some(x)).collect(),
+        kyc: kyc.iter().map(|&x| Some(x)).collect(),
+        threshold: Some(threshold),
+        commitment: Some(commitment),
+        n,
+    }
+    .generate_constraints(cs.clone())
+    .unwrap();
+    if !cs.is_satisfied().unwrap() {
+        println!("  => circuit unsatisfiable for this book: no valid ZK proof can exist");
         println!("  => MINT BLOCKED");
         return;
     }
 
     // servicer signs the Poseidon commitment to the book
-    let commitment = commit_book(&collateral, &performing, &kyc);
     let mut commit_bytes = Vec::new();
     commitment.serialize_compressed(&mut commit_bytes).unwrap();
     let servicer = SigningKey::generate(&mut OsRng);

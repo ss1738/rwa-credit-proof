@@ -78,8 +78,9 @@ fn main() {
         && public.len() == 2;
     println!("\n{}", if pass {
         "AUDIT PASSED (honest-prover): constraints are real, verifier is not a no-op, privacy holds.\n\
-         CAVEAT: this only exercises HONESTLY-generated proofs. The Groth16 setup uses a fixed public\n\
-         seed, so it is NOT sound against a malicious prover who knows it. See KNOWN_LIMITATIONS.md #1."
+         CAVEAT: this exercises HONESTLY-generated proofs. The setup now uses secure randomness (no\n\
+         public seed), but a single-party setup still requires trusting whoever ran it; production needs\n\
+         the relying party to generate the setup, or a multi-party ceremony. See KNOWN_LIMITATIONS.md #1."
     } else { "AUDIT FAILED: a claim did not hold. Investigate." });
     assert!(pass);
 }
