@@ -17,9 +17,13 @@ ark-groth16 = "0.4"
 ark-r1cs-std = "0.4"
 ark-relations = "0.4"
 ark-snark = "0.4"
+ark-ec = "0.4"
 ark-ff = "0.4"
 ark-serialize = "0.4"
 ark-std = "0.4"
+
+# Solana's on-chain BN254 pairing (native fallback runs the same arithmetic the syscall does)
+solana-bn254 = "2"
 
 [[bin]]
 name = "demo"
@@ -28,6 +32,10 @@ path = "src/demo.rs"
 [[bin]]
 name = "prove"
 path = "src/prove.rs"
+
+[[bin]]
+name = "onchain"
+path = "src/onchain.rs"
 
 [profile.release]
 opt-level = 3

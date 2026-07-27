@@ -8,11 +8,39 @@
 //! `alt_bn128` pairing syscalls, so the first proof is already on the path to the Solana mint-gate.
 //! (Signature-in-circuit and Nova folding for 10k loans are later weeks; this is the core predicate.)
 
-use ark_bn254::Fr;
+use ark_bn254::{Bn254, Fr};
+use ark_groth16::{Groth16, Proof, VerifyingKey};
 use ark_r1cs_std::fields::fp::FpVar;
 use ark_r1cs_std::prelude::*;
 use ark_relations::r1cs::{ConstraintSynthesizer, ConstraintSystemRef, SynthesisError};
+use ark_snark::SNARK;
 use core::cmp::Ordering;
+use rand::{rngs::StdRng, SeedableRng};
+
+/// Setup + prove for a book. Returns the verifying key, the proof, and the public inputs (the
+/// threshold), so both the native verifier and the Solana alt_bn128 verifier can consume the same
+/// proof. Deterministic RNG for reproducible demos (a real deployment uses a proper setup ceremony).
+pub fn prove_solvency(
+    collateral: &[u128],
+    performing: &[bool],
+    threshold: u128,
+) -> (VerifyingKey<Bn254>, Proof<Bn254>, Vec<Fr>) {
+    let n = collateral.len();
+    let mut rng = StdRng::seed_from_u64(7);
+    let (pk, vk) = Groth16::<Bn254>::circuit_specific_setup(
+        SolvencyCircuit { collateral: vec![None; n], performing: vec![None; n], threshold: None, n },
+        &mut rng,
+    )
+    .expect("setup");
+    let circuit = SolvencyCircuit {
+        collateral: collateral.iter().map(|&x| Some(x)).collect(),
+        performing: performing.iter().map(|&x| Some(x)).collect(),
+        threshold: Some(threshold),
+        n,
+    };
+    let proof = Groth16::<Bn254>::prove(&pk, circuit, &mut rng).expect("prove");
+    (vk, proof, vec![Fr::from(threshold)])
+}
 
 #[derive(Clone)]
 pub struct SolvencyCircuit {
