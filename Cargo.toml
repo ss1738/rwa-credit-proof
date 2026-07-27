@@ -38,5 +38,9 @@ path = "src/prove.rs"
 name = "onchain"
 path = "src/onchain.rs"
 
+[[bin]]
+name = "bench"
+path = "src/bench.rs"
+
 [profile.release]
 opt-level = 3
