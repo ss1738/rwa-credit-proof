@@ -11,6 +11,23 @@ sha2 = "0.10"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
+# ZK: Groth16 over BN254 (the curve Solana verifies via alt_bn128 syscalls)
+ark-bn254 = "0.4"
+ark-groth16 = "0.4"
+ark-r1cs-std = "0.4"
+ark-relations = "0.4"
+ark-snark = "0.4"
+ark-ff = "0.4"
+ark-serialize = "0.4"
+ark-std = "0.4"
+
 [[bin]]
 name = "demo"
 path = "src/demo.rs"
+
+[[bin]]
+name = "prove"
+path = "src/prove.rs"
+
+[profile.release]
+opt-level = 3
