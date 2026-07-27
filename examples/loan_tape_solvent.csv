@@ -1,0 +1,13 @@
+loan_id,principal,collateral_value,status,kyc_ok
+L001,250000,375000,performing,true
+L002,180000,252000,performing,true
+L003,420000,588000,performing,true
+L004,95000,142500,performing,true
+L005,310000,434000,performing,true
+L006,150000,90000,defaulted,true
+L007,275000,398750,performing,true
+L008,200000,300000,performing,true
+L009,360000,486000,performing,true
+L010,125000,187500,performing,true
+L011,290000,406000,performing,true
+L012,175000,245000,performing,true
