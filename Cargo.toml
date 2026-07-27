@@ -42,5 +42,9 @@ path = "src/onchain.rs"
 name = "bench"
 path = "src/bench.rs"
 
+[[bin]]
+name = "pipeline"
+path = "src/pipeline.rs"
+
 [profile.release]
 opt-level = 3
