@@ -18,20 +18,21 @@ ceremony**, or the system must move to a **transparent** proof (no trusted setup
 soundness holds against an honest prover and against an outsider, but not against a prover who also
 controlled the setup. This is the remaining item before an external soundness claim.
 
-## 2. Commitment is binding but not hiding
-The Poseidon commitment is a deterministic hash of the book with no blinding nonce. It binds the book
-but does not hide it: low-entropy loan values could be brute-forced from the commitment. Add a random
-nonce to make it a hiding commitment.
+## 2. Commitment hiding — FIXED
+The Poseidon commitment now absorbs a random blinding `nonce` (`commit_book(..., nonce)` and a private
+`nonce` witness in the circuit), so it is a **hiding** commitment: it no longer reveals the book even
+for low-entropy values. The nonce is a secret shared by servicer and prover.
 
-## 3. No in-circuit range constraint on collateral witnesses
-Collateral witnesses are not constrained `< 2^128` in-circuit, and `enforce_cmp` is only sound for
-operands `< (p-1)/2`. Soundness is rescued in the full system by the signed commitment (which pins the
-values to the honest book), but the circuit alone does not enforce it.
+## 3. In-circuit range constraint on collateral — accepted with rationale (not fixed)
+Collateral witnesses are not bounded `< 2^128` in-circuit, and `enforce_cmp` is only sound for operands
+`< (p-1)/2`. Full-system soundness is **rescued by the signed commitment**: a prover cannot substitute
+an out-of-range value without changing the commitment the servicer signed. An explicit in-circuit
+bit-range check is deferred on purpose, it adds ~254 constraints per loan (prohibitive at 10k+ scale)
+for a case the commitment already covers. Revisit if the threat model ever excludes the signed feed.
 
-## 4. Pipeline BLOCKED path is a cleartext check
-In `pipeline.rs` the MINT-BLOCKED decision is a cleartext native check, not a crypto path (only the
-ALLOW path runs the real proof + verify). Logically correct (an honest prover cannot prove a false
-statement), but the block decision itself exercises no cryptography.
+## 4. Pipeline BLOCKED path — FIXED
+`pipeline.rs` now decides the block by testing **the actual circuit's satisfiability**
+(`ConstraintSystem::is_satisfied`), not a cleartext comparison. The crypto decides.
 
 ## Confirmed genuine, not fabricated (independent audit)
 The circuit really enforces solvency + all-KYC + commitment binding over private witnesses; the same

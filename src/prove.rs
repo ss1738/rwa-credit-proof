@@ -44,14 +44,16 @@ fn main() {
     println!("insolvent threshold rejected   : {insolvent_rejected}");
 
     // soundness 2: a KYC-failure book is not a satisfiable witness -> unprovable
+    let nonce = Fr::from(3u64);
     let mut bad_kyc = vec![true; n];
     bad_kyc[3] = false;
     let bad_circuit = SolvencyCircuit {
         collateral: opt_u128(&collateral),
         performing: opt_bool(&performing),
         kyc: opt_bool(&bad_kyc),
+        nonce: Some(nonce),
         threshold: Some(threshold),
-        commitment: Some(commit_book(&collateral, &performing, &bad_kyc)),
+        commitment: Some(commit_book(&collateral, &performing, &bad_kyc, nonce)),
         n,
     };
     let cs = ConstraintSystem::<Fr>::new_ref();
@@ -62,7 +64,7 @@ fn main() {
     // soundness 3: the commitment binds the book -- a modified book has a different commitment
     let mut other = collateral.clone();
     other[0] += 999; // change one loan
-    let bound = commit_book(&collateral, &performing, &kyc) != commit_book(&other, &performing, &kyc);
+    let bound = commit_book(&collateral, &performing, &kyc, nonce) != commit_book(&other, &performing, &kyc, nonce);
     println!("commitment changes with the book: {bound}");
 
     assert!(ok && insolvent_rejected && kyc_fail_unprovable && bound, "statement soundness failed");
