@@ -1,0 +1,10 @@
+[profile.default]
+src = "src"
+test = "test"
+libs = ["lib"]
+solc = "0.8.20"
+optimizer = true
+optimizer_runs = 200
+
+# forge-std is installed via `forge install foundry-rs/forge-std`
+remappings = ["forge-std/=lib/forge-std/src/"]
