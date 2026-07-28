@@ -1,6 +1,6 @@
 # Launch posts (ready to fire once the repo is public)
 
-Fill `[REPO LINK]`. Honest framing on purpose: a prototype with a working demo beats a hyped claim,
+Fill `https://github.com/ss1738/rwa-credit-proof`. Honest framing on purpose: a prototype with a working demo beats a hyped claim,
 especially on Hacker News and among ZK people who will check.
 
 ---
@@ -33,7 +33,7 @@ KNOWN_LIMITATIONS.md and AUDIT.md.
 One command (`./demo.sh`) reproduces everything: the proof, the on-chain verification, a scale test to
 10k loans, and an adversarial self-audit. Two independent code reviews are in the repo.
 
-Repo: [REPO LINK]
+Repo: https://github.com/ss1738/rwa-credit-proof
 
 I would love feedback, especially from people in RWA / private credit or ZK. And if you run a
 tokenized-credit protocol, I am looking for one design partner to pilot against a real (even test)
@@ -62,7 +62,7 @@ single-party, and it rests on a trusted signed loan-tape feed. One-command demo 
 reviews in the repo.
 
 **5/**
-Open-source: [REPO LINK]
+Open-source: https://github.com/ss1738/rwa-credit-proof
 I am looking for one tokenized-credit protocol to pilot with. If that is you, DM me.
 
 ---

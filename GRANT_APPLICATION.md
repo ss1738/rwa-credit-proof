@@ -1,7 +1,7 @@
 # Solana Foundation grant application (draft)
 
 Apply at solana.org/grants-funding (rolling, decisions ~3 weeks). Fits the "convertible grant"
-(commercial) or open-source public-good track. Fill `[REPO LINK]` and contact details before sending.
+(commercial) or open-source public-good track. Fill `https://github.com/ss1738/rwa-credit-proof` and contact details before sending.
 NOTE: taking grant money is an earning event, confirm your visa/entity position first (see end).
 
 ---
@@ -37,7 +37,7 @@ under this grant so the primitive is available to the whole ecosystem, not a sin
 - On-chain verifier deployed to and confirmed on a live Solana validator (83,352 CU).
 - One-command demo (`./demo.sh`) reproduces the proof, on-chain verification, a 10k-loan scale test, and
   an adversarial self-audit. Two independent code reviews are in `AUDIT.md`.
-- Repo: [REPO LINK]
+- Repo: https://github.com/ss1738/rwa-credit-proof
 
 ## Proposed milestones (this is what the grant funds)
 1. **Open-source release + docs** (largely complete): public repo, reproducible demo, audit trail,
