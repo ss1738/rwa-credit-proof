@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proof-of-Solvency demo</title>
+<style>
+  :root{ --bg:#0d1117; --win:#161b22; --bar:#21262d; --txt:#c9d1d9; --dim:#8b949e;
+         --grn:#3fb950; --red:#f85149; --cy:#58a6ff; --yel:#d29922; }
+  *{box-sizing:border-box} html,body{margin:0;height:100%}
+  body{background:#010409; display:flex; align-items:center; justify-content:center; min-height:100vh;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; padding:24px}
+  .term{width:min(760px,96vw); background:var(--win); border:1px solid #30363d; border-radius:12px;
+    box-shadow:0 24px 70px rgba(0,0,0,.6); overflow:hidden}
+  .bar{background:var(--bar); height:38px; display:flex; align-items:center; padding:0 14px; gap:8px}
+  .dot{width:12px;height:12px;border-radius:50%}
+  .r{background:#ff5f56}.y{background:#ffbd2e}.g{background:#27c93f}
+  .bar .t{color:var(--dim); font-size:13px; margin-left:10px}
+  .scr{background:var(--bg); color:var(--txt); font-size:14px; line-height:1.55; padding:18px 20px;
+    height:440px; overflow:hidden; white-space:pre-wrap}
+  .h{color:var(--cy); font-weight:700}
+  .ok{color:var(--grn); font-weight:700}.no{color:var(--red); font-weight:700}
+  .dim{color:var(--dim)}.k{color:var(--yel)}
+  .cur{display:inline-block;width:8px;height:16px;background:var(--grn);vertical-align:-2px;
+    animation:b 1s steps(1) infinite}
+  @keyframes b{50%{opacity:0}}
+  .replay{position:fixed;bottom:20px;right:20px;background:#21262d;color:#c9d1d9;border:1px solid #30363d;
+    border-radius:8px;padding:9px 14px;font:600 13px ui-monospace,monospace;cursor:pointer}
+  .cap{position:fixed;top:18px;left:0;right:0;text-align:center;color:#484f58;font-size:12px}
+</style>
+</head>
+<body>
+  <div class="cap">screen-record this window (~30s) for your launch post</div>
+  <div class="term">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="t">rwa-credit-proof &mdash; ./demo.sh</span></div>
+    <div class="scr" id="scr"></div>
+  </div>
+  <button class="replay" onclick="play()">&#9654; replay</button>
+<script>
+const L = [
+ ["$ ./demo.sh","dim",250],
+ ["","",120],
+ ["== 1/6  Statement soundness ==","h",120],
+ ["test result: ok. 5 passed; 0 failed","",500],
+ ["","",120],
+ ["== 2/6  Realistic servicer loan tapes ==","h",120],
+ ["loan_tape_solvent.csv   12 loans, supply 2,830,000","",250],
+ ["  performing collateral 3,814,750 >= required 3,396,000, all-KYC true","",250],
+ ["  ZK proof (128 bytes): valid   servicer signature: valid","",250],
+ ["  => MINT ALLOWED","ok",400],
+ ["loan_tape_insolvent.csv  a big loan defaulted","",250],
+ ["  performing collateral 1,275,000 < required 2,256,000","",250],
+ ["  => MINT BLOCKED","no",450],
+ ["","",100],
+ ["== 3/6  Zero-knowledge proof (loans hidden) ==","h",120],
+ ["  proof size: 128 bytes   loans in book: PRIVATE","",250],
+ ["  actual collateral sum: 1,545,000  <- never revealed","dim",300],
+ ["  VERIFIED (solvent + all-KYC + book-bound): true","ok",450],
+ ["","",100],
+ ["== 4/6  On-chain mint-gate (Solana) + attack ==","h",120],
+ ["  (a) alt_bn128 accepts ZK proof: true","",250],
+ ["  (b) servicer signed the commitment: true","",250],
+ ["  => MINT ALLOWED","ok",350],
+ ["  attack: swap in a different book, reuse the signature","",300],
+ ["  servicer signature matches it: false","",250],
+ ["  => MINT BLOCKED","no",450],
+ ["","",100],
+ ["== 5/6  Scale (prover cost vs book size) ==","h",120],
+ ["  n=   100   prove 0.40s   proof 128B   verified true","",250],
+ ["  n= 1,000   prove 3.50s   proof 128B   verified true","",250],
+ ["  n=10,000   prove ~60s     (constant on-chain cost)","",400],
+ ["","",100],
+ ["== 6/6  Real on-chain compute units ==","h",120],
+ ["  measured on a live Solana validator","dim",250],
+ ["  COMPUTE_UNITS_CONSUMED: 83,354  (~6% of the 1.4M cap)","k",550],
+ ["","",150],
+ ["All stages passed. Proof-of-solvency verified end to end.","ok",300],
+ ["A fund proved it is solvent without revealing a single loan.","dim",300],
+];
+const scr=document.getElementById('scr');
+let timer=null;
+function cls(c){return c?` class="${c}"`:'';}
+function play(){
+  if(timer) clearInterval(timer);
+  scr.innerHTML=''; let i=0, html='';
+  const step=()=>{
+    if(i>=L.length){ scr.innerHTML=html+'<span class="cur"></span>'; return; }
+    const [t,c,d]=L[i];
+    html += `<span${cls(c)}>${t}</span>\n`;
+    scr.innerHTML = html+'<span class="cur"></span>';
+    scr.scrollTop = scr.scrollHeight;
+    i++;
+    timer=setTimeout(step, d);
+  };
+  step();
+}
+play();
+</script>
+</body>
+</html>
