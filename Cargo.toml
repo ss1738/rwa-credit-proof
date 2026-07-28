@@ -54,5 +54,9 @@ path = "src/audit.rs"
 name = "ceremony"
 path = "src/ceremony.rs"
 
+[[bin]]
+name = "evm_export"
+path = "src/evm_export.rs"
+
 [profile.release]
 opt-level = 3
