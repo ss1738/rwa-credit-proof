@@ -18,19 +18,19 @@ ceremony**, or the system must move to a **transparent** proof (no trusted setup
 soundness holds against an honest prover and against an outsider, but not against a prover who also
 controlled the setup. This is the remaining item before an external soundness claim.
 
-## 2. Commitment hiding — FIXED
+## 2. Commitment hiding: FIXED
 The Poseidon commitment now absorbs a random blinding `nonce` (`commit_book(..., nonce)` and a private
 `nonce` witness in the circuit), so it is a **hiding** commitment: it no longer reveals the book even
 for low-entropy values. The nonce is a secret shared by servicer and prover.
 
-## 3. In-circuit range constraint on collateral — accepted with rationale (not fixed)
+## 3. In-circuit range constraint on collateral: accepted with rationale (not fixed)
 Collateral witnesses are not bounded `< 2^128` in-circuit, and `enforce_cmp` is only sound for operands
 `< (p-1)/2`. Full-system soundness is **rescued by the signed commitment**: a prover cannot substitute
 an out-of-range value without changing the commitment the servicer signed. An explicit in-circuit
 bit-range check is deferred on purpose, it adds ~254 constraints per loan (prohibitive at 10k+ scale)
 for a case the commitment already covers. Revisit if the threat model ever excludes the signed feed.
 
-## 4. Pipeline BLOCKED path — FIXED
+## 4. Pipeline BLOCKED path: FIXED
 `pipeline.rs` now decides the block by testing **the actual circuit's satisfiability**
 (`ConstraintSystem::is_satisfied`), not a cleartext comparison. The crypto decides.
 
