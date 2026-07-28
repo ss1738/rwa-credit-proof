@@ -13,11 +13,11 @@ fn ou(v: &[u128]) -> Vec<Option<u128>> { v.iter().map(|&x| Some(x)).collect() }
 fn ob(v: &[bool]) -> Vec<Option<bool>> { v.iter().map(|&x| Some(x)).collect() }
 
 /// Build the circuit with a full witness and report (satisfied?, constraint_count).
-fn check(collateral: &[u128], performing: &[bool], kyc: &[bool], threshold: u128, commitment: Fr) -> (bool, usize) {
+fn check(collateral: &[u128], performing: &[bool], kyc: &[bool], threshold: u128, commitment: Fr, nonce: Fr) -> (bool, usize) {
     let n = collateral.len();
     let c = SolvencyCircuit {
         collateral: ou(collateral), performing: ob(performing), kyc: ob(kyc),
-        threshold: Some(threshold), commitment: Some(commitment), n,
+        nonce: Some(nonce), threshold: Some(threshold), commitment: Some(commitment), n,
     };
     let cs = ConstraintSystem::<Fr>::new_ref();
     c.generate_constraints(cs.clone()).unwrap();
@@ -30,24 +30,25 @@ fn main() {
     let performing = vec![true; n];
     let kyc = vec![true; n];
     let sum: u128 = collateral.iter().sum();
-    let commitment = commit_book(&collateral, &performing, &kyc);
+    let nonce = Fr::from(7u64);
+    let commitment = commit_book(&collateral, &performing, &kyc, nonce);
 
     println!("== Is the circuit real, or a vacuous no-op? ==");
-    let (ok1, nc) = check(&collateral, &performing, &kyc, sum - 50_000, commitment);
+    let (ok1, nc) = check(&collateral, &performing, &kyc, sum - 50_000, commitment, nonce);
     println!("constraints in the circuit : {nc}   (a vacuous circuit would be ~0)");
     println!("[1] solvent + KYC + correct commitment -> satisfied : {ok1}   expect TRUE");
 
-    let (ok2, _) = check(&collateral, &performing, &kyc, sum + 1, commitment);
+    let (ok2, _) = check(&collateral, &performing, &kyc, sum + 1, commitment, nonce);
     println!("[2] insolvent (threshold = collateral + 1) -> satisfied : {ok2}   expect FALSE");
 
     let mut bad_kyc = kyc.clone(); bad_kyc[3] = false;
-    let (ok3, _) = check(&collateral, &performing, &bad_kyc, sum - 50_000, commit_book(&collateral, &performing, &bad_kyc));
+    let (ok3, _) = check(&collateral, &performing, &bad_kyc, sum - 50_000, commit_book(&collateral, &performing, &bad_kyc, nonce), nonce);
     println!("[3] one borrower fails KYC -> satisfied : {ok3}   expect FALSE");
 
-    let (ok4, _) = check(&collateral, &performing, &kyc, sum - 50_000, commitment + Fr::from(1u64));
+    let (ok4, _) = check(&collateral, &performing, &kyc, sum - 50_000, commitment + Fr::from(1u64), nonce);
     println!("[4] book with a MISMATCHED commitment -> satisfied : {ok4}   expect FALSE");
 
-    let (ok5, _) = check(&collateral, &performing, &kyc, sum, commitment);
+    let (ok5, _) = check(&collateral, &performing, &kyc, sum, commitment, nonce);
     println!("[5] boundary: threshold == collateral -> satisfied : {ok5}   expect TRUE (>= inclusive)");
 
     println!("\n== Can a forged proof or altered claim pass verification? ==");

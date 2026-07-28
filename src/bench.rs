@@ -17,13 +17,15 @@ fn bench(n: usize) {
     let kyc = vec![true; n];
     let total: u128 = collateral.iter().sum();
     let threshold = total - 50_000;
-    let commitment = commit_book(&collateral, &performing, &kyc);
+    let nonce = Fr::from(1u64);
+    let commitment = commit_book(&collateral, &performing, &kyc, nonce);
 
     let mut rng = StdRng::seed_from_u64(7);
     let shape = SolvencyCircuit {
         collateral: vec![None; n],
         performing: vec![None; n],
         kyc: vec![None; n],
+        nonce: None,
         threshold: None,
         commitment: None,
         n,
@@ -37,6 +39,7 @@ fn bench(n: usize) {
         collateral: collateral.iter().map(|&x| Some(x)).collect(),
         performing: performing.iter().map(|&x| Some(x)).collect(),
         kyc: kyc.iter().map(|&x| Some(x)).collect(),
+        nonce: Some(nonce),
         threshold: Some(threshold),
         commitment: Some(commitment),
         n,

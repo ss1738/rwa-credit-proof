@@ -54,14 +54,16 @@ fn main() {
     // Decide via the ACTUAL circuit constraints, not a cleartext check: build the circuit for this
     // book and test satisfiability. An unsatisfiable circuit means no valid ZK proof can exist, so an
     // insolvent / non-compliant tape genuinely cannot open the gate.
-    let commitment = commit_book(&collateral, &performing, &kyc);
+    let precheck_nonce = Fr::from(1u64);
+    let precheck_commit = commit_book(&collateral, &performing, &kyc, precheck_nonce);
     let cs = ConstraintSystem::<Fr>::new_ref();
     SolvencyCircuit {
         collateral: collateral.iter().map(|&x| Some(x)).collect(),
         performing: performing.iter().map(|&x| Some(x)).collect(),
         kyc: kyc.iter().map(|&x| Some(x)).collect(),
+        nonce: Some(precheck_nonce),
         threshold: Some(threshold),
-        commitment: Some(commitment),
+        commitment: Some(precheck_commit),
         n,
     }
     .generate_constraints(cs.clone())
@@ -72,16 +74,18 @@ fn main() {
         return;
     }
 
-    // servicer signs the Poseidon commitment to the book
+    // fund generates the ZK proof over its private book (prove_solvency picks a fresh hiding nonce and
+    // returns the commitment as public input 1)
+    let (vk, proof, public) = prove_solvency(&collateral, &performing, &kyc, threshold);
+    let commitment = public[1];
+    let mut proof_bytes = Vec::new();
+    proof.serialize_compressed(&mut proof_bytes).unwrap();
+
+    // servicer signs THAT commitment; the mint-gate needs the ZK proof AND the signature over it
     let mut commit_bytes = Vec::new();
     commitment.serialize_compressed(&mut commit_bytes).unwrap();
     let servicer = SigningKey::generate(&mut OsRng);
     let signature = servicer.sign(&commit_bytes);
-
-    // fund generates the ZK proof over its private book
-    let (vk, proof, public) = prove_solvency(&collateral, &performing, &kyc, threshold);
-    let mut proof_bytes = Vec::new();
-    proof.serialize_compressed(&mut proof_bytes).unwrap();
 
     // the mint-gate: ZK proof AND servicer signature over the same commitment
     let zk_ok = Groth16::<Bn254>::verify(&vk, &public, &proof).unwrap_or(false);
