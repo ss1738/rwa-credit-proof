@@ -50,5 +50,9 @@ path = "src/pipeline.rs"
 name = "audit"
 path = "src/audit.rs"
 
+[[bin]]
+name = "ceremony"
+path = "src/ceremony.rs"
+
 [profile.release]
 opt-level = 3

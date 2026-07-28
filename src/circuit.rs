@@ -13,12 +13,13 @@
 //! Groth16 over BN254 so the pairing verifies via Solana's alt_bn128 syscalls.
 
 use ark_bn254::{Bn254, Fr};
+use ark_ec::{AffineRepr, CurveGroup};
 use ark_crypto_primitives::sponge::constraints::CryptographicSpongeVar;
 use ark_crypto_primitives::sponge::poseidon::constraints::PoseidonSpongeVar;
 use ark_crypto_primitives::sponge::poseidon::{find_poseidon_ark_and_mds, PoseidonConfig, PoseidonSponge};
 use ark_crypto_primitives::sponge::{CryptographicSponge, FieldBasedCryptographicSponge};
-use ark_ff::{PrimeField, UniformRand};
-use ark_groth16::{Groth16, Proof, VerifyingKey};
+use ark_ff::{Field, PrimeField, UniformRand, Zero};
+use ark_groth16::{Groth16, Proof, ProvingKey, VerifyingKey};
 use ark_r1cs_std::fields::fp::FpVar;
 use ark_r1cs_std::prelude::*;
 use ark_relations::r1cs::{ConstraintSynthesizer, ConstraintSystemRef, SynthesisError};
@@ -162,4 +163,72 @@ pub fn prove_solvency(
     };
     let proof = Groth16::<Bn254>::prove(&pk, circuit, &mut rng).expect("prove");
     (vk, proof, vec![Fr::from(threshold), commitment])
+}
+
+// ---- Multi-party trusted-setup (phase 2 / delta) --------------------------------------------------
+// A real, working demonstration: each participant multiplies the setup's `delta` by a secret factor
+// (and divides the delta-dependent query elements by it), then discards the factor. After k
+// participants, delta = delta_0 * s_1 * ... * s_k, and no single participant knows the product. The
+// output keys still produce valid, verifying proofs (tested). This is the phase-2 half of a trusted
+// setup; a complete ceremony additionally needs a multi-party phase-1 (Powers of Tau) and per-
+// contribution consistency proofs. See KNOWN_LIMITATIONS.md #1.
+
+/// Initial (single-party) setup whose delta will be re-randomised by the ceremony participants.
+pub fn setup_only(n: usize) -> ProvingKey<Bn254> {
+    let (pk, _vk) = Groth16::<Bn254>::circuit_specific_setup(
+        SolvencyCircuit {
+            collateral: vec![None; n], performing: vec![None; n], kyc: vec![None; n],
+            nonce: None, threshold: None, commitment: None, n,
+        },
+        &mut OsRng,
+    )
+    .expect("setup");
+    pk
+}
+
+/// One participant's phase-2 contribution: pick a secret `s`, set delta *= s and divide the
+/// delta-dependent query elements by s. `s` is generated here and dropped, it never leaves this process.
+pub fn contribute_delta(mut pk: ProvingKey<Bn254>) -> ProvingKey<Bn254> {
+    let mut rng = OsRng;
+    let s = loop {
+        let x = Fr::rand(&mut rng);
+        if !x.is_zero() {
+            break x;
+        }
+    };
+    let s_inv = s.inverse().expect("nonzero");
+    pk.delta_g1 = (pk.delta_g1.into_group() * s).into_affine();
+    pk.vk.delta_g2 = (pk.vk.delta_g2.into_group() * s).into_affine();
+    for x in pk.l_query.iter_mut() {
+        *x = ((*x).into_group() * s_inv).into_affine();
+    }
+    for x in pk.h_query.iter_mut() {
+        *x = ((*x).into_group() * s_inv).into_affine();
+    }
+    pk
+}
+
+/// Prove with a specific proving key (the ceremony output), not a fresh internal setup.
+pub fn prove_with_pk(
+    pk: &ProvingKey<Bn254>,
+    collateral: &[u128],
+    performing: &[bool],
+    kyc: &[bool],
+    threshold: u128,
+) -> (Proof<Bn254>, Vec<Fr>) {
+    let n = collateral.len();
+    let mut rng = OsRng;
+    let nonce = Fr::rand(&mut rng);
+    let commitment = commit_book(collateral, performing, kyc, nonce);
+    let circuit = SolvencyCircuit {
+        collateral: collateral.iter().map(|&x| Some(x)).collect(),
+        performing: performing.iter().map(|&x| Some(x)).collect(),
+        kyc: kyc.iter().map(|&x| Some(x)).collect(),
+        nonce: Some(nonce),
+        threshold: Some(threshold),
+        commitment: Some(commitment),
+        n,
+    };
+    let proof = Groth16::<Bn254>::prove(pk, circuit, &mut rng).expect("prove");
+    (proof, vec![Fr::from(threshold), commitment])
 }
