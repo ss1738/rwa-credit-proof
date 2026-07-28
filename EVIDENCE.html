@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proof-of-Solvency — Technical Evidence</title>
+<style>
+  :root{ --ink:#16202e; --muted:#5a6675; --line:#e3e8ef; --soft:#f6f8fb; --accent:#1f5c46; --good:#1f7a4d; --flag:#9a6a00; }
+  *{box-sizing:border-box}
+  body{margin:0;color:var(--ink);background:#fff;font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:800px;margin:0 auto;padding:48px 30px 64px}
+  header{border-bottom:2px solid var(--accent);padding-bottom:18px;margin-bottom:26px}
+  .kick{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  h1{font-size:25px;margin:8px 0 6px;line-height:1.25}
+  .sub{color:var(--muted);margin:0;font-size:15.5px}
+  h2{font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);margin:30px 0 10px;font-weight:700}
+  p{margin:0 0 12px} strong{color:var(--ink)}
+  table{width:100%;border-collapse:collapse;margin:6px 0 4px;font-size:14.5px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;width:42%}
+  td b{color:var(--ink)}
+  .box{background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:14px 16px;margin:6px 0}
+  .box.flag{border-left:3px solid var(--flag)}
+  ul{margin:6px 0 12px;padding-left:20px} li{margin:0 0 5px}
+  code{background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:13px}
+  .ok{color:var(--good);font-weight:700}
+  footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+  a{color:var(--accent)}
+  @media print{ body{font-size:12px} .wrap{padding:0;max-width:none} .box,th,td{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="kick">Technical Evidence</div>
+    <h1>Proof-of-Solvency for Tokenized Private Credit</h1>
+    <p class="sub">A fund proves it is solvent and fully KYC'd, over a loan book it cannot fake, without revealing a single loan. Every claim below is measured and independently verified.</p>
+  </header>
+
+  <h2>What it is</h2>
+  <p>An open-source zero-knowledge verifier. A Groth16/BN254 circuit proves, over a PRIVATE loan book, that (1) performing collateral covers the required over-collateralisation of the token supply, (2) every borrower passed KYC, and (3) the book hashes to a servicer-signed hiding commitment. Only the threshold and the commitment are revealed. The mint is gated on the proof and the servicer signature together, so a prover cannot substitute a different book.</p>
+
+  <h2>Measured results</h2>
+  <table>
+    <tr><th>Proof size</th><td><b>128 bytes</b>, constant regardless of book size</td></tr>
+    <tr><th>Privacy</th><td>individual loans never revealed; public inputs are 2 field elements</td></tr>
+    <tr><th>On-chain verification</th><td><b>83,352 compute units</b> on a live Solana validator (~6% of the 1.4M cap); also verifies on Ethereum/EVM via the ecPairing precompile</td></tr>
+    <tr><th>On-chain cost vs book size</th><td><b>constant</b> — a 10-loan and a 10,000-loan fund cost the same to verify</td></tr>
+    <tr><th>Prover scale</th><td>10,000-loan book proves in ~60s; 1,000 in ~3.5s (Apple M4)</td></tr>
+    <tr><th>Circuit</th><td>5,911 R1CS constraints (verified non-vacuous)</td></tr>
+    <tr><th>Attack test</th><td>swap in a different book and reuse the signature → <b>blocked</b></td></tr>
+  </table>
+
+  <h2>Independent verification (audited three ways)</h2>
+  <p><b>1. Empirical adversarial audit</b> (<code>cargo run --bin audit</code>): checks that fail if the ZK claims were fabricated. Result: the circuit genuinely enforces solvency, all-KYC, and commitment binding; insolvent, KYC-fail, and wrong-commitment books each fail the constraint system; a proof with one flipped bit or an altered public input is rejected. <span class="ok">Passed.</span></p>
+  <p><b>2 &amp; 3. Two independent code reviews.</b> Two separate reviewers read every source file. Verdict: <span class="ok">"genuine, working ZK cryptography, not fabricated or hollow."</span> The second review, after fixes, confirmed: "genuinely in a more honest and sounder state than before; documentation matches what the code enforces." The full record is in <a href="https://github.com/ss1738/rwa-credit-proof/blob/main/AUDIT.md">AUDIT.md</a>.</p>
+
+  <h2>Reproducible</h2>
+  <p>One command reproduces every claim above: <code>./demo.sh</code> runs the statement soundness tests, realistic loan-tape decisions (mint allowed / blocked), the ZK proof, the on-chain mint-gate plus the attack test, the scale benchmark, and the real on-chain compute-unit measurement. Deployed and confirmed on a live Solana validator (program success, confirmed transaction signature). MIT-licensed.</p>
+
+  <h2>What is NOT yet production-safe (stated honestly)</h2>
+  <div class="box flag">
+    <ul>
+      <li><b>Trusted setup is not yet fully multi-party.</b> A phase-2 (delta) ceremony is implemented and validated; a complete ceremony additionally needs a multi-party phase-1 (Powers of Tau) and contribution proofs.</li>
+      <li><b>Not third-party security-audited.</b> Independently code-reviewed, but not a formal security audit.</li>
+      <li><b>The data-trust anchor is external.</b> A proof certifies that the servicer-attested data is solvent, not that the data is true. It depends on an authenticated signed loan-tape feed.</li>
+    </ul>
+    <p style="margin:6px 0 0">Full detail: <a href="https://github.com/ss1738/rwa-credit-proof/blob/main/KNOWN_LIMITATIONS.md">KNOWN_LIMITATIONS.md</a>. This is a research prototype, not a production system.</p>
+  </div>
+
+  <footer>
+    Repository: <a href="https://github.com/ss1738/rwa-credit-proof">github.com/ss1738/rwa-credit-proof</a> (open-source, MIT).
+    Market figures: on-chain values from rwa.xyz; private-credit market size IMF (Apr 2024) and JPMorgan (2024). Performance measured on Apple M4 hardware and the Solana SBF runtime.
+  </footer>
+
+</div>
+</body>
+</html>
