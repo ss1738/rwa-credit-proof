@@ -1,3 +1,7 @@
 /target
 /solana-verifier/target
 /client/target
+/evm/lib
+/evm/out
+/evm/cache
+/evm/test/Verifier.t.sol
