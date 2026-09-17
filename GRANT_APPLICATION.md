@@ -2,10 +2,10 @@
 
 Apply at solana.org/grants-funding (rolling, decisions ~3 weeks). Open-source public-good track.
 Fill in contact details before sending. Rescoped after a first-pass rejection (reason: "the dollar
-amount requested exceeds the value of the public good delivered") — this version cuts the ask down to
+amount requested exceeds the value of the public good delivered"). This version cuts the ask down to
 only the milestones that are unambiguously ecosystem-wide public good, and drops the paid single-protocol
 integration that likely caused that judgment.
-NOTE: taking grant money is an earning event — confirm your visa/entity position first (see end).
+NOTE: taking grant money is an earning event. Confirm your visa/entity position first (see end).
 
 ---
 
@@ -21,7 +21,7 @@ The previous version asked the Foundation to fund a paid reference integration w
 protocol. That milestone primarily benefits a single private business, not the ecosystem, and is the most
 likely reason the ask outweighed the public good delivered. This version removes it. The scope below is
 narrowed to the two milestones that produce reusable, protocol-agnostic infrastructure any Solana RWA
-project can adopt without our involvement. A reference integration is still worth doing — we'll do it
+project can adopt without our involvement. A reference integration is still worth doing: we'll do it
 ourselves, unpaid, as a demo, once the developer kit exists, and let it speak for itself rather than ask
 the Foundation to fund it.
 
@@ -30,7 +30,7 @@ Private credit is the largest tokenized real-world-asset category (~$20B on-chai
 growing fast), but the loan book backing each token lives off-chain and cannot be verified on-chain.
 Investors, counterparties, and regulators have no cryptographic way to check solvency. This is a
 blocker to institutional RWA capital coming on-chain. A reusable, open-source proof-of-solvency primitive
-removes it — for any protocol, not one.
+removes it, for any protocol, not one.
 
 ## Why Solana specifically
 The verifier uses Solana's `alt_bn128` pairing syscalls to check a Groth16/BN254 proof on-chain in
@@ -44,12 +44,12 @@ open source under MIT from day one. No milestone in this version depends on, or 
 single company or protocol.
 
 ## Related work
-ZK solvency/compliance proofs for RWA are a recognized need across the ecosystem, not a novel concept —
+ZK solvency/compliance proofs for RWA are a recognized need across the ecosystem, not a novel concept:
 see the "Related work" section in the repo README for the full comparison. The closest adjacent project
 is Zyga (SOL Strategies), a general institutional privacy layer that lists solvency attestation as one
 of several use cases; it's commercial and, as far as we've found, has no shipped private-credit-specific
 reference implementation. This project is narrower, open source, and already working end to end for one
-asset class — complementary rather than redundant.
+asset class: complementary rather than redundant.
 
 ## What is already built (measured, reproducible)
 - ZK proof: performing collateral >= threshold, all-KYC, book hashes to a servicer-signed (hiding)
@@ -57,12 +57,12 @@ asset class — complementary rather than redundant.
 - On-chain verifier deployed to and confirmed on a local Solana test validator (83,352 CU).
 - EVM verifier also deployed and confirmed **on public Sepolia testnet** (contract
   `0x8c3DD5E6b660D6aFdCdCa2FB757b2E777d8511Df`, 197,605 gas, publicly inspectable on
-  sepolia.etherscan.io) — same proof, portable across chains.
+  sepolia.etherscan.io), same proof, portable across chains.
 - One-command demo (`./demo.sh`) reproduces the proof, on-chain verification, a 10k-loan scale test, and
   an adversarial self-audit. Two independent code reviews are in `AUDIT.md`.
 - Repo: https://github.com/ss1738/rwa-credit-proof
 
-## Proposed milestones (this is what the grant funds — narrowed from 4 to 2)
+## Proposed milestones (this is what the grant funds, narrowed from 4 to 2)
 1. **Open-source release + developer kit**: clean up the existing crate into a reusable, documented
    library any Solana RWA protocol can integrate in a day (not tied to any one integration partner);
    publish docs, an integration guide, and the audit trail. Largely complete, this milestone is about
@@ -95,7 +95,7 @@ certifies the attested data is solvent, not that the data is true). Full detail 
 - Confirm your **visa/entity** position: receiving grant money is an earning event and may need the
   Graduate visa and/or a company to receive it. Verify with an immigration adviser / accountant first.
 - Decide the recipient: individual vs a UK Ltd / other entity. Note: this rejection was about ask-size
-  vs. public good, not entity status — incorporating does not by itself change the outcome. Kelvotem Inc.
-  (US, Delaware) is chartered for off-world infrastructure and is a brand/purpose mismatch for a Solana
-  ZK-credit project; if an entity is needed here, it should be a separate one, decided only if this
-  progresses to something (like a Colosseum accelerator slot) that actually requires it.
+  versus public good, not entity status; incorporating does not by itself change the outcome. Kelvotem
+  Inc. (US, Delaware) is chartered for off-world infrastructure and is a brand/purpose mismatch for a
+  Solana ZK-credit project. If an entity is needed here, it should be a separate one, decided only if
+  this progresses to something (like a Colosseum accelerator slot) that actually requires it.

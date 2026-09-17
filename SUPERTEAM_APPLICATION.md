@@ -1,11 +1,11 @@
-# Superteam microgrant application (draft)
+# Superteam microgrant application (draft, non-UK chapters)
 
-Apply via a regional listing at earn.superteam.fun/grants/ (pick the chapter that matches you — check
-current listings for one open to UK/Europe-based applicants, e.g. Superteam Germany or a general/global
-grants track; exact form fields vary by chapter but all ask for the sections below). Equity-free,
-typically $200-$10k, fast turnaround. Good fit here because the ask is small, the milestone is concrete,
-and — unlike most microgrant applicants — there's already a live, measured, reproducible prototype to
-point to instead of a plan.
+If you're UK-based, use `SUPERTEAM_UK_APPLICATION.md` instead, it's tailored to that program's actual
+eligibility, funding range, and status. Use this version for any other chapter: pick a regional listing
+at earn.superteam.fun/grants/ that's currently open to you (exact form fields vary by chapter, but all
+ask for the sections below). Equity-free, typically $200-$10k, fast turnaround. Good fit here because the
+ask is small, the milestone is concrete, and, unlike most microgrant applicants, there's already a live,
+measured, reproducible prototype to point to instead of a plan.
 
 ---
 
@@ -29,13 +29,13 @@ lives off-chain with no cryptographic way to verify solvency on-chain. This bloc
 capital and leaves Solana RWA protocols (Credix, Huma, and others) with no shared, trustworthy primitive
 for this.
 
-## What's already working (not a plan — measured and reproducible today)
+## What's already working (not a plan, measured and reproducible today)
 - 128-byte ZK proof (Groth16/BN254) that a private loan book is solvent and fully KYC'd.
 - On-chain verifier deployed to and confirmed on a **local Solana test validator**: 83,352 compute units
   (~6% of the per-transaction budget), constant cost regardless of book size.
 - Same proof is also **live on public Ethereum Sepolia testnet** (contract
   `0x8c3DD5E6b660D6aFdCdCa2FB757b2E777d8511Df`, 197,605 gas, publicly inspectable on
-  sepolia.etherscan.io) — cross-chain portable.
+  sepolia.etherscan.io), cross-chain portable.
 - Two independent code audits documented in `AUDIT.md`; honest limitations documented in
   `KNOWN_LIMITATIONS.md` rather than glossed over.
 
@@ -43,12 +43,12 @@ for this.
 One concrete, scoped piece of work: **replacing the current single-party trusted setup with a real
 multi-party ceremony** (or evaluating a transparent proof system as an alternative), which is the one
 soundness gap standing between this being a prototype and being safe for a real integration. Output:
-working ceremony tooling, a public write-up, and an updated audit note — all open source, reusable by
+working ceremony tooling, a public write-up, and an updated audit note, all open source, reusable by
 any Solana ZK project doing a Groth16 setup, not just this one.
 
 ## Why this is a good fit for a microgrant specifically
-It's small, well-defined, and has a clear finish line (the ceremony either closes the soundness gap or it
-doesn't) — not an open-ended roadmap item. It doesn't depend on landing a business partner first. And
+It's small, well-defined, and has a clear finish line: the ceremony either closes the soundness gap or it
+doesn't, not an open-ended roadmap item. It doesn't depend on landing a business partner first. And
 because the cryptography, the circuit, and the on-chain verifier already exist and are measured, the
 grant is funding the last mile to production-safety, not R&D risk.
 
@@ -59,8 +59,8 @@ whatever the chapter's typical microgrant size is.
 ## Related work
 The closest adjacent project is Zyga (SOL Strategies), a general institutional ZK privacy layer for
 Solana that lists solvency attestation as one of several use cases. It's commercial and general-purpose;
-this project is open source, narrow, and already shipped end to end for private-credit specifically —
-see the repo README's "Related work" section for the full comparison.
+this project is open source, narrow, and already shipped end to end for private-credit specifically.
+See the repo README's "Related work" section for the full comparison.
 
 ## Team
 Solo technical founder (Satyawan Singh, UK). Background: from-scratch Rust L1 blockchain (consensus,
@@ -71,6 +71,6 @@ github.com/ss1738 (37 public repos, most in formal verification and ZK).
 ## Note
 Previously submitted a larger-scope application to the Solana Foundation's main grants program (open-
 source track); it was not funded because the ask exceeded the public good delivered at that scope. This
-application is the same underlying project cut down to a single, self-contained, low-cost milestone —
-not a resubmission of the same ask, and not exclusive with a rescoped Foundation application running in
-parallel.
+application is the same underlying project cut down to a single, self-contained, low-cost milestone.
+It's not a resubmission of the same ask, and it's not exclusive with a rescoped Foundation application
+running in parallel.
