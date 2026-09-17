@@ -1,0 +1,183 @@
+Ceremony compatibility run: <repo>/target/ceremony-compat.SaRsBH
+
+added 35 packages in 443ms
+    Finished `release` profile [optimized] target(s) in 0.11s
+     Running `target/ceremony-build/release/ceremony-bridge export examples/loan_tape_solvent.csv <repo>/target/ceremony-compat.SaRsBH/fixture-1`
+R1CS_EXPORTED loans=12 constraints=6648 hash=fa787034aacd454212122a2612f9582540e9f5b84387deec89e3dc446de00864
+    Finished `release` profile [optimized] target(s) in 0.03s
+     Running `target/ceremony-build/release/ceremony-bridge export examples/loan_tape_solvent.csv <repo>/target/ceremony-compat.SaRsBH/fixture-2`
+R1CS_EXPORTED loans=12 constraints=6648 hash=fa787034aacd454212122a2612f9582540e9f5b84387deec89e3dc446de00864
+    Finished `release` profile [optimized] target(s) in 0.03s
+     Running `target/ceremony-build/release/ceremony-bridge export <repo>/target/ceremony-compat.SaRsBH/different-shape.csv <repo>/target/ceremony-compat.SaRsBH/fixture-mismatch`
+R1CS_EXPORTED loans=11 constraints=6158 hash=09bdfcabb20eba7b9d54bb0d400b692e7072f73c0b6558e37c9318a03574d2ad
+CEREMONY_STAGE phase1_initialize
+VERIFIER_DIAGNOSTIC This file has no contribution! It cannot be used in production
+CEREMONY_CHECK_PASSED uncontributed_phase1
+CEREMONY_STAGE phase1_local_contribution_1
+(node:31834) Warning: Closing file descriptor 31 on garbage collection
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:31834) [DEP0137] DeprecationWarning: Closing a FileHandle object on garbage collection is deprecated. Please close FileHandle objects explicitly using FileHandle.prototype.close(). In the future, an error will be thrown if a file descriptor is closed during garbage collection.
+CEREMONY_CHECK_PASSED phase1_contribution_1_verified
+CEREMONY_STAGE phase1_local_contribution_2
+CEREMONY_CHECK_PASSED phase1_contribution_2_verified
+CEREMONY_STAGE phase1_local_contribution_3
+CEREMONY_CHECK_PASSED phase1_contribution_3_verified
+CEREMONY_STAGE phase1_local_beacon
+CEREMONY_STAGE prepare_phase2
+CEREMONY_STAGE verify_final_phase1
+CEREMONY_CHECK_PASSED final_phase1_verified
+CEREMONY_CHECK_PASSED same_matrix_for_different_private_witnesses
+CEREMONY_CHECK_PASSED arkworks_witness_satisfies_exported_r1cs
+CEREMONY_CHECK_PASSED arkworks_witness_satisfies_exported_r1cs
+CEREMONY_CHECK_PASSED altered_witness_commitment
+CEREMONY_STAGE circuit_specific_setup
+CEREMONY_STAGE local_contribution_1
+CEREMONY_CHECK_PASSED contribution_1_verified_against_r1cs_and_phase1
+CEREMONY_STAGE local_contribution_2
+(node:31834) Warning: Closing file descriptor 32 on garbage collection
+CEREMONY_CHECK_PASSED contribution_2_verified_against_r1cs_and_phase1
+CEREMONY_STAGE local_contribution_3
+(node:31834) Warning: Closing file descriptor 32 on garbage collection
+CEREMONY_CHECK_PASSED contribution_3_verified_against_r1cs_and_phase1
+CEREMONY_STAGE local_beacon_rehearsal
+(node:31834) Warning: Closing file descriptor 32 on garbage collection
+CEREMONY_CHECK_PASSED final_phase2_transcript_verified
+CEREMONY_STAGE prove_witness_1
+(node:31834) Warning: Closing file descriptor 32 on garbage collection
+CEREMONY_CHECK_PASSED proof_1_verifies_with_final_key
+VERIFIER_DIAGNOSTIC Invalid proof
+CEREMONY_CHECK_PASSED altered_public_input_0
+VERIFIER_DIAGNOSTIC Invalid proof
+CEREMONY_CHECK_PASSED altered_public_input_1
+VERIFIER_DIAGNOSTIC Invalid proof
+CEREMONY_CHECK_PASSED final_proof_under_initial_key
+CEREMONY_STAGE prove_witness_2
+CEREMONY_CHECK_PASSED proof_2_verifies_with_final_key
+INVALID(0): deltaAfter does not fillow the public key 
+CEREMONY_CHECK_PASSED corrupted_contribution_point
+(node:31834) Warning: Closing file descriptor 31 on garbage collection
+VERIFIER_DIAGNOSTIC INVALID:  Different circuit parameters
+CEREMONY_CHECK_PASSED different_circuit_same_final_key
+CEREMONY_SNARKJS_REHEARSAL_PASSED
+(node:31834) Warning: Closing file descriptor 31 on garbage collection
+    Finished `release` profile [optimized] target(s) in 0.17s
+     Running `target/ceremony-build/release/ceremony-bridge verify <repo>/target/ceremony-compat.SaRsBH/fixture-1 <repo>/target/ceremony-compat.SaRsBH/snarkjs-1 <repo>/target/ceremony-compat.SaRsBH/wire-1`
+CEREMONY_ARKWORKS_VERIFIED public_inputs=2 changed_inputs_rejected=2 vk_sha256=bd0d020242a7275d83b696c6a9e2ebd84a1044ad420cd09b11642c43aa4b6bef
+    Finished `release` profile [optimized] target(s) in 0.04s
+     Running `target/ceremony-build/release/ceremony-bridge verify <repo>/target/ceremony-compat.SaRsBH/fixture-2 <repo>/target/ceremony-compat.SaRsBH/snarkjs-2 <repo>/target/ceremony-compat.SaRsBH/wire-2`
+CEREMONY_ARKWORKS_VERIFIED public_inputs=2 changed_inputs_rejected=2 vk_sha256=bd0d020242a7275d83b696c6a9e2ebd84a1044ad420cd09b11642c43aa4b6bef
+[2026-09-17T13:47:29.233780000Z WARN  cargo_build_sbf] Package 'caledren-solana-gate' has two crate types defined: cdylib and lib. This setting precludes link-time optimizations (LTO). Use cdylib for programs to be deployed and rlib for packages to be imported by other programs as libraries.
+warning: unused import: `entrypoint`
+  --> src/lib.rs:17:32
+   |
+17 |     account_info::AccountInfo, entrypoint, entrypoint::ProgramResult, msg,
+   |                                ^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `solana-verifier` (lib) generated 1 warning (run `cargo fix --lib -p solana-verifier` to apply 1 suggestion)
+warning: unexpected `cfg` condition value: `custom-heap`
+  --> src/lib.rs:11:1
+   |
+11 | solana_program::entrypoint!(process_instruction);
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `no-entrypoint`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `$crate::custom_heap_default` crate for guidance on how handle this unexpected cfg
+   = help: the macro `$crate::custom_heap_default` may come from an old version of the `solana_program_entrypoint` crate, try updating your dependency with `cargo update -p solana_program_entrypoint`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+   = note: this warning originates in the macro `$crate::custom_heap_default` which comes from the expansion of the macro `solana_program::entrypoint` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: unexpected `cfg` condition value: `custom-panic`
+  --> src/lib.rs:11:1
+   |
+11 | solana_program::entrypoint!(process_instruction);
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `no-entrypoint`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `$crate::custom_panic_default` crate for guidance on how handle this unexpected cfg
+   = help: the macro `$crate::custom_panic_default` may come from an old version of the `solana_program_entrypoint` crate, try updating your dependency with `cargo update -p solana_program_entrypoint`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `$crate::custom_panic_default` which comes from the expansion of the macro `solana_program::entrypoint` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `caledren-solana-gate` (lib) generated 2 warnings
+    Finished `release` profile [optimized] target(s) in 0.28s
+warning: unused import: `entrypoint`
+  --> <repo>/solana-verifier/src/lib.rs:17:32
+   |
+17 |     account_info::AccountInfo, entrypoint, entrypoint::ProgramResult, msg,
+   |                                ^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `solana-verifier` (lib) generated 1 warning (run `cargo fix --lib -p solana-verifier` to apply 1 suggestion)
+warning: unexpected `cfg` condition value: `custom-heap`
+  --> src/lib.rs:11:1
+   |
+11 | solana_program::entrypoint!(process_instruction);
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `no-entrypoint`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `$crate::custom_heap_default` crate for guidance on how handle this unexpected cfg
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+   = note: this warning originates in the macro `$crate::custom_heap_default` which comes from the expansion of the macro `solana_program::entrypoint` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: unexpected `cfg` condition value: `solana`
+  --> src/lib.rs:11:1
+   |
+11 | solana_program::entrypoint!(process_instruction);
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `target_os` are: `aix`, `amdhsa`, `android`, `cuda`, `cygwin`, `dragonfly`, `emscripten`, `espidf`, `freebsd`, `fuchsia`, `haiku`, `helenos`, `hermit`, `horizon`, `hurd`, `illumos`, `ios`, `l4re`, `linux`, `lynxos178`, `macos`, `managarm`, `motor`, `netbsd`, `none`, `nto`, `nuttx`, `openbsd`, `psp`, `psx`, `qnx`, `qurt`, `redox`, `rtems`, and `solaris` and 15 more
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `$crate::custom_heap_default` crate for guidance on how handle this unexpected cfg
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `$crate::custom_heap_default` which comes from the expansion of the macro `solana_program::entrypoint` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: unexpected `cfg` condition value: `custom-panic`
+  --> src/lib.rs:11:1
+   |
+11 | solana_program::entrypoint!(process_instruction);
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `no-entrypoint`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `$crate::custom_panic_default` crate for guidance on how handle this unexpected cfg
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `$crate::custom_panic_default` which comes from the expansion of the macro `solana_program::entrypoint` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: unexpected `cfg` condition value: `solana`
+  --> src/lib.rs:11:1
+   |
+11 | solana_program::entrypoint!(process_instruction);
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `target_os` are: `aix`, `amdhsa`, `android`, `cuda`, `cygwin`, `dragonfly`, `emscripten`, `espidf`, `freebsd`, `fuchsia`, `haiku`, `helenos`, `hermit`, `horizon`, `hurd`, `illumos`, `ios`, `l4re`, `linux`, `lynxos178`, `macos`, `managarm`, `motor`, `netbsd`, `none`, `nto`, `nuttx`, `openbsd`, `psp`, `psx`, `qnx`, `qurt`, `redox`, `rtems`, and `solaris` and 15 more
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `$crate::custom_panic_default` crate for guidance on how handle this unexpected cfg
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `$crate::custom_panic_default` which comes from the expansion of the macro `solana_program::entrypoint` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `caledren-solana-gate` (lib) generated 4 warnings
+    Finished `release` profile [optimized] target(s) in 0.52s
+warning: the following packages contain code that will be rejected by a future version of Rust: proc-macro-error2 v2.0.1
+note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 1`
+     Running tests/ceremony.rs (solana-gate/target/host/release/deps/ceremony-700af519ecf14dbf)
+
+running 1 test
+CEREMONY_SBF_REJECTED altered_threshold state_unchanged=true
+CEREMONY_SBF_ACCEPTED sequence=1 compute_units=85529 transaction_bytes=672
+CEREMONY_SBF_ACCEPTED sequence=2 compute_units=85529 transaction_bytes=672
+CEREMONY_SBF_COMPATIBILITY_PASSED
+test snarkjs_final_key_and_proofs_are_accepted_by_compiled_gate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+CEREMONY_COMPATIBILITY_PASSED
+Report: <repo>/target/ceremony-compat.SaRsBH/ceremony-report.json
+Local rehearsal only; contributor recruitment and a real public phase-2 ceremony remain future work.

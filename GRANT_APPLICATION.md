@@ -20,7 +20,7 @@ Satyawan Singh
 
 ## 2. Website URL
 
-https://github.com/ss1738/rwa-credit-proof
+https://caledren.com
 
 ## 3. Country
 
@@ -60,14 +60,20 @@ including consensus, light clients and data-availability sampling, and working w
 aggregate signatures, Nova recursive SNARKs, Groth16, KZG/Verkle commitments, on-chain BLS
 (EIP-2537), and Coq/TLA+ formal verification.
 
-I have already built an MIT-licensed private-credit solvency proof with a reproducible demo,
-adversarial checks and an inspectable audit trail. It enforces solvency, KYC flags and commitment
-binding over a private loan book. The Solana verifier runs in the SBF runtime; a separate verifier
-example is confirmed on public Ethereum Sepolia. My edge is a narrow, working reference implementation
-that developers can inspect and extend. It complements broader institutional privacy systems such as
-Zyga. The requested funding turns this into reusable Solana tooling, completes a verifiable setup
-workflow, and supports maintenance and adoption. The current code remains a research prototype:
-single-party setup, circuit-key pinning and on-chain mint/signature integration are explicit gaps.
+I have built an MIT-licensed private-credit proof and approval workflow that another developer can
+reproduce locally with one command. It ingests a loan CSV, reuses persisted Groth16 parameters,
+privately checks the servicer's book commitment and writes an authenticated approval receipt on
+Solana. The compiled program pins the approved key and servicer and enforces minimum threshold,
+freshness and sequence. Its runtime suite accepts successive approvals and rejects 26 invalid
+requests without changing state. A finalized local approval used 85,529 compute units with two
+signers; a separate verifier example is confirmed on public Ethereum Sepolia.
+
+My edge is a working, inspectable reference implementation with explicit trust boundaries. It
+complements broader institutional privacy systems such as Zyga. The grant funds the next release:
+developer integration and hardening, a pinned setup compatibility gate followed by an externally
+contributed ceremony, maintenance and independently evidenced adoption. This remains a pilot alpha
+with single-party setup, no live supply or SPL token integration, and no external security audit or
+customer traction claimed.
 
 ## 11. Developer Tooling Instructions (conditional required field)
 
@@ -79,12 +85,14 @@ paste the proposal body into Why You. The form asks that links appear only in fi
 
 ## Internal preparation notes (not form answers)
 
-- Proposed budget: $5,000 developer kit; $12,000 setup tooling; $3,000 maintenance ($500/month for
-  six months); $2,000 adoption. Total: $22,000. Full acceptance criteria are in the supporting proposal.
+- Proposed budget: $5,000 developer kit; $12,000 setup tooling ($2,000 compatibility and launch gate,
+  $10,000 externally contributed ceremony and release); $3,000 maintenance ($500/month for six
+  months); $2,000 adoption. Total: $22,000. Full acceptance criteria are in the supporting proposal.
 - The original $300,000 application was rejected because the ask exceeded the public good delivered.
   This draft funds reusable open-source components and measurable maintenance/adoption. It does not
   fund a bespoke integration for a named commercial protocol.
-- No dedicated domain has been supplied. Keep the GitHub URL until a landing page is live.
+- Caledren uses caledren.com. The new pilot code and evidence are local changes awaiting an approved
+  GitHub push; publish the reviewed source before relying on its public accessibility in submission.
 - No application has been submitted and no changes have been pushed to GitHub.
 - [General application guidance](https://docs.google.com/document/d/1eK-WNhQmQFyk06XhwWRZJrXn3z_0NDbChZ_Rm8XRoXw/edit)
   permits N/A in the on-chain accounts field.

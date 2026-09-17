@@ -1,0 +1,14 @@
+{
+  "name": "caledren-ceremony-compatibility",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24 <25" },
+  "description": "Pinned external ceremony tooling for the arkworks R1CS compatibility rehearsal",
+  "dependencies": {
+    "snarkjs": "0.7.6"
+  },
+  "overrides": {
+    "underscore": "1.13.8"
+  }
+}

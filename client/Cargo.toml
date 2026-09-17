@@ -11,3 +11,6 @@ description = "Sends a real solvency-proof transaction to the deployed on-chain 
 credit-solvency-core = { path = ".." }
 solana-client = "2"
 solana-sdk = "2"
+caledren-gate-protocol = { path = "../gate-protocol" }
+serde_json = "1"
+bincode = "1"

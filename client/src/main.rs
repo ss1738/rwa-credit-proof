@@ -13,8 +13,16 @@ use solana_sdk::{
     transaction::Transaction,
 };
 use std::str::FromStr;
+mod gate;
 
 fn main() {
+    if std::env::args().nth(1).as_deref() == Some("pilot-demo") {
+        if let Err(error) = gate::run(std::env::args().skip(2).collect()) {
+            eprintln!("pilot-demo: {error}");
+            std::process::exit(1);
+        }
+        return;
+    }
     let mut args = std::env::args().skip(1);
     let url = args.next().unwrap_or_else(|| "http://127.0.0.1:8899".into());
     let program_id = Pubkey::from_str(&args.next().expect("program id arg")).expect("valid program id");

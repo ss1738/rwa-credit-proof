@@ -10,6 +10,9 @@ description = "On-chain Groth16 verifier for the private-credit solvency proof (
 [lib]
 crate-type = ["cdylib", "lib"]
 
+[features]
+no-entrypoint = []
+
 [dependencies]
 solana-program = "2"
 solana-bn254 = "2"

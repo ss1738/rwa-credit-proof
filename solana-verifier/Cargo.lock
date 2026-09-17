@@ -800,6 +800,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "caledren-gate-protocol"
+version = "0.1.0"
+
+[[package]]
 name = "caps"
 version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1042,6 +1046,7 @@ dependencies = [
  "ark-serialize",
  "ark-snark",
  "ark-std",
+ "caledren-gate-protocol",
  "ed25519-dalek 2.2.0",
  "rand 0.8.7",
  "serde",

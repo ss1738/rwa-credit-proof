@@ -56,7 +56,7 @@ The demo script now propagates unit-test failures instead of suppressing them wi
 Reading `solana-verifier/src/lib.rs` and `client/src/main.rs` also confirms that the deployed-program
 example accepts its verifying key from instruction data. It checks the pairing equation, not whether
 that key belongs to an approved solvency circuit. It neither authenticates the servicer nor mints
-SPL tokens. Those combined checks currently exist only in the native demo. Input slices also assume
+SPL tokens. At the time of this legacy reproduction, those combined checks existed only in the native demo. Input slices also assume
 a valid encoding. These integration and validation gaps are now recorded in `KNOWN_LIMITATIONS.md`.
 This documentation review is not a new independent security audit.
 
@@ -65,10 +65,43 @@ the complete transaction used 224,234 gas. The contract verifies a baked-in exam
 Solana devnet deployment remains pending faucet funding; no local address is represented as a
 public deployment. See [DEPLOYMENTS.md](DEPLOYMENTS.md).
 
+## 2026-09-17 pilot alpha regression evidence
+
+The new `solana-gate/` is separate from the legacy benchmark. It stores the approved verification
+key and servicer, requires runtime signer authorization, validates the instruction format, and
+enforces minimum threshold, sequence and freshness before storing the latest approval receipt.
+The SDK adds strict CSV ingestion, persisted parameter/hash checks and private commitment checking.
+
+`./pilot-demo.sh` passed the SDK and protocol tests, the compiled SBF suite and a real finalized
+local RPC approval. The SBF suite accepted two successive approvals using one key and rejected
+26 invalid requests with the entire configuration account unchanged. These include unsigned
+initialization, reinitialization, wrong/missing signer, wrong owner, uninitialized/read-only account,
+low threshold, bad timestamps, skipped/replayed sequences, tampered proofs/public inputs,
+an otherwise valid proof from another key, and malformed/noncanonical encodings.
+
+The finalized 12-loan local approval used 85,529 CU in a 672-byte legacy transaction, including the
+compute-budget instruction. Initialization with account creation fit in 1,057 bytes. These are
+pilot measurements, separate from the 83,354-CU legacy pairing benchmark. The private CSV and
+nonce did not enter instruction data. The demo operated both signer roles; it did not integrate
+an external servicer or execute a token mint.
+
+The separate `./ceremony-compat.sh` rehearsal now pins `iden3/snarkjs` 0.7.6 on Node 24 LTS and
+passes the exact 6,648-constraint arkworks fixture through local phase 1 and phase 2 transcript
+checks, arkworks proof verification and the compiled Solana gate. It also rejects altered public
+inputs, corrupted contribution data and a mismatched circuit. The three rehearsal contributions
+are controlled by one operator, so they establish compatibility only; Milestone 2b still requires
+at least three independently operated contributors and a public beacon.
+
+Evidence: `evidence/2026-09-17/pilot-alpha/`. This is developer-run regression evidence, not an
+independent security audit. Setup, circuit range assumptions, consumer policy, deployment authority,
+real data authenticity and external integration still need work. `PILOT_GUIDE.md` defines the
+integration contract and `KNOWN_LIMITATIONS.md` records what it does not establish.
+
 ## Honest scope
 
-This is a research prototype with locally reproduced tests and a public Sepolia verifier example.
+This is a pilot alpha with locally reproduced tests and a public Sepolia verifier example.
 It is not a production, third-party-security-audited system. A production mint gate needs a complete
-trusted setup or suitable transparent proof system, a pinned approved circuit/key, authenticated
-servicer/signature and policy enforcement, a token integration, input validation, and external review.
+trusted setup or suitable transparent proof system, reviewed parameter provenance and range bounds,
+real servicer operations, a consumer/token integration and external review. The pilot's stored key,
+signer policy and parser are implemented, but are not an independent assurance of those properties.
 See [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).

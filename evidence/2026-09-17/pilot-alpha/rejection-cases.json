@@ -1,0 +1,33 @@
+{
+  "runtime": "compiled SBF via solana-program-test; no native processor substitute",
+  "accepted_approvals": 2,
+  "rejected_cases": [
+    "unsigned_config_initialization",
+    "reinitialization",
+    "wrong_servicer",
+    "missing_servicer_signature",
+    "wrong_account_owner",
+    "uninitialized_config",
+    "readonly_config",
+    "below_policy_threshold",
+    "future_attestation",
+    "expired_attestation",
+    "excessive_validity_window",
+    "negative_timestamp",
+    "skipped_sequence",
+    "tampered_proof",
+    "altered_commitment",
+    "altered_public_threshold",
+    "valid_proof_from_unapproved_key",
+    "empty",
+    "short_header",
+    "truncated_proof",
+    "trailing_bytes",
+    "reserved_byte",
+    "unknown_version",
+    "noncanonical_scalar",
+    "replayed_approval",
+    "older_book_after_acceptance"
+  ],
+  "unchanged_account_asserted_for_every_rejection": true
+}

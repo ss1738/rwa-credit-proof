@@ -1,0 +1,122 @@
+
+== 1/6  Statement soundness (unit tests) ==
+
+running 5 tests
+.....
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 2 tests
+..
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.83s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+== 2/6  Realistic servicer loan tapes (CSV in, mint decision out) ==
+Loan tape: examples/loan_tape_solvent.csv
+  loans                 : 12
+  token supply          : 2830000
+  required collateral   : 3396000   (120% of supply)
+  performing collateral : 3814750
+  all borrowers KYC'd   : true
+  ZK proof (128 bytes)   : valid
+  servicer signature    : valid
+  => MINT ALLOWED
+
+Loan tape: examples/loan_tape_insolvent.csv
+  loans                 : 8
+  token supply          : 1880000
+  required collateral   : 2256000   (120% of supply)
+  performing collateral : 1275000
+  all borrowers KYC'd   : true
+Constraint trace requires enabling `ConstraintLayer`
+  => circuit unsatisfiable for this book: no valid ZK proof can exist
+  => MINT BLOCKED
+
+== 3/6  Zero-knowledge proof: solvent + all-KYC + bound to the signed book ==
+=== ZK proof: solvent + all-KYC + bound to book commitment ===
+loans in book (PRIVATE)        : 10
+proof size                     : 128 bytes
+public threshold               : 1495000
+public book commitment         : 20705003402445388391056819259986141017645030528739506314279392568086861064220
+actual collateral sum          : 1545000   <- never revealed
+VERIFIED (solvent + KYC + bound): true
+insolvent threshold rejected   : true
+Constraint trace requires enabling `ConstraintLayer`
+KYC-failure book unprovable    : true
+commitment changes with the book: true
+
+OK: solvent + fully KYC'd + cryptographically bound to the attested book.
+
+== 4/6  Native mint-gate model (Solana alt_bn128 + ed25519) and swap-book attack ==
+=== Solana mint-gate: ZK proof + servicer signature ===
+book: 10 loans (values hidden)   public threshold: 1495000
+(a) alt_bn128 accepts ZK proof      : true
+(b) servicer signed the commitment  : true
+=> MINT ALLOWED  ✅
+
+--- attack: swap in a different book, reuse the signature ---
+(a) attacker's ZK proof valid       : true
+(b) servicer signature matches it   : false  (expected false)
+=> MINT BLOCKED  ⛔
+
+OK: proof + signature bind the mint to exactly the book the servicer attested.
+
+== 5/6  Scale: prover cost vs book size (100, 1000 loans) ==
+n=   100  setup=    0.46s  prove=    0.46s  verify=   1.4ms  proof=128B  verified=true
+n=  1000  setup=    4.37s  prove=    4.05s  verify=   1.4ms  proof=128B  verified=true
+
+== 6/6  Real on-chain compute units (optional: needs the Solana toolchain) ==
+RESULT: Ok(())
+COMPUTE_UNITS_CONSUMED: 83354
+
+All stages passed.  Proof-of-solvency verified end to end.
