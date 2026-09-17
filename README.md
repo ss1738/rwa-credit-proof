@@ -37,6 +37,31 @@ different book has a different commitment the servicer never signed.
 | Portability | verifies on Solana (`alt_bn128`) and any EVM chain (`ecPairing`) |
 | Attack (swap book, reuse signature) | blocked |
 
+## Related work
+
+ZK-based solvency and compliance proofs for RWA are an active, recognized need in the ecosystem, not a
+novel idea invented here — see Chainlink's and zk.me's write-ups on ZK compliance for institutional
+finance, and zkVerify/zkOrigo's compliance-scoring work. The contribution here is not the concept; it's
+a concrete, working, narrowly-scoped implementation of it for one specific asset class.
+
+The closest adjacent project is **Zyga** (formerly Darklake, now developed under SOL Strategies since
+its April 2026 acquisition), a dynamic zero-knowledge proof system for Solana with a published
+construction (IACR ePrint 2025/1802) that lists solvency attestation among several use cases (alongside
+FATF travel-rule proofs and MEV-resistant private execution). It's a different bet than this project:
+
+| | This project | Zyga |
+|---|---|---|
+| Scope | One asset class: private-credit loan-book solvency | General institutional privacy layer |
+| License | Open source (MIT), integrate today | Commercial, institution-facing |
+| Status | Concrete Groth16 circuit, deployed and measured on a live Solana validator and on EVM | Published research construction; no shipped private-credit reference integration found at time of writing |
+| Who it's for | Any RWA/private-credit protocol wanting a drop-in primitive | Large institutions adopting Solana broadly |
+
+These aren't mutually exclusive: a protocol could use Zyga's general privacy rails for MEV protection or
+travel-rule compliance while using this narrow, open-source primitive specifically for per-mint solvency
+verification — or use this as the lightweight, inspectable alternative if a general commercial platform
+isn't the right fit yet. If that competitive picture changes, this section should be updated rather than
+left to go stale.
+
 ## Run it
 
 ```bash
