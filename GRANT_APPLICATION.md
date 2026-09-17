@@ -54,8 +54,10 @@ asset class — complementary rather than redundant.
 ## What is already built (measured, reproducible)
 - ZK proof: performing collateral >= threshold, all-KYC, book hashes to a servicer-signed (hiding)
   commitment. 128-byte proof, loans stay private.
-- On-chain verifier deployed to and confirmed on a live Solana validator (83,352 CU).
-- EVM verifier also deployed and confirmed (197,603 gas) — same proof, portable across chains.
+- On-chain verifier deployed to and confirmed on a local Solana test validator (83,352 CU).
+- EVM verifier also deployed and confirmed **on public Sepolia testnet** (contract
+  `0x8c3DD5E6b660D6aFdCdCa2FB757b2E777d8511Df`, 197,605 gas, publicly inspectable on
+  sepolia.etherscan.io) — same proof, portable across chains.
 - One-command demo (`./demo.sh`) reproduces the proof, on-chain verification, a 10k-loan scale test, and
   an adversarial self-audit. Two independent code reviews are in `AUDIT.md`.
 - Repo: https://github.com/ss1738/rwa-credit-proof

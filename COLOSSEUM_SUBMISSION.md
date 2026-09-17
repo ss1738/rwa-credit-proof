@@ -26,9 +26,10 @@ Private credit is the largest tokenized real-world-asset category — around $20
 $1.8-3.1T off-chain market — but the loan book backing every token lives off-chain, so nobody can
 verify solvency on-chain. We built a zero-knowledge proof that a fund's private loan book is solvent
 and every borrower passed KYC, and gated an on-chain mint on that proof plus the servicer's signature.
-It's already deployed and confirmed on a live Solana validator: 83,352 compute units, 6% of the
-per-transaction budget, constant cost no matter how many loans are in the book. The same proof also
-verifies on any EVM chain.
+It's already deployed and confirmed on a local Solana test validator: 83,352 compute units, 6% of the
+per-transaction budget, constant cost no matter how many loans are in the book. The same proof is also
+live on public Ethereum Sepolia testnet (contract `0x8c3DD5E6b660D6aFdCdCa2FB757b2E777d8511Df`, 197,605
+gas, publicly inspectable on sepolia.etherscan.io).
 
 ## Prior work disclosure (required — read this before judging the rest)
 The core cryptography, the Solana on-chain verifier, and the EVM verifier were built and deployed
@@ -44,8 +45,8 @@ hackathon submission on that increment, not on the pre-existing core, which is d
 | Property | Result |
 |---|---|
 | Proof size | 128 bytes, constant regardless of book size |
-| On-chain verification (Solana) | 83,352 compute units on a live validator |
-| On-chain verification (EVM) | 197,603 gas, confirmed on-chain |
+| On-chain verification (Solana) | 83,352 compute units on a local test validator |
+| On-chain verification (EVM) | 197,605 gas, live on public Sepolia testnet, Etherscan-verifiable |
 | Scale | 10,000-loan book proves in ~60s |
 | Attack test (swap book, reuse signature) | blocked |
 
