@@ -6,10 +6,15 @@ security audit and the fixes noted below. The cryptography is genuine and indepe
 [AUDIT.md](AUDIT.md)), but the trust model is not yet production-grade.
 
 ## What is verified
-- The ZK circuit genuinely enforces solvency + all-KYC + a servicer-signed hiding commitment over
-  private witnesses (empirical audit: `cargo run --bin audit`; two independent code reviews in AUDIT.md).
+- The ZK circuit enforces coverage + all-KYC + a blinded Poseidon commitment over private witnesses
+  (empirical audit: `cargo run --bin audit`; historical review record in AUDIT.md). The circuit does
+  not verify a servicer signature or establish that off-chain inputs are true.
 - The Solana `alt_bn128` verifier performs real Groth16 pairing checks (measured 83k CU on a validator).
-- The phase-2 (delta) multi-party setup contribution is implemented correctly.
+- The local pilot gate pins a verification key and servicer, applies threshold/freshness/sequence
+  policy and records an approval receipt. This is developer-run local evidence, not a public deployment
+  or independent audit.
+- The pinned setup-tool compatibility rehearsal verifies locally generated phase-1/phase-2 artifacts.
+  It is not an externally contributed production ceremony.
 
 ## What is NOT production-safe (read before relying on it)
 See [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) for detail. In short:
@@ -18,13 +23,15 @@ See [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) for detail. In short:
    multi-party Powers-of-Tau (phase 1) and per-contribution consistency proofs. The secret in the
    ceremony is also not zeroized.
 2. **No third-party security audit.**
-3. **No approved verifying-key or mint authorization enforcement in the SBF example.** The caller
-   supplies the key; signature and mint policy checks exist only in the native model. Malformed
-   instructions also lack explicit length validation. See `KNOWN_LIMITATIONS.md` sections 5 and 6.
+3. **No production mint authorization integration.** The legacy verifier accepts a caller-supplied
+   key and does not enforce signature or mint policy. The separate pilot gate pins the key and servicer
+   and validates its instruction format, but it is local-only, does not derive policy from live supply,
+   does not mint SPL tokens and does not prevent repeated downstream use of one receipt. See
+   `KNOWN_LIMITATIONS.md` sections 5 through 7.
 4. **The data-trust anchor is external.** A proof certifies that the *servicer-attested* loan tape is
    solvent, not that the data is *true*. Security depends on a real, authenticated signed loan-tape feed
    that does not exist yet.
 
 ## Reporting
-Found an issue? Please open a GitHub issue or contact `[ your email ]`. Responsible disclosure
-appreciated, this is a prototype and feedback is welcome.
+Found a security issue? Email `satyawansinghinuk@gmail.com` before public disclosure; do not include
+exploitable details in a public GitHub issue. This is a prototype and responsible feedback is welcome.

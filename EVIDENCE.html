@@ -36,17 +36,18 @@
   <header>
     <div class="kick">Technical Evidence</div>
     <h1>Proof-of-Solvency for Tokenized Private Credit</h1>
-    <p class="sub">A fund proves it is solvent and fully KYC'd, over a loan book it cannot fake, without revealing a single loan. Research prototype with reproducible tests and explicitly scoped network evidence.</p>
+    <p class="sub">A fund proves a coverage and KYC predicate over a supplied private loan book without revealing individual loans. Research prototype with reproducible tests and explicitly scoped network evidence.</p>
   </header>
 
   <h2>What it is</h2>
-  <p>An open-source zero-knowledge verifier. A Groth16/BN254 circuit proves, over a PRIVATE loan book, that (1) performing collateral covers the required over-collateralisation of the token supply, (2) every borrower passed KYC, and (3) the book hashes to a servicer-signed hiding commitment. Only the threshold and the commitment are revealed. The native model checks the proof and servicer signature together to reject a swapped book. The SBF program verifies the pairing equation only; it does not pin the circuit key, authenticate the servicer or mint tokens.</p>
+  <p>An open-source zero-knowledge verifier. A Groth16/BN254 circuit proves, over a PRIVATE loan book, that (1) performing collateral covers a public threshold, (2) every supplied KYC flag is true, and (3) the private witnesses hash to a blinded public commitment. Only the threshold and commitment are revealed. A legacy native model checks a proof and a servicer signature over the same commitment. The separate local pilot gate pins the key and servicer and records a policy-checked approval receipt; it does not mint tokens or establish that the off-chain data is true.</p>
 
   <h2>Measured results</h2>
   <table>
     <tr><th>Proof size</th><td><b>128 bytes</b>, constant regardless of book size</td></tr>
     <tr><th>Privacy</th><td>individual loans never revealed; public inputs are 2 field elements</td></tr>
-    <tr><th>On-chain verification</th><td><b>83,354 CU</b> in the latest local-validator and SBF-harness runs; earlier local result: <b>83,352 CU</b>. Sepolia: <b>197,605 verifier-only gas</b>, <b>224,234 total transaction gas</b>. Separate example proofs use the same proof system.</td></tr>
+    <tr><th>Local Solana pilot approval</th><td><b>85,529 CU</b> in a <b>672-byte</b> transaction with separate payer and servicer signatures. The compiled gate suite accepted two successive approvals and rejected 26 invalid cases without changing state.</td></tr>
+    <tr><th>Legacy proof verification</th><td><b>83,354 CU</b> in the latest local-validator and SBF-harness runs; earlier local result: <b>83,352 CU</b>. Sepolia: <b>197,605 verifier-only gas</b>, <b>224,234 total transaction gas</b>. These are separate examples, not the pilot approval transaction.</td></tr>
     <tr><th>Live on public Ethereum</th><td>Deployed verifier contract <b>0x8c3DD5E6b660D6aFdCdCa2FB757b2E777d8511Df</b>; the verification transaction <b>0x91196bd0a9b6d192733bdc7df7126520c142f2bbda2c146190ebddd75aaae7c7</b> emits Verified(true, 197605). <a href="https://sepolia.etherscan.io/tx/0x91196bd0a9b6d192733bdc7df7126520c142f2bbda2c146190ebddd75aaae7c7">Inspect the successful transaction</a>. This contract verifies a baked-in example proof.</td></tr>
     <tr><th>On-chain cost vs book size</th><td><b>constant</b>: a 10-loan and a 10,000-loan fund cost the same to verify</td></tr>
     <tr><th>Prover scale</th><td>10,000 loans: 72.17s proving plus 64.61s setup; 1,000 loans: 3.82s proving (2026-09-17 run)</td></tr>
@@ -56,7 +57,7 @@
 
   <h2>Independent verification (audited three ways)</h2>
   <p><b>1. Empirical adversarial audit</b> (<code>cargo run --bin audit</code>): checks that fail if the ZK claims were fabricated. Result: the circuit genuinely enforces solvency, all-KYC, and commitment binding; insolvent, KYC-fail, and wrong-commitment books each fail the constraint system; a proof with one flipped bit or an altered public input is rejected. <span class="ok">Passed.</span></p>
-  <p><b>2 &amp; 3. Two independent code reviews.</b> Two separate reviewers read every source file. Verdict: <span class="ok">"genuine, working ZK cryptography, not fabricated or hollow."</span> The second review, after fixes, confirmed: "genuinely in a more honest and sounder state than before; documentation matches what the code enforces." The full record is in <a href="https://github.com/ss1738/rwa-credit-proof/blob/main/AUDIT.md">AUDIT.md</a>.</p>
+  <p><b>2 &amp; 3. Historical independent code reviews.</b> Two separate reviewers examined the source and their findings and follow-up are recorded in <a href="https://github.com/ss1738/rwa-credit-proof/blob/main/AUDIT.md">AUDIT.md</a>. These reviews found real cryptography and prompted documented fixes; they were not a formal third-party security audit. The newer pilot evidence is developer-run regression evidence.</p>
 
   <h2>Public Solana deployment</h2>
   <p>Devnet deployment is pending faucet funding. The local program ID is not evidence of a public deployment. See <a href="DEPLOYMENTS.md">deployment status and receipts</a>.</p>
@@ -67,8 +68,8 @@
   <h2>What is NOT yet production-safe (stated honestly)</h2>
   <div class="box flag">
     <ul>
-      <li><b>Trusted setup is not yet fully multi-party.</b> A phase-2 (delta) ceremony is implemented and validated; a complete ceremony additionally needs a multi-party phase-1 (Powers of Tau) and contribution proofs.</li>
-      <li><b>On-chain mint integration is incomplete.</b> The example accepts a caller-supplied verifying key and has no servicer-signature, threshold/freshness or token-mint enforcement. Production use needs these checks and explicit instruction validation.</li>
+      <li><b>Trusted setup is not yet fully multi-party.</b> The pinned compatibility rehearsal checks locally generated phase-1 and phase-2 artifacts, but all contributors are controlled by one operator. A production ceremony needs independently operated contributors and reviewed parameter provenance.</li>
+      <li><b>On-chain mint integration is incomplete.</b> The legacy example accepts a caller-supplied key. The separate local pilot gate pins the key and servicer and enforces threshold, freshness and sequence, but it does not use live token supply, mint SPL tokens or prevent repeated downstream use of one receipt.</li>
       <li><b>Not third-party security-audited.</b> Independently code-reviewed, but not a formal security audit.</li>
       <li><b>The data-trust anchor is external.</b> A proof certifies that the servicer-attested data is solvent, not that the data is true. It depends on an authenticated signed loan-tape feed.</li>
     </ul>

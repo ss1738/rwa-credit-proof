@@ -11,3 +11,5 @@
 .vercel
 .env*
 /dist/
+/notes/
+/CODEX_*_PROMPT.txt

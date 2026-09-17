@@ -99,9 +99,10 @@ are checked separately; `./demo.sh` does not redeploy to either public network.
 
 - **The statement** (`src/circuit.rs`): an R1CS circuit: sum of performing collateral `>=` threshold,
   every KYC flag true, and the book's Poseidon commitment equals a public input. Groth16 over BN254.
-- **The binding** (`commit_book` + `src/onchain_bytes.rs`): the servicer signs the Poseidon commitment;
-  the proof proves the private book hashes to it. This is the answer to the "garbage-in" problem: the
-  proof certifies the **attested** book, not arbitrary numbers.
+- **The binding models** (`commit_book` + `src/onchain_bytes.rs`): the legacy native model signs the
+  Poseidon commitment and checks the proof against that same value. In the pilot workflow, the
+  servicer privately recomputes the commitment before co-signing the exact approval transaction.
+  Neither model independently establishes that the source data is true.
 - **The pilot SDK and gate** (`src/pilot.rs`, `gate-protocol/`, `solana-gate/`): reuse parameters,
   validate CSV and wire inputs, privately check the book commitment, enforce the stored key and
   signer policy, and write a fresh sequential approval receipt. Consumers must pin the approved
@@ -120,8 +121,8 @@ src/lib.rs            servicer-signed loan tape + native predicate (evaluate)
 src/circuit.rs        the ZK statement (Groth16 R1CS) + prove_solvency + Poseidon commitment
 src/onchain_bytes.rs  serialize proof/vk/public inputs into the on-chain byte layout
 src/prove.rs          ZK proof + soundness checks            (bin: prove)
-src/onchain.rs        native alt_bn128 mint-gate + attack     (bin: onchain)
-src/pipeline.rs       CSV loan tape -> mint decision          (bin: pipeline)
+src/onchain.rs        native proof/signature model + attack    (bin: onchain)
+src/pipeline.rs       CSV loan tape -> native model decision   (bin: pipeline)
 src/bench.rs          prover cost vs book size                (bin: bench)
 src/pilot.rs          reusable parameters, strict CSV ingestion, proof and private attestation API
 src/pilot_cli.rs      setup / prove / check-attestation       (bin: pilot)
@@ -131,9 +132,7 @@ pilot-demo.sh        current product workflow and real local RPC transaction
 solana-verifier/      on-chain Groth16 verifier program (SBF) + compute-unit test
 client/               RPC client: sends a real proof tx to a deployed program
 examples/             realistic loan-tape CSVs (solvent, insolvent)
-DESIGN_PARTNER_BRIEF.md / brief.html   the one-pager
-DESIGN_PARTNER_TARGETS.md / OUTREACH_DRAFTS.md   who to pilot with
-PRIVATE_CREDIT_SPIKE.md   the 60-day plan
+DESIGN_PARTNER_BRIEF.md  design-partner one-pager
 ```
 
 ## What is proven, and what is not
