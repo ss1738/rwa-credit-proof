@@ -29,13 +29,13 @@ bundles, a private servicer commitment check, and a separate stateful Solana app
 stores an approved key and servicer, enforces threshold/freshness/sequence policy, and records the
 latest receipt. Its compiled SBF suite accepts two successive approvals and rejects 26 invalid
 requests while preserving state. A finalized local 12-loan approval used 85,529 CU in a 672-byte
-legacy transaction signed by separate payer and servicer keys. `./pilot-demo.sh` reproduces it.
+legacy transaction signed by separate payer and servicer keys (a repeat run measured 85,538 CU).
+`./pilot-demo.sh` reproduces it.
 
 The existing six-stage demo and separate adversarial audit also pass. Their 10-loan circuit has
 5,911 constraints and legacy pairing-only SBF harness uses 83,354 CU. A separate verifier example
-is confirmed on public Sepolia. These programs do not mint tokens. Pilot code and evidence are
-currently local changes to publish after review; do not submit claims of public availability until
-that publication is complete.
+is confirmed on public Sepolia. These programs do not mint tokens. Pilot code, evidence and the
+site are pushed to `main` and public.
 
 Repository: https://github.com/ss1738/rwa-credit-proof.
 Audit record: https://github.com/ss1738/rwa-credit-proof/blob/main/AUDIT.md.
@@ -124,7 +124,7 @@ Solidity/EVM example demonstrates portability; this grant's deliverables focus o
 
 **Proof-of-Concept**
 
-- Source and demos: https://github.com/ss1738/rwa-credit-proof (`./pilot-demo.sh`, `./demo.sh`; publish the pilot changes before submission).
+- Source and demos: https://github.com/ss1738/rwa-credit-proof (`./pilot-demo.sh`, `./demo.sh`).
 - Adversarial audit: `cargo run --release --bin audit`.
 - Larger benchmark: `cargo run --release --bin bench -- 10000`.
 - Sepolia example: https://sepolia.etherscan.io/tx/0x91196bd0a9b6d192733bdc7df7126520c142f2bbda2c146190ebddd75aaae7c7.

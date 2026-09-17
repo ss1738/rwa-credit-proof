@@ -62,11 +62,12 @@ aggregate signatures, Nova recursive SNARKs, Groth16, KZG/Verkle commitments, on
 
 I have built an MIT-licensed private-credit proof and approval workflow that another developer can
 reproduce locally with one command. It ingests a loan CSV, reuses persisted Groth16 parameters,
-privately checks the servicer's book commitment and writes an authenticated approval receipt on
-Solana. The compiled program pins the approved key and servicer and enforces minimum threshold,
-freshness and sequence. Its runtime suite accepts successive approvals and rejects 26 invalid
-requests without changing state. A finalized local approval used 85,529 compute units with two
-signers; a separate verifier example is confirmed on public Ethereum Sepolia.
+privately checks the servicer's book commitment and writes an authenticated approval receipt on a
+local Solana validator. The compiled program pins the approved key and servicer and enforces
+minimum threshold, freshness and sequence. Its runtime suite accepts successive approvals and
+rejects 26 invalid requests without changing state. A fresh finalized local approval used 85,529
+compute units with two signers (a repeat run measured 85,538 CU); a separate verifier example is
+confirmed on public Ethereum Sepolia.
 
 My edge is a working, inspectable reference implementation with explicit trust boundaries. It
 complements broader institutional privacy systems such as Zyga. The grant funds the next release:
@@ -91,9 +92,9 @@ paste the proposal body into Why You. The form asks that links appear only in fi
 - The original $300,000 application was rejected because the ask exceeded the public good delivered.
   This draft funds reusable open-source components and measurable maintenance/adoption. It does not
   fund a bespoke integration for a named commercial protocol.
-- Caledren uses caledren.com. The new pilot code and evidence are local changes awaiting an approved
-  GitHub push; publish the reviewed source before relying on its public accessibility in submission.
-- No application has been submitted and no changes have been pushed to GitHub.
+- Caledren uses caledren.com. The pilot code, evidence and site are pushed to `main` and live at
+  that domain (verified 2026-09-17, commit f4cf7e6, byte-identical to the deployed site).
+- No application has been submitted.
 - [General application guidance](https://docs.google.com/document/d/1eK-WNhQmQFyk06XhwWRZJrXn3z_0NDbChZ_Rm8XRoXw/edit)
   permits N/A in the on-chain accounts field.
 - [Developer Tooling template](https://docs.google.com/document/d/1S28sq80-1Nz5FnD2yepEaldrmbRDB-2Q7g0CilNdHOA/edit)
