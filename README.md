@@ -4,7 +4,7 @@
 > single loan**, and a token mints only when that proof and the servicer's signature both check out.
 
 Working prototype. Every claim below is reproducible with `./demo.sh`, and the on-chain verifier has
-been deployed to and confirmed on a live Solana validator.
+been deployed to and confirmed on a local Solana test validator (`solana-test-validator`).
 
 ## The problem
 
@@ -31,7 +31,7 @@ different book has a different commitment the servicer never signed.
 |---|---|
 | Proof size | **128 bytes**, constant regardless of book size |
 | Privacy | individual loans never revealed |
-| On-chain verification | **83,352 compute units** on a live Solana validator (~6% of the 1.4M cap) |
+| On-chain verification | **83,352 compute units** on a local Solana test validator (~6% of the 1.4M cap) |
 | On-chain cost vs book size | **constant** (a 10-loan and a 10,000-loan fund cost the same to verify) |
 | Scale | 10,000-loan book proves in ~60s; 1,000 in ~3.5s |
 | Portability | verifies on Solana (`alt_bn128`) and any EVM chain (`ecPairing`) |
@@ -78,8 +78,8 @@ PRIVATE_CREDIT_SPIKE.md   the 60-day plan
 
 ## What is proven, and what is not
 
-**Proven:** the cryptography and the on-chain verification, end to end, on real hardware and a live
-Solana validator. The proof is sound (insolvent or non-compliant books are unprovable) and private
+**Proven:** the cryptography and the on-chain verification, end to end, on real hardware and a local
+Solana test validator. The proof is sound (insolvent or non-compliant books are unprovable) and private
 (loans never revealed).
 
 **Not proven, honestly:** a proof certifies the **attested** data is solvent, not that the data is
