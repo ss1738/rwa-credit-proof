@@ -18,6 +18,7 @@ use solana_program::{
     program_error::ProgramError, pubkey::Pubkey,
 };
 
+#[cfg(not(feature = "no-entrypoint"))]
 entrypoint!(process_instruction);
 
 pub fn process_instruction(_program_id: &Pubkey, _accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {

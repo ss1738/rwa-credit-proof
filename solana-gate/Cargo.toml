@@ -1,11 +1,11 @@
-# Standalone workspace so it isn't pulled into the parent host crate.
 [workspace]
 
 [package]
-name = "solana-verifier"
+name = "caledren-solana-gate"
 version = "0.1.0"
 edition = "2021"
-description = "On-chain Groth16 verifier for the private-credit solvency proof (BN254 via alt_bn128)."
+license = "MIT"
+description = "Pilot proof-approval gate: pinned key, servicer authorization, freshness and replay checks"
 
 [lib]
 crate-type = ["cdylib", "lib"]
@@ -15,10 +15,12 @@ no-entrypoint = []
 
 [dependencies]
 solana-program = "2"
-solana-bn254 = "2"
+solana-verifier = { path = "../solana-verifier", features = ["no-entrypoint"] }
+caledren-gate-protocol = { path = "../gate-protocol" }
 
 [dev-dependencies]
 credit-solvency-core = { path = ".." }
 solana-program-test = "2"
 solana-sdk = "2"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+bincode = "1"

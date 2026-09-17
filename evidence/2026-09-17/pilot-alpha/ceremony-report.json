@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "scope": "Compatibility rehearsal only. Three local contributions are NOT three independent participants. No production ceremony completed.",
+  "tool": "iden3/snarkjs",
+  "version": "0.7.6",
+  "phase1_source": "Locally initialized power-13 accumulator with three local contributions",
+  "phase1_sha256": "623a7e37a7f9181b25d343ba5ff1cd140f4e40f3270c6ac3a978c4d90f4c4834",
+  "phase1_verified": true,
+  "final_transcript_verified": true,
+  "local_phase1_contributions": 3,
+  "local_phase2_contributions": 3,
+  "independent_participants_recruited": 0,
+  "fixture": {
+    "constraints": 6648,
+    "loan_count": 12,
+    "public_input_order": [
+      "threshold",
+      "commitment"
+    ],
+    "r1cs_sha256": "fa787034aacd454212122a2612f9582540e9f5b84387deec89e3dc446de00864",
+    "schema_version": 1,
+    "scope": "existing arkworks circuit export; compatibility rehearsal, not a completed ceremony",
+    "wires": 6185
+  },
+  "phase1_contribution_hashes": [
+    "e7a802c5a3a11f9a82be6ff470998410f68ba1448687d401d5a8b6cc7cb75452f56ac00b13b939a4f15512c8300e3597aa498c0013c7e84170ba8015099e43fe",
+    "b60c5928b12fdc28da9d9f34856ef5b481ae483c95ad6c2a85e1abbe016a78c2e52521a956f173fc2f24b6158f93492f3ae053dca8a41b4154580e477397e708",
+    "d40fc4fa62a342fb3418f81022bcb8f385febd5a4af76c3acc9a77896196616852fdd45228948e47fe7d475aa5454cc6c662d358022f7d15f770f7616cbee045"
+  ],
+  "contribution_hashes": [
+    "a4dbe4c46cec237221759b445c157fb1f6a40ecb1497023f3157b4f6247d0cfd3a0ef0bd4d8ff3f384d1ca7ee5ad339515c715fd1f4baabc9cfac7b20d8874ab",
+    "190a6aff643c157283d43e70bdb423cf0f2c8f5df17686953b5fcb286e1a33dd2e880841d690245b611ef9929228831e74be4ffe57b85482a940f58514a39daf",
+    "331de126931704630c0ccc4ea93dbedba352678052130d5bd0d66b5b5e22a02d36cbbb542b69971380e24527885d6c0af34ae4d69fd824a9c02f875935ec9815"
+  ],
+  "phase1_rehearsal_beacon": "844602c8925ba6efa7eeb0eea5f2d83bb664f4dd7b68301947c9814b206a17ae",
+  "rehearsal_beacon": "3e9f63f7ee3f10b19c1c9b1f2097f764c76678425543c535c47d82dd9c3fe779",
+  "beacon_scope": "Locally generated demo value; not a precommitted future public beacon",
+  "final_zkey_sha256": "61b58a833a7b1e1e2e50a35ab18d2598323634974dfc0793792eba641db9cb5f",
+  "verification_key_json_sha256": "e03c49e8b4ad147b5d601752f9f1c487c92b65e461181d1565c6d7115e0621bb",
+  "negative_checks": [
+    "uncontributed_phase1",
+    "altered_witness_commitment",
+    "altered_public_input_0",
+    "altered_public_input_1",
+    "final_proof_under_initial_key",
+    "corrupted_contribution_point",
+    "different_circuit_same_final_key"
+  ],
+  "timings_ms": {
+    "phase1_initialize": 117,
+    "phase1_local_contribution_1": 2370,
+    "phase1_local_contribution_2": 2304,
+    "phase1_local_contribution_3": 2336,
+    "phase1_local_beacon": 2321,
+    "prepare_phase2": 34958,
+    "verify_final_phase1": 1287,
+    "circuit_specific_setup": 15580,
+    "local_contribution_1": 605,
+    "local_contribution_2": 550,
+    "local_contribution_3": 554,
+    "local_beacon_rehearsal": 556,
+    "prove_witness_1": 287,
+    "prove_witness_2": 282
+  }
+}

@@ -1,10 +1,9 @@
 # Known limitations (honest)
 
-This is a research prototype. The zero-knowledge cryptography is **genuine and verified** (an
-independent code audit plus `cargo run --bin audit` confirm the circuit is real, negative cases fail for
-the expected reasons under honestly generated parameters, and the Solana verifier does real pairing checks). But it is **not a
-deployable, adversarially-sound mint-gate.** The independent audit flagged the following. All must be
-addressed before any external security claim.
+This is a pilot alpha with locally reproduced cryptographic and Solana runtime tests. It is not a
+production mint gate or an independently security-audited product. The historical review record is
+in `AUDIT.md`; the new pilot regression suite is developer-run evidence, not an independent audit.
+The separate programs have different scopes, as described below.
 
 ## 1. Trusted setup (soundness-critical)
 **Fixed (partial):** `prove_solvency` now runs the Groth16 setup with **secure randomness** (`OsRng`)
@@ -17,8 +16,10 @@ party not to have retained the toxic waste. For a real deployment the setup must
 ceremony**, or the system must move to a **transparent** proof (no trusted setup). Until one of those,
 soundness holds against an honest prover and against an outsider, but not against a prover who also
 controlled the setup. A complete ceremony must cover the relevant phase-1/phase-2 parameters and verify contributions;
-the delta-only `src/ceremony.rs` experiment does not do that. Secret destruction cannot be proven
-by this demo. Setup is one of several remaining requirements, alongside the integration gaps below.
+the delta-only `src/ceremony.rs` experiment does not do that. The pinned `iden3/snarkjs` compatibility
+rehearsal covers the exact arkworks circuit and rejects invalid artifacts, but all rehearsal contributions
+are local and controlled by one operator, so it is not a production ceremony. Secret destruction cannot
+be proven by this demo. Setup is one of several remaining requirements, alongside the integration gaps below.
 
 ## 2. Commitment hiding: FIXED
 The Poseidon commitment now absorbs a random blinding `nonce` (`commit_book(..., nonce)` and a private
@@ -31,31 +32,62 @@ Collateral witnesses are not bounded `< 2^128` in-circuit, and `enforce_cmp` is 
 model relies on the **signed commitment**: a prover cannot substitute
 an out-of-range value without changing the commitment the servicer signed. An explicit in-circuit
 bit-range check is deferred on purpose, it adds ~254 constraints per loan (prohibitive at 10k+ scale)
-for a case the intended signed-feed model covers. The current SBF verifier alone does not enforce
-that model (see section 5). Revisit if the threat model excludes the signed feed.
+for a case the intended signed-feed model covers. The legacy SBF verifier alone does not enforce
+that model. The pilot gate enforces the configured signer and key, while the servicer SDK recomputes
+the commitment from a bounded book before signing. This still trusts the servicer's actual validation
+and parameter provenance; the on-chain circuit has not gained explicit ranges. Revisit if the threat
+model excludes the signed feed.
 
 ## 4. Pipeline BLOCKED path: FIXED
 `pipeline.rs` now decides the block by testing **the actual circuit's satisfiability**
 (`ConstraintSystem::is_satisfied`), not a cleartext comparison. The crypto decides.
 
-## 5. Solana program scope: verifying-key pinning and mint enforcement are missing
+## 5. Solana program scope: pilot approval is not a token mint
 
-The program accepts the verifying key, proof and public inputs from the caller. A successful pairing
+The legacy `solana-verifier/` program accepts the verifying key, proof and public inputs from the caller. A successful pairing
 check therefore does not establish that an approved solvency circuit was used. A production consumer
 must pin or authenticate the circuit/key and enforce the intended public-input policy. The client
-currently generates fresh single-party parameters on each run.
+in its legacy mode generates fresh single-party parameters on each run.
 
-The SBF program does not verify a servicer signature, enforce freshness or supply/threshold policy,
+The legacy SBF program does not verify a servicer signature, enforce freshness or supply/threshold policy,
 or invoke an SPL token mint. `src/onchain.rs` checks the proof and ed25519 signature in a native
 host-side model. A successful local or devnet verifier transaction must not be described as a deployed
 fund, authenticated loan feed, KYC service or production mint gate.
 
+The new `solana-gate/` program stores an immutable approved key, configured servicer, minimum
+threshold and maximum validity window. It requires Solana-authenticated signer privileges, exact
+next sequence and fresh timestamps before verifying the proof and updating the receipt. The pilot
+SDK reuses persisted parameters and independently checks the private book commitment before signing.
+The local demo operates both signer roles itself; a real external servicer integration remains open.
+
+Consumers must pin both program and configuration address, check ownership and current expiry,
+and enforce their own action policy. The gate does not use live token supply, mint SPL tokens, or
+prevent a consumer from repeatedly acting on one receipt. A one-time action needs a consumer-side
+consumed-sequence check. Policy rotation requires a new approved configuration. A public deployment
+also needs reviewed upgrade authority and key custody. No public deployment of this gate is claimed.
+
 ## 6. Instruction validation and proof encoding
 
-Instruction parsing uses fixed slices and the caller's public-input count without explicit length
+Legacy verifier instruction parsing uses fixed slices and the caller's public-input count without explicit length
 validation. Malformed input can abort the instruction. The 128-byte size refers to the arkworks
 compressed proof, not the transaction: with two public inputs the current Solana instruction carries
 961 bytes including uncompressed proof points, verifying-key points and scalars.
+
+The pilot gate instead validates exact lengths, version/reserved bytes and canonical commitment
+scalars before using the pairing helper with a fixed two-input layout and the stored key. Its
+approval instruction is 332 bytes, initialization is 700 bytes and account state is 816 bytes.
+The two-signature demo approval transaction is 672 bytes, including a compute-budget instruction;
+these sizes are distinct from the compressed proof. Malformed pilot requests are covered by SBF
+regression tests. The standalone legacy parser remains a demonstration interface.
+
+## 7. Data authenticity, principal and metadata
+
+The commitment covers ordered collateral, performance/KYC flags and a private nonce. It does not
+cover loan IDs or principal. The SDK's private source digest detects an inconsistent CSV in the
+local workflow; it is not part of the circuit or on-chain statement. The 120% CLI option computes
+a threshold from the supplied principal total, but the circuit only proves coverage of that
+threshold. The consumer must approve the policy independently. The proof cannot establish real
+asset values, absence of undisclosed liabilities, complete loan-book coverage or actual KYC checks.
 
 The September 2026 evidence and network status are in [DEPLOYMENTS.md](DEPLOYMENTS.md).
 

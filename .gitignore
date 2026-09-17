@@ -1,7 +1,13 @@
 /target
 /solana-verifier/target
 /client/target
+/solana-gate/target
+/gate-protocol/target
+/ceremony-toolchain/node_modules
 /evm/lib
 /evm/out
 /evm/cache
 /evm/test/Verifier.t.sol
+.vercel
+.env*
+/dist/

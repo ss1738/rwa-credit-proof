@@ -19,6 +19,7 @@ use sha2::{Digest, Sha256};
 
 pub mod circuit;
 pub mod onchain_bytes;
+pub mod pilot;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum LoanStatus {

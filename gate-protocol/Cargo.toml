@@ -1,0 +1,9 @@
+[package]
+name = "caledren-gate-protocol"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Bounded versioned wire format for Caledren's pilot approval gate"
+
+[lib]
+path = "src/lib.rs"

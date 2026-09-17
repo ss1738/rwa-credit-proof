@@ -264,6 +264,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "caledren-gate-protocol"
+version = "0.1.0"
+
+[[package]]
 name = "cfg-if"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -298,6 +302,7 @@ dependencies = [
  "ark-serialize",
  "ark-snark",
  "ark-std",
+ "caledren-gate-protocol",
  "ed25519-dalek",
  "rand",
  "serde",

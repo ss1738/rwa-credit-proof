@@ -1,0 +1,17 @@
+# Only website source and public evidence inputs are uploaded.
+*
+!package.json
+!vercel.json
+!site
+!site/**
+!scripts
+!scripts/**
+!evidence
+!evidence/**
+!README.md
+!AUDIT.md
+!KNOWN_LIMITATIONS.md
+!DEPLOYMENTS.md
+!DESIGN_PARTNER_BRIEF.md
+!EVIDENCE.html
+!LICENSE

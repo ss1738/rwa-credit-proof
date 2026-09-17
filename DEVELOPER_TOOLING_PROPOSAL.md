@@ -8,7 +8,7 @@ before copying this into a shared Google Doc. Deployment status is in `DEPLOYMEN
 
 ## 1. Applicant Information
 
-**Project / Tool Name:** Proof-of-Solvency for Tokenized Private Credit (rwa-credit-proof)
+**Project / Tool Name:** Caledren: private-credit proof and approval tooling (rwa-credit-proof)
 
 **Applicant / Organization:** Satyawan Singh, solo developer
 
@@ -24,12 +24,18 @@ data-availability sampling; BLS12-381 aggregate signatures; Nova recursive SNARK
 KZG/Verkle commitments; on-chain BLS (EIP-2537); and Coq/TLA+ formal verification.
 Public work: https://github.com/ss1738.
 
-This project's existing implementation includes a Rust loan-book circuit, a Solana SBF pairing
-verifier and RPC client, adversarial checks, documentation of limitations, and a public Sepolia
-verifier example. The 2026-09-17 reproduction passed all six demo stages and the separate
-adversarial audit. The 10-loan audit circuit has 5,911 constraints; the SBF program-test harness
-uses 83,354 CU. The native mint-gate model verifies both a proof and a servicer signature and
-rejects a swapped book. Those combined checks are not yet an on-chain token-mint integration.
+The current pilot alpha includes strict CSV ingestion, persisted Groth16 parameters, typed proof
+bundles, a private servicer commitment check, and a separate stateful Solana approval gate. The gate
+stores an approved key and servicer, enforces threshold/freshness/sequence policy, and records the
+latest receipt. Its compiled SBF suite accepts two successive approvals and rejects 26 invalid
+requests while preserving state. A finalized local 12-loan approval used 85,529 CU in a 672-byte
+legacy transaction signed by separate payer and servicer keys. `./pilot-demo.sh` reproduces it.
+
+The existing six-stage demo and separate adversarial audit also pass. Their 10-loan circuit has
+5,911 constraints and legacy pairing-only SBF harness uses 83,354 CU. A separate verifier example
+is confirmed on public Sepolia. These programs do not mint tokens. Pilot code and evidence are
+currently local changes to publish after review; do not submit claims of public availability until
+that publication is complete.
 
 Repository: https://github.com/ss1738/rwa-credit-proof.
 Audit record: https://github.com/ss1738/rwa-credit-proof/blob/main/AUDIT.md.
@@ -65,22 +71,34 @@ A servicer-attested loan book supplies collateral, performance and KYC flags. A 
 commitment binds the private witnesses to a public commitment. The R1CS circuit enforces that
 performing collateral covers a public threshold, every KYC flag is true, and the commitment matches.
 Groth16 over BN254 produces a compressed 128-byte proof with two public field elements.
-The existing Solana instruction is larger (961 bytes for two public inputs), because it carries
-uncompressed proof points and the verifying key as well as public inputs.
+The pilot approval instruction is 332 bytes and its policy account is 816 bytes; proof points in
+the instruction are uncompressed. The legacy pairing-only instruction remains 961 bytes because
+it carries the key on each call. These are distinct interfaces and size measurements.
 
-The SBF verifier checks a BN254 pairing equation through Solana's `alt_bn128` syscalls. Its current
-caller-supplied verifying key is suitable for a demonstration, but does not identify an authorized
-solvency circuit. The developer-kit component will pin approved keys/circuit versions and validate
-instruction structure. A consuming mint program must separately enforce threshold policy, freshness,
-servicer authority/signature binding, and token mint authorization. The existing native example
-models the proof/signature conjunction; it is not a deployed token program.
+The gate validates strict instruction structure and checks the pairing equation through Solana's
+`alt_bn128` syscalls using its stored approved key. Solana signer privileges authenticate the
+configured servicer on the exact approval transaction, including the policy account, claim,
+sequence and timestamps. A consumer must pin both program and policy account, check expiry and
+apply its action policy. Live supply, one-time downstream action consumption and SPL mint authority
+remain consuming-program work. The servicer must independently validate the bounded off-chain book.
+The commitment includes collateral and flags, but not loan IDs or principal; the host's percentage
+threshold calculation is not an in-circuit token-supply calculation.
 
-The setup component will select a maintained complete ceremony implementation compatible with this
-circuit, document the phase-1/phase-2 boundary, and publish independently checkable contributions,
-transcripts, and key hashes. The existing delta-only experiment is insufficient by itself.
-Completion requires both a complete verified setup path and circuit/key compatibility tests.
-A feasibility checkpoint precedes implementation; any necessary scope change goes back to the
-Foundation rather than relabeling a partial ceremony as complete.
+The setup implementation is now pinned to [iden3/snarkjs 0.7.6](https://github.com/iden3/snarkjs/releases/tag/v0.7.6),
+which supports BN128 Groth16 Powers of Tau and circuit-specific phase 2 workflows. The lockfile,
+`ceremony-compat.sh`, `ceremony-toolchain/rehearse.mjs` and the Rust `ceremony-bridge` export the
+existing arkworks R1CS, run the phase-1 and phase-2 transcript checks, verify the resulting proof
+and key back in arkworks, and execute the final proof through the compiled Solana gate. The local
+rehearsal also checks altered witnesses, public inputs, corrupted contribution data and a mismatched
+circuit. This resolves the prior compatibility unknown for this circuit shape.
+
+The rehearsal is deliberately not called a ceremony: all contributions are local and there are no
+independent participants. The funded setup milestone begins with an external reproducibility and
+launch gate, then runs a public phase-1/phase-2 ceremony with at least three separately operated
+contributors and a precommitted beacon. It publishes the contribution transcript, hashes, final
+key, circuit hash and verification report. If the launch gate fails, the remaining setup budget is
+paused and the scope is returned to the Foundation before any partial transcript is described as a
+completed ceremony. The existing delta-only experiment is insufficient by itself.
 
 **Key features**
 
@@ -91,22 +109,22 @@ Foundation rather than relabeling a partial ceremony as complete.
 
 **Integration into existing developer workflows**
 
-Developers clone the MIT repository, run `./demo.sh` and the separate audit, then run the RPC client
-against their local validator or the recorded devnet deployment when available. The funded release
-adds a documented crate interface and example consuming-program integration. Developers retain
+Developers clone the MIT repository and run `./pilot-demo.sh`, then follow `PILOT_GUIDE.md` to reuse
+parameters and produce another approval. The legacy `./demo.sh` and separate audit remain available.
+The funded release hardens and versions the crate interface, adds an example consuming-program
+integration and public devnet reproduction. Developers retain
 control of their signed feeds, keys, threshold policy and deployment. Documentation will explicitly
 separate a successful proof-verifier call from an authorized mint.
 
 **Technology stack**
 
 Rust, arkworks Groth16/BN254/R1CS/Poseidon, ed25519-dalek, Solana SBF and `alt_bn128`, Solana RPC
-client and program-test, with a compatible maintained ceremony implementation selected at the
-feasibility checkpoint. The existing Solidity/EVM example demonstrates portability; this grant's
-deliverables focus on Solana tooling.
+client and program-test, plus the pinned iden3/snarkjs 0.7.6 ceremony tooling. The existing
+Solidity/EVM example demonstrates portability; this grant's deliverables focus on Solana tooling.
 
 **Proof-of-Concept**
 
-- Source and demo: https://github.com/ss1738/rwa-credit-proof (`./demo.sh`).
+- Source and demos: https://github.com/ss1738/rwa-credit-proof (`./pilot-demo.sh`, `./demo.sh`; publish the pilot changes before submission).
 - Adversarial audit: `cargo run --release --bin audit`.
 - Larger benchmark: `cargo run --release --bin bench -- 10000`.
 - Sepolia example: https://sepolia.etherscan.io/tx/0x91196bd0a9b6d192733bdc7df7126520c142f2bbda2c146190ebddd75aaae7c7.
@@ -122,21 +140,39 @@ a named protocol is included. Adoption targets are future outcomes, not existing
 
 ### 4a. Completed First Version (Beta), per component
 
-**Component 1: Solana developer kit, $5,000.** Target: weeks 1-4. Deliver a versioned library,
-documented APIs/encodings, pinned circuit/key configuration, instruction validation, local/devnet
-examples and signature/mint integration guidance. Acceptance: a clean checkout reproduces valid
-verification, rejects invalid proofs/inputs/keys/malformed data, and passes documented integration
-and compute-budget tests. Publish a beta release and reproducible build instructions.
+**Component 1: Solana developer-kit release, $5,000.** Target: weeks 1-4. Build on the existing
+pilot's persisted parameters, key pinning, signer policy and strict encodings. Deliver a versioned
+library and migration policy, documented APIs, a consuming-program example with receipt pinning,
+freshness and one-time action enforcement, public devnet examples, and CI/reproducible release
+artifacts. Review circuit range hardening and document the final threat model. Acceptance: a clean
+checkout reproduces valid verification, rejects invalid proofs/inputs/keys/malformed data and
+consumer replay/configuration substitution, and passes documented compute-budget tests. Publish
+the beta and integration guide. Existing pilot features are the baseline, not unpaid future scope.
 
-**Component 2: Complete setup workflow, $12,000.** Target: weeks 1-12, including an early
-compatibility checkpoint. Deliver a complete phase-1/phase-2 workflow using a suitable maintained
-implementation, at least three separately operated contributions, verified public transcripts,
-key hashes, circuit integration and a runbook. Test rejection of corrupted contributions and
-mismatched circuit/key artifacts, then prove and verify with the final parameters. Publish the
-production tooling release by the end of the grant agreement. Participant independence is a
-recruitment dependency; ceremony soundness depends on at least one honest contributor and the
-chosen protocol's assumptions. An external security audit and a production fund/token deployment
-are not included in this budget or implied by this deliverable.
+**Component 2: Verified setup workflow, $12,000.** Target: weeks 1-12. The concrete tool is
+iden3/snarkjs 0.7.6, pinned in `ceremony-toolchain/package-lock.json`, with the Rust bridge and
+Solana compatibility test in this repository. The existing local rehearsal is baseline evidence,
+not retroactive billing. The funded work has two acceptance gates:
+
+1. **Compatibility and launch gate, $2,000, weeks 1-3.** A clean checkout reproduces the pinned
+   phase-1/phase-2 local rehearsal (power 13, sufficient for the current 6,648-constraint fixture),
+   exports the exact arkworks R1CS, verifies two independently generated witness instances and
+   proofs in arkworks, rejects altered public inputs, corrupted contributions and a
+   mismatched circuit, and runs the final proof through the compiled Solana gate. Publish a runbook,
+   dependency/license record, circuit hash and key-conversion test. If this gate fails, pause the
+   remaining setup funds and agree a scope change with the Foundation.
+2. **Externally contributed ceremony and release, $10,000, weeks 4-12.** Run the same pinned
+   workflow with at least three independently operated contributors, a publicly specified beacon,
+   contribution identity records, independently verified phase-1 and phase-2 transcripts, final
+   proving/verifying-key hashes, circuit compatibility checks and proofs accepted by arkworks and
+   the Solana gate. Before launch, publish a participation request with the pinned client, exact
+   commands and contribution-record format; accept a contributor only after an independently
+   generated contribution and a separate operator record. If three independent operators are not
+   confirmed by week 6, pause unreleased setup funds and return a rescope to the Foundation rather
+   than calling a partial transcript complete. Publish the transcript, final artifacts, verification
+   commands and a production tooling release. Ceremony soundness still depends on at least one
+   honest contributor and the chosen protocol's assumptions. An external security audit and a
+   production fund/token deployment are not included in this budget or implied by this deliverable.
 
 ### 4b. Maintenance, minimum 6 months
 
@@ -164,8 +200,9 @@ financial TVL or a claim of production safety.
 
 | # | Milestone / Deliverable | Success Criteria | Amount (USD) |
 |---|---|---|---:|
-| 1 | Developer-kit beta | Versioned APIs, key pinning, validation, examples, positive/negative tests | 5,000 |
-| 2 | Setup workflow and tooling release | Complete verified ceremony, 3 separate contributors, reproducible artifacts, production tooling release | 12,000 |
+| 1 | Developer-kit beta | Consumer integration, receipt pinning, one-time action checks, range review, devnet example, CI and release artifacts | 5,000 |
+| 2a | Setup compatibility and launch gate | Clean-checkout snarkjs 0.7.6 rehearsal, arkworks/Solana cross-verification, negative artifact checks and go/no-go report | 2,000 |
+| 2b | Externally contributed setup and release | Public phase 1 and phase 2, 3 independent contributors, beacon, verified transcripts, final hashes and production tooling release | 10,000 |
 | 3 | Maintenance month 1 | Accepted fixes, compatibility checks and report | 500 |
 | 4 | Maintenance month 2 | Accepted fixes, compatibility checks and report | 500 |
 | 5 | Maintenance month 3 | Accepted fixes, compatibility checks and report | 500 |

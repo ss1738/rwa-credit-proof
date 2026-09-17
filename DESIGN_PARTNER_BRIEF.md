@@ -1,82 +1,34 @@
-# Proof-of-Solvency for Tokenized Private Credit
-### A design-partner brief · working prototype
+# Caledren: private-credit proof and approval tooling
 
-*(product name TBD)*
+A local pilot alpha for a protocol engineer and its servicing/data partner.
 
-**Evidence update (2026-09-17):** all six demo stages and the separate audit passed. The latest
-local-validator and SBF-harness runs used 83,354 CU; 83,352 CU is retained as the earlier local result.
-Solana devnet is pending free test SOL. The Solana program is a pairing verifier; signature binding
-and the mint decision are currently demonstrated natively. It does not enforce an approved key or
-mint tokens on-chain. See [DEPLOYMENTS.md](DEPLOYMENTS.md) and [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
+A protocol needs to check coverage of its private-credit book without publishing individual loans.
+Caledren proves that performing collateral covers an approved threshold, that supplied KYC flags
+are true, and that the witnesses match a blinded book commitment. It records an approval on Solana
+only when the configured servicer authorizes the exact transaction and the stored key, threshold,
+freshness and sequence checks pass.
 
----
+The working flow is CSV ingestion, proof generation with reusable parameters, a private servicer
+commitment check, and an on-chain approval receipt. A developer can reproduce it with
+`./pilot-demo.sh`. The compiled gate suite accepts two successive approvals and rejects 26 invalid
+requests without changing its state. A finalized local 12-loan approval used 85,529 compute units
+in a 672-byte transaction with separate payer and servicer signatures. The public proof bundle
+contains no individual loan records or blinding nonce.
 
-## The problem
+We are seeking one external developer evaluation using synthetic or appropriately approved test
+inputs. The goal is to reproduce the workflow independently, read the receipt from a consuming
+application, and identify the servicing schema, threshold source and authorization requirements
+for a useful integration. The protocol retains control of its feed, keys and policy.
 
-Private credit is the **largest tokenized real-world-asset category**, roughly **$20.5B on-chain**
-today (rwa.xyz), on top of a **$1.8–3.14T** off-chain private credit market (IMF / JPMorgan). But the
-thing that backs the token, the loan book, lives **off-chain**, in servicer systems and spreadsheets.
+This is not a deployed fund or token mint. The proof certifies a predicate over supplied collateral
+and flags, not their real-world truth. Loan IDs and principal are outside the circuit commitment;
+threshold-to-supply policy remains a consumer responsibility. The current setup is single-party,
+range assumptions remain, no external security audit is claimed, and no customer or third-party
+integration has been completed. Solana devnet is pending test funding. The separate historical
+pairing benchmark and public Sepolia example are described in `DEPLOYMENTS.md`.
 
-So the hardest question an investor, counterparty, or regulator can ask is also the one nobody can
-answer well: *"prove this token is actually over-collateralised right now, without showing me the
-private loan book."* Today the answer is a periodic manual attestation or a trust-me dashboard. Smart-
-contract audits don't help; they verify the **code**, not the **asset state**.
+Start with [PILOT_GUIDE.md](PILOT_GUIDE.md). Record independent results and integration feedback
+using [PILOT_EVALUATION.md](PILOT_EVALUATION.md). Read [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md)
+before deciding whether the trust model suits your use case.
 
-## What we built
-
-A way for a fund to prove, **cryptographically, over a book it cannot fake, revealing nothing**, that it
-is solvent and compliant, *before* it is allowed to mint.
-
-The zero-knowledge proof attests, over a **private** loan book, that:
-
-1. **Solvent**: performing collateral ≥ the required over-collateralisation of the token supply
-2. **Compliant**: every borrower passed KYC
-3. **Authentic**: the book hashes to a commitment the **servicer signed**
-
-...while revealing only the threshold and the commitment. Individual loans, balances, and borrower data
-never leave the fund.
-
-The native mint-gate model checks **both** the ZK proof *and* the servicer's signature over the commitment. That is
-the answer to the "garbage-in" objection every proof-of-reserves scheme hits: **you cannot prove a
-different book than the one the servicer attested**. A swapped book has a different commitment, which
-the servicer never signed, and the gate blocks it.
-
-## What runs today (measured, on our hardware)
-
-| Property | Result |
-|---|---|
-| Proof size | **128 bytes**, constant |
-| Book privacy | individual loans never revealed |
-| Verification | on **Solana** natively (Groth16 / BN254 via `alt_bn128`) |
-| **On-chain cost** | **constant regardless of book size**: a 10-loan and a 10,000-loan fund cost the same to verify |
-| Scale | a **10,000-loan** book proves in **~72s**; 1,000 loans in ~3.8s |
-| Binding attack (swap book, reuse signature) | **blocked** |
-
-This is a working prototype, verified end-to-end on our own machines, not yet a production, audited
-system.
-
-## What we honestly do NOT solve (and where you come in)
-
-A proof certifies that the **attested** data is solvent. It does not certify the data is **true**. The
-security therefore rests on the **data-trust anchor**: the servicer/custodian signing the loan tape (or
-a bank-API attestation) that feeds the proof. That integration, a signed, authenticated loan-tape feed
-from your servicing stack, is exactly what a design partner helps us define against a real book.
-
-## The ask
-
-We're looking for **one design partner**: a tokenized-credit protocol or fund willing to feed a loan
-tape (test or anonymised is fine) and co-define the integration. In return:
-
-- **Free integration** and hands-on engineering through the pilot
-- Be the **reference deployment** and help shape what becomes the standard for verifiable
-  tokenized-credit solvency
-- A continuous, privacy-preserving proof your LPs, counterparties, and regulators can check instead
-  of a quarterly PDF
-
-If you tokenize private credit and "prove you're solvent without showing the book" is a real problem
-for you, that's the conversation.
-
----
-
-*Contact: [name / email / handle]*
-*Sources: on-chain figures rwa.xyz; private-credit market size IMF (Apr 2024) & JPMorgan (2024).*
+Contact: Satyawan Singh, satyawansinghinuk@gmail.com.

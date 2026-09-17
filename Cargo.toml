@@ -10,6 +10,7 @@ rand = "0.8"
 sha2 = "0.10"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+caledren-gate-protocol = { path = "gate-protocol" }
 
 # ZK: Groth16 over BN254 (the curve Solana verifies via alt_bn128 syscalls)
 ark-bn254 = "0.4"
@@ -58,5 +59,13 @@ path = "src/ceremony.rs"
 name = "evm_export"
 path = "src/evm_export.rs"
 
+[[bin]]
+name = "pilot"
+path = "src/pilot_cli.rs"
+
 [profile.release]
 opt-level = 3
+
+[[bin]]
+name = "ceremony-bridge"
+path = "src/ceremony_bridge.rs"

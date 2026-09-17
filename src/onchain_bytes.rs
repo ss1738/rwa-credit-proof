@@ -41,6 +41,26 @@ fn g2(p: &G2Affine) -> [u8; 128] {
     o
 }
 
+/// Two-input key stored once in an immutable pilot policy account.
+pub fn gate_key(vk: &VerifyingKey<Bn254>) -> Result<[u8; 640], &'static str> {
+    if vk.gamma_abc_g1.len() != 3 { return Err("pilot requires exactly two public inputs"); }
+    let mut bytes = Vec::with_capacity(640);
+    bytes.extend_from_slice(&g1(&vk.alpha_g1));
+    bytes.extend_from_slice(&g2(&vk.beta_g2));
+    bytes.extend_from_slice(&g2(&vk.gamma_g2));
+    bytes.extend_from_slice(&g2(&vk.delta_g2));
+    for point in &vk.gamma_abc_g1 { bytes.extend_from_slice(&g1(point)); }
+    bytes.try_into().map_err(|_| "invalid key length")
+}
+
+pub fn gate_proof(proof: &Proof<Bn254>) -> [u8; 256] {
+    let mut out = [0; 256];
+    out[..64].copy_from_slice(&g1(&(-proof.a)));
+    out[64..192].copy_from_slice(&g2(&proof.b));
+    out[192..].copy_from_slice(&g1(&proof.c));
+    out
+}
+
 /// Layout: [neg_a:64][b:128][c:64][alpha:64][beta:128][gamma:128][delta:128][ic0:64][n_pub:1]
 /// then n_pub × ([ic_i:64][scalar_i:32]).
 pub fn build_instruction_data(vk: &VerifyingKey<Bn254>, proof: &Proof<Bn254>, public: &[Fr]) -> Vec<u8> {

@@ -40,6 +40,28 @@ update the form's comma-separated account list, README, audit, evidence page and
 Do not use these prospective addresses as evidence of a deployed program. The grant guide permits
 `N/A` for on-chain accounts when not applicable.
 
+## Solana pilot gate: local approval reproduced
+
+The new stateful `solana-gate/` is a separate program from the legacy verifier below. It pins an
+approved key and servicer, checks threshold/freshness/sequence, and records an approval. It does
+not mint tokens or derive threshold from live supply. `./pilot-demo.sh` passed from an isolated
+native build directory and fresh validator. The devnet payer was rechecked after this work and
+still had 0 test SOL; no public gate deployment is claimed.
+
+- Local program: `kWitTf3ZRSVJyKpf6gwzG17JEvLsUKf6XCRJSahURtW`.
+- Local configuration: `FiT5imbsndpCNDTFdRLpwiYydZPH6AB2Cu4qULxAtco`.
+- Finalized LOCAL approval: `4Mt2uB5K99gTzfocq5Qs2tgek6x7mk5iKDc7pQqJm2oKTCkXcuCXJgWZvXNPJNunNGTFnTMbyVAVZuNLnDAbvTyo`.
+- 12-loan approval: **85,529 CU**, **672-byte legacy transaction**, separate payer and servicer signatures.
+- Account creation plus policy initialization: **1,057 transaction bytes**.
+- Compiled SBF suite: 2 accepted updates and **26 rejected cases**, with unchanged state on rejection.
+- Evidence and source hashes: [pilot-alpha/README.md](evidence/2026-09-17/pilot-alpha/README.md).
+- Finalized receipt: [approval-report.json](evidence/2026-09-17/pilot-alpha/approval-report.json).
+
+The demo operates both signer roles and uses synthetic data. Its local-only client does not sign
+on behalf of an external servicer. Consumers must pin both program and configuration address,
+check receipt freshness and implement their own action policy. The earlier devnet commands above
+target the legacy pairing verifier; they do not deploy this pilot gate.
+
 ## Solana local validator: reproduced successfully
 
 Fresh `solana-test-validator` 4.1.1 instance on `http://127.0.0.1:18999`, with the rebuilt SBF

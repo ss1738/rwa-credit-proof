@@ -1,0 +1,134 @@
+{
+  "approval_signature": "4Mt2uB5K99gTzfocq5Qs2tgek6x7mk5iKDc7pQqJm2oKTCkXcuCXJgWZvXNPJNunNGTFnTMbyVAVZuNLnDAbvTyo",
+  "approval_transaction_bytes": 672,
+  "commitment_be": "13a3a945ebd3aa4ec7dd77367a7a3b1f77d6c785440ddabfafbf5f3d79b579d0",
+  "configuration": "FiT5imbsndpCNDTFdRLpwiYydZPH6AB2Cu4qULxAtco",
+  "configuration_data_hex": "434c444e4754303132d95b47771863c6f8405d0d6d9cf61dad9f5ad72ceb43ed544d66258d1c86a0da1f7a15bfddcc83f4702a1bbe06dd1c03ba43091e49e06661ba6283090eb6f8a0d133000000000000000000000000002c01000000000000010000000000000096d0ab6a000000000ed1ab6a00000000510000000000000013a3a945ebd3aa4ec7dd77367a7a3b1f77d6c785440ddabfafbf5f3d79b579d0a0d1330000000000000000000000000019e5813df914919d600bb94274e2b204c1e5f28c6ef9bf9bd15b570d1f96488d05b582b24978f1419689ef44bdd6e5a2a0b15b2effb6f2450c519e0f4fb533cb093e0a4770cfec0f3c2ba3be3adc8b67c230fcbe1fc2e373ee177054b6f23b450fb8a933abea6ed1b3524f89d9ffab571637c53de328583155aeced114389dd5179f0ae1b0c860d4a1525b2eaf4cb5357ef7cdec31cfaed9d315bdfcff2c19a00071824dbce4908fa6145b638e77fc68574a631fd86a31894fcce29a5eb7f2f820ca01160ef6898cbee55ee8c34f3dbc75f9233b1a580b42337f1aa39d8c391e165ae869eab33287d2724d91753d73ff021c509878bbdc5aba5b54e4510648cf1a91e3f86136eed7dd3af20532d8158947f8b4cf6e754dc57405b7132faa3f0929b474d99bb80a83c326ca22fbb221f06bdf27acf160daa25146cc1e87a87f9f28490cd169a41e55d8f9a003d362c58b386873c84da25ec0a7874ed089f4a64401465715fba69bf5f7b7112ea04cece372e77712b154a84498abd1a8dee151b22baafbdb710f18104f58f0b31675b1d580a70237f3f2f5d19889f9381f0fd3102718d05694d8c9707513d34b5b5918fc8174decb1b2578a231d776e8fa54ebf90e59d74df3e80b9b5033a111106bc2da5efe0ef3c5d0c7ccdb354902d652c95a1b9d7d46c28fb211bff1e00d039af369d56b7c44123796d8352a296c211046480795f0b5b7ba6365575ada8cff1beed98d38ced38130534988654f2e642eeacf302a15bd1854b4a0c0b36d0609e1004cc0aaf2080a33f85343b7ca4ca0816d2f15e8088b7f58406c5a13147080450f12f0bb33223a92ff901bc28ded8e62bcdb1b20a412fd4150ed2539a1a6c7a87a65cab89070a76d4da8363b30b30d23b2c3",
+  "expires_at": 1789645070,
+  "finalized_transaction": {
+    "blockTime": 1789644967,
+    "meta": {
+      "computeUnitsConsumed": 85529,
+      "costUnits": 87669,
+      "err": null,
+      "fee": 10000,
+      "innerInstructions": [],
+      "loadedAddresses": {
+        "readonly": [],
+        "writable": []
+      },
+      "logMessages": [
+        "Program ComputeBudget111111111111111111111111111111 invoke [1]",
+        "Program ComputeBudget111111111111111111111111111111 success",
+        "Program kWitTf3ZRSVJyKpf6gwzG17JEvLsUKf6XCRJSahURtW invoke [1]",
+        "Program log: groth16 solvency proof valid: true",
+        "Program log: Caledren approval accepted: sequence=1, slot=81",
+        "Program kWitTf3ZRSVJyKpf6gwzG17JEvLsUKf6XCRJSahURtW consumed 85379 of 179850 compute units",
+        "Program kWitTf3ZRSVJyKpf6gwzG17JEvLsUKf6XCRJSahURtW success"
+      ],
+      "postBalances": [
+        1993409760,
+        0,
+        6570240,
+        1,
+        1141440
+      ],
+      "postTokenBalances": [],
+      "preBalances": [
+        1993419760,
+        0,
+        6570240,
+        1,
+        1141440
+      ],
+      "preTokenBalances": [],
+      "rewards": [],
+      "status": {
+        "Ok": null
+      }
+    },
+    "slot": 81,
+    "transaction": {
+      "message": {
+        "accountKeys": [
+          "4RVcjfXtS6MmQYcWwVj5DYoj1MmLG3S9gPZo1ijuL8by",
+          "FgTiZ6SLQTSt6Qi65vq9yJv36JVJMHYJJTHWJZjzjt9V",
+          "FiT5imbsndpCNDTFdRLpwiYydZPH6AB2Cu4qULxAtco",
+          "ComputeBudget111111111111111111111111111111",
+          "kWitTf3ZRSVJyKpf6gwzG17JEvLsUKf6XCRJSahURtW"
+        ],
+        "header": {
+          "numReadonlySignedAccounts": 1,
+          "numReadonlyUnsignedAccounts": 2,
+          "numRequiredSignatures": 2
+        },
+        "instructions": [
+          {
+            "accounts": [],
+            "data": "EvcRSF",
+            "programIdIndex": 3,
+            "stackHeight": 1
+          },
+          {
+            "accounts": [
+              2,
+              1
+            ],
+            "data": "29YSfWgjDmgKQVifQY7oypZvT37bEb5XEdCjP6QRtWugUjKEF7Q9sZbZPvSsugcrCUppGZFYWFAznqpSWw72ETsFcAzCbfX52NUj3AmGLXzhiR3uJaE825epvB7pRsmzXaAypKn8sinQ6gwiTcaMqHjUrkT36sQsLGQStkP9YjQ6exVH3NRJ8f6V8QhrLA93WcfXxFPue1dFxxrRgbUzyC4aFuBhf44oiqCoWMFGU4cXk2e2zgjZFWTMhpgbWzR9e87nasb5W6gaV8pq3DRZVCKKQBiTUf86ati35s2NQUjC59neqdW8hgTnReg6LPmhPvzKPSEbb1v2UwLyEbU4pt5Jkt4Lz689o3q8s3SjUdFjfiYPPTPTMybZVix3RZRYxep9z6MF6pap3rHY7EzpsU7mvnHftWU1kHLUk7JEPmdSPVw29ALEL6fFLLDsGhYEzTSYH",
+            "programIdIndex": 4,
+            "stackHeight": 1
+          }
+        ],
+        "recentBlockhash": "J8YcHRHvSbvB3ARs8MJxfcXwsJ6wqUxkojVqDXebc8oq"
+      },
+      "signatures": [
+        "4Mt2uB5K99gTzfocq5Qs2tgek6x7mk5iKDc7pQqJm2oKTCkXcuCXJgWZvXNPJNunNGTFnTMbyVAVZuNLnDAbvTyo",
+        "55KdefyC8SWcDMFgGF1ZunCL9ikMHf6KNij3zEAmpaQ4MzEdgPdH6kunReNbDZmcanPAxN1gJUf8rh7hYNJVHq3s"
+      ]
+    },
+    "transactionIndex": 1,
+    "version": "legacy"
+  },
+  "initialization_signature": "2oMGHrffgV6jKTd2EMmrbVeczNLFbf82pmjcRar6xBhY2LfcrQJh1CW2tE5DcBVsGbDAhrfYmAtYGHWKVxQVef5W",
+  "initialization_transaction_bytes": 1057,
+  "loan_count": 12,
+  "negative_simulations": [
+    {
+      "case": "wrong_servicer",
+      "error": {
+        "InstructionError": [
+          0,
+          {
+            "Custom": 6
+          }
+        ]
+      },
+      "expected_custom_error": 6,
+      "simulation_only": true
+    },
+    {
+      "case": "replayed_approval",
+      "error": {
+        "InstructionError": [
+          0,
+          {
+            "Custom": 9
+          }
+        ]
+      },
+      "expected_custom_error": 9,
+      "simulation_only": true
+    }
+  ],
+  "observed_at": 1789644950,
+  "payer": "4RVcjfXtS6MmQYcWwVj5DYoj1MmLG3S9gPZo1ijuL8by",
+  "program_id": "kWitTf3ZRSVJyKpf6gwzG17JEvLsUKf6XCRJSahURtW",
+  "schema_version": 1,
+  "scope": "LOCAL validator pilot alpha; no public deployment, token mint or external servicer",
+  "sequence": 1,
+  "servicer": "FgTiZ6SLQTSt6Qi65vq9yJv36JVJMHYJJTHWJZjzjt9V",
+  "simulation_compute_units": 85529,
+  "threshold": "3396000",
+  "verified_slot": 81,
+  "verifying_key_sha256": "25215c1db1e73cd9ed9b2b218084fe9232319723c6dc2cae4b9f5a6b29a50c3a"
+}
