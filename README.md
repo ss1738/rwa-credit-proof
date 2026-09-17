@@ -40,7 +40,7 @@ different book has a different commitment the servicer never signed.
 ## Related work
 
 ZK-based solvency and compliance proofs for RWA are an active, recognized need in the ecosystem, not a
-novel idea invented here — see Chainlink's and zk.me's write-ups on ZK compliance for institutional
+novel idea invented here: see Chainlink's and zk.me's write-ups on ZK compliance for institutional
 finance, and zkVerify/zkOrigo's compliance-scoring work. The contribution here is not the concept; it's
 a concrete, working, narrowly-scoped implementation of it for one specific asset class.
 
@@ -53,12 +53,12 @@ FATF travel-rule proofs and MEV-resistant private execution). It's a different b
 |---|---|---|
 | Scope | One asset class: private-credit loan-book solvency | General institutional privacy layer |
 | License | Open source (MIT), integrate today | Commercial, institution-facing |
-| Status | Concrete Groth16 circuit, deployed and measured on a live Solana validator and on EVM | Published research construction; no shipped private-credit reference integration found at time of writing |
+| Status | Concrete Groth16 circuit, deployed and measured on a local Solana test validator and live on public Ethereum Sepolia | Published research construction; no shipped private-credit reference integration found at time of writing |
 | Who it's for | Any RWA/private-credit protocol wanting a drop-in primitive | Large institutions adopting Solana broadly |
 
 These aren't mutually exclusive: a protocol could use Zyga's general privacy rails for MEV protection or
 travel-rule compliance while using this narrow, open-source primitive specifically for per-mint solvency
-verification — or use this as the lightweight, inspectable alternative if a general commercial platform
+verification, or use this as the lightweight, inspectable alternative if a general commercial platform
 isn't the right fit yet. If that competitive picture changes, this section should be updated rather than
 left to go stale.
 
