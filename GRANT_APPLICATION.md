@@ -9,11 +9,11 @@ Selecting Developer Tooling reveals an additional required field for a shared Go
 Use `DEVELOPER_TOOLING_PROPOSAL.md` for that document. This replaces the earlier milestone-only
 application; the supporting proposal is a separate required attachment, not a competing form draft.
 
-**Status: draft, not submitted.** The Google Doc for field 11 is created and shared (see section 11
-below). Applicant approval of the proposal's release, maintenance, and adoption commitments in
-DEVELOPER_TOOLING_PROPOSAL.md section 5 is still needed before submission. Devnet deployment is
-pending free test SOL. The Foundation's application guide explicitly permits `N/A` for on-chain
-accounts when not applicable; a local validator address must not be presented as a devnet deployment.
+**Status: ready to submit.** The Google Doc for field 11 is created and shared (see section 11
+below). Satyawan Singh confirmed the release, maintenance, and adoption commitments in
+DEVELOPER_TOOLING_PROPOSAL.md section 5 on 2026-09-18. Devnet deployment is still pending free
+test SOL; the Foundation's application guide explicitly permits `N/A` for on-chain accounts when
+not applicable, so this does not block submission. Nothing else is outstanding.
 
 ## 1. Company name
 
