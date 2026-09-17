@@ -156,6 +156,30 @@ document.addEventListener('click', event => {
   if (!mobileMenu.contains(event.target)) mobileMenu.open = false;
 });
 
+// Native anchor-jump lands short on this page (layout not yet settled at
+// navigation time), so in-page links are scrolled explicitly instead.
+// 'instant' is used deliberately: 'smooth' scrollIntoView gets interrupted
+// here (the per-frame scroll listener below forces layout reads mid-animation)
+// and lands at inconsistent positions, verified across all five section links.
+function scrollToHash(hash) {
+  if (!hash || hash.length < 2) return;
+  const target = document.querySelector(hash);
+  if (!target) return;
+  target.scrollIntoView({ behavior: 'instant', block: 'start' });
+}
+document.addEventListener('click', event => {
+  const link = event.target.closest('a[href^="#"]');
+  if (!link || !document.querySelector(link.getAttribute('href'))) return;
+  event.preventDefault();
+  const hash = link.getAttribute('href');
+  scrollToHash(hash);
+  history.pushState(null, '', hash);
+});
+if (location.hash) {
+  // Wait two frames so layout (fonts, canvas sizing) has settled before jumping.
+  requestAnimationFrame(() => requestAnimationFrame(() => scrollToHash(location.hash)));
+}
+
 const canvas = document.querySelector('#proof-network');
 const context = canvas.getContext('2d');
 if (context) {
