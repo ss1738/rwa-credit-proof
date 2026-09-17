@@ -30,7 +30,7 @@ stores an approved key and servicer, enforces threshold/freshness/sequence polic
 latest receipt. Its compiled SBF suite accepts two successive approvals and rejects 26 invalid
 requests while preserving state. A finalized local 12-loan approval used 85,529 CU in a 672-byte
 legacy transaction signed by separate payer and servicer keys (a repeat run measured 85,538 CU).
-`./pilot-demo.sh` reproduces it.
+`./pilot-demo.sh` reproduces the workflow; measured CU may vary slightly.
 
 The existing six-stage demo and separate adversarial audit also pass. Their 10-loan circuit has
 5,911 constraints and legacy pairing-only SBF harness uses 83,354 CU. A separate verifier example
