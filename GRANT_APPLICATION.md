@@ -9,8 +9,9 @@ Selecting Developer Tooling reveals an additional required field for a shared Go
 Use `DEVELOPER_TOOLING_PROPOSAL.md` for that document. This replaces the earlier milestone-only
 application; the supporting proposal is a separate required attachment, not a competing form draft.
 
-**Status: draft, not submitted.** The shared Google Doc URL and applicant approval of the
-proposal's release, maintenance, and adoption commitments are still needed. Devnet deployment is
+**Status: draft, not submitted.** The Google Doc for field 11 is created and shared (see section 11
+below). Applicant approval of the proposal's release, maintenance, and adoption commitments in
+DEVELOPER_TOOLING_PROPOSAL.md section 5 is still needed before submission. Devnet deployment is
 pending free test SOL. The Foundation's application guide explicitly permits `N/A` for on-chain
 accounts when not applicable; a local validator address must not be presented as a devnet deployment.
 
@@ -78,11 +79,10 @@ customer traction claimed.
 
 ## 11. Developer Tooling Instructions (conditional required field)
 
-[Paste the shared Google Doc URL containing DEVELOPER_TOOLING_PROPOSAL.md after reviewing it.]
+https://docs.google.com/document/d/1ASQ3GGkMozcpvlCdlipWubl9inVm2iJpd7n7wVwJQc0/edit?usp=sharing
 
-*Preparation note, do not paste: the live form asks for a proposal following its linked Developer
-Tooling template. Create/share the Google Doc yourself, then insert its accessible URL here. Do not
-paste the proposal body into Why You. The form asks that links appear only in fields requesting them.*
+Shared 2026-09-18, "Anyone with the link" set to Viewer. Contents match
+DEVELOPER_TOOLING_PROPOSAL.md as of this commit.
 
 ## Internal preparation notes (not form answers)
 
