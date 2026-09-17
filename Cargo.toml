@@ -2,7 +2,7 @@
 name = "credit-solvency-core"
 version = "0.1.0"
 edition = "2021"
-description = "The statement a tokenized private-credit fund must prove before it mints: a servicer-signed loan tape is solvent and fully KYC'd, in zero-knowledge. Plain-Rust reference; lifts into a zkVM guest unchanged."
+description = "Experimental private-credit coverage/KYC circuit, host-side binding models, and Solana approval tooling."
 
 [dependencies]
 ed25519-dalek = { version = "2", features = ["rand_core"] }

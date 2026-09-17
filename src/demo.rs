@@ -41,7 +41,7 @@ fn report(label: &str, tape: &LoanTape, servicer: &SigningKey) {
     println!("  performing collateral : {}", att.performing_collateral);
     println!("  required collateral   : {}", att.required_collateral);
     println!("  solvent               : {}", att.solvent);
-    println!("  => MINT {}", if att.verified() { "ALLOWED  ✅" } else { "BLOCKED  ⛔" });
+    println!("  => MODEL DECISION: {}", if att.verified() { "ALLOW  ✅" } else { "BLOCK  ⛔" });
     println!();
 }
 
@@ -49,11 +49,11 @@ fn main() {
     let mut rng = OsRng;
     let servicer = SigningKey::generate(&mut rng);
 
-    // 1. A healthy, over-collateralised, servicer-signed book -> mint allowed.
+    // 1. A healthy, over-collateralised, servicer-signed book passes the model.
     let good = mock_tape(10, true, &mut rng);
     report("solvent book", &good, &servicer);
 
-    // 2. Same shape, but the book does not cover the claim -> caught, mint blocked.
+    // 2. Same shape, but the book does not cover the claim -> caught and blocked by the model.
     let bad = mock_tape(10, false, &mut rng);
     report("insolvent book", &bad, &servicer);
 
@@ -63,6 +63,6 @@ fn main() {
     tampered.loans[0].collateral_value *= 5;
     let att = evaluate(&tampered, &servicer.verifying_key(), &sig);
     println!("--- tampered book (collateral inflated after signing) ---");
-    println!("  signature valid : {}  => MINT {}", att.signature_valid,
-             if att.verified() { "ALLOWED" } else { "BLOCKED  ⛔" });
+    println!("  signature valid : {}  => MODEL DECISION: {}", att.signature_valid,
+             if att.verified() { "ALLOW" } else { "BLOCK  ⛔" });
 }

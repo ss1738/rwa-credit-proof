@@ -1,10 +1,9 @@
 //! End-to-end pipeline on a realistic servicer loan tape (CSV).
 //!
-//!   loan tape CSV -> servicer signs the book commitment -> ZK proof of solvency+KYC ->
-//!   mint-gate (ZK proof AND servicer signature)
+//!   loan tape CSV -> servicer signs the book commitment -> ZK proof of coverage+KYC ->
+//!   host-side decision model (ZK proof AND servicer signature)
 //!
-//! This is the shape a pilot takes: a servicer exports its book, signs it, and the fund can only mint
-//! when the private book provably covers the token supply. Run on a Mini:
+//! This legacy example does not send a transaction or mint a token. Run on a Mini:
 //!   cargo run --release --bin pipeline -- examples/loan_tape_solvent.csv
 //!
 //! CSV columns: loan_id,principal,collateral_value,status(performing|defaulted),kyc_ok(true|false)
@@ -70,7 +69,7 @@ fn main() {
     .unwrap();
     if !cs.is_satisfied().unwrap() {
         println!("  => circuit unsatisfiable for this book: no valid ZK proof can exist");
-        println!("  => MINT BLOCKED");
+        println!("  => MODEL DECISION: BLOCK");
         return;
     }
 
@@ -81,17 +80,17 @@ fn main() {
     let mut proof_bytes = Vec::new();
     proof.serialize_compressed(&mut proof_bytes).unwrap();
 
-    // servicer signs THAT commitment; the mint-gate needs the ZK proof AND the signature over it
+    // Servicer signs that commitment; the host-side decision requires the proof and signature.
     let mut commit_bytes = Vec::new();
     commitment.serialize_compressed(&mut commit_bytes).unwrap();
     let servicer = SigningKey::generate(&mut OsRng);
     let signature = servicer.sign(&commit_bytes);
 
-    // the mint-gate: ZK proof AND servicer signature over the same commitment
+    // Host-side reference decision: proof and servicer signature over the same commitment.
     let zk_ok = Groth16::<Bn254>::verify(&vk, &public, &proof).unwrap_or(false);
     let sig_ok = servicer.verifying_key().verify(&commit_bytes, &signature).is_ok();
 
     println!("  ZK proof ({} bytes)   : {}", proof_bytes.len(), if zk_ok { "valid" } else { "INVALID" });
     println!("  servicer signature    : {}", if sig_ok { "valid" } else { "INVALID" });
-    println!("  => MINT {}", if zk_ok && sig_ok { "ALLOWED" } else { "BLOCKED" });
+    println!("  => MODEL DECISION: {}", if zk_ok && sig_ok { "ALLOW" } else { "BLOCK" });
 }

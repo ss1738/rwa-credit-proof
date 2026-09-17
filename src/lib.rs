@@ -1,17 +1,13 @@
 //! credit-solvency-core
 //!
-//! THE STATEMENT at the heart of the RWA private-credit bet: before a tokenized private-credit fund
-//! mints tokens, it must prove that a loan tape SIGNED BY THE SERVICER is solvent and fully KYC'd,
-//! WITHOUT revealing the individual loans.
+//! Native reference model for the RWA private-credit workflow: before an approval is consumed, a
+//! private loan tape must satisfy the solvency and KYC predicate and the authorized servicer must
+//! authenticate that exact tape.
 //!
-//! Why the signature is inside the statement: a ZK proof only certifies that *the data you were given*
-//! satisfies the predicate. It cannot certify the data is true. Binding the servicer's signature into
-//! the statement is the answer to that "garbage-in" problem: the proof asserts
-//!   "the servicer attested this exact book AND it is solvent",
-//! not "someone typed numbers that happen to be solvent". Solve the data-trust anchor or it is theatre.
-//!
-//! `evaluate()` is written as a pure function so it lifts into an SP1 / RISC Zero guest almost
-//! unchanged in weeks 2-3 of the spike (see PRIVATE_CREDIT_SPIKE.md). Plain Rust now => testable today.
+//! The Groth16 circuit does not verify an Ed25519 signature. It proves coverage, KYC flags and a
+//! blinded commitment over private witnesses. Authentication is a separate policy boundary: this
+//! host-side model verifies a signature over the full tape digest, while the Solana pilot gate
+//! requires the configured servicer's signer privilege and checks the approved commitment workflow.
 
 use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use serde::{Deserialize, Serialize};
@@ -47,20 +43,20 @@ pub struct LoanTape {
 }
 
 impl LoanTape {
-    /// The deterministic digest the servicer signs. Any change to a loan or the claim breaks the
-    /// signature, so the proof is bound to the exact attested book.
+    /// The deterministic digest used by this legacy host-side signature model. Any change to a loan
+    /// or the claim breaks the signature and blocks this model's combined decision.
     pub fn signing_digest(&self) -> [u8; 32] {
         let json = serde_json::to_vec(self).expect("serialize loan tape");
         Sha256::digest(json).into()
     }
 
-    /// Servicer signs the book (in production this key belongs to the loan servicer / custodian).
+    /// Sign the full tape digest with the key representing the servicer in this reference model.
     pub fn sign(&self, key: &SigningKey) -> Signature {
         key.sign(&self.signing_digest())
     }
 }
 
-/// What the ZK proof will attest to. `verified()` is the single bit an on-chain mint-gate checks.
+/// Cleartext result from the legacy host-side reference predicate; this is not a ZK attestation.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Attestation {
     pub signature_valid: bool,
@@ -71,15 +67,14 @@ pub struct Attestation {
 }
 
 impl Attestation {
-    /// Mint is permitted only if the servicer signed the book, every borrower passed KYC, and the
-    /// performing collateral covers the required over-collateralisation.
+    /// Return true only when signature, KYC and coverage checks all pass in this reference model.
     pub fn verified(&self) -> bool {
         self.signature_valid && self.all_kyc_ok && self.solvent
     }
 }
 
-/// THE STATEMENT, evaluated. This exact logic becomes the zkVM guest program: prove that a tape signed
-/// by `servicer` is solvent + fully KYC'd, revealing only the aggregate result, never the loans.
+/// Evaluate the legacy host-side reference predicate over a full loan tape and servicer signature.
+/// This is not the Groth16 circuit or an on-chain signature verifier.
 pub fn evaluate(tape: &LoanTape, servicer: &VerifyingKey, sig: &Signature) -> Attestation {
     let signature_valid = servicer.verify(&tape.signing_digest(), sig).is_ok();
 

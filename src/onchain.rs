@@ -1,7 +1,7 @@
-//! Verify the solvency proof through Solana's `alt_bn128` pairing interface -- the exact arithmetic
-//! the on-chain mint-gate runs. This is a NATIVE run (no SBF toolchain, no devnet needed): it proves
-//! the arkworks proof serializes correctly into Solana's verifier byte layout (EIP-197), which is the
-//! real integration risk. Run on a Mini:  cargo run --release --bin onchain
+//! Exercise the solvency proof through Solana's native `alt_bn128` implementation. This is a host-side
+//! reference model (no SBF program, RPC transaction or token mint): it checks arkworks-to-EIP-197
+//! serialization and models a separate signature check. Run on a Mini:
+//! `cargo run --release --bin onchain`
 //!
 //! Groth16 check, arranged for one pairing product == 1:
 //!   e(-A, B) * e(alpha, beta) * e(vk_x, gamma) * e(C, delta) == 1,  vk_x = IC0 + Σ pub_i · IC_i
@@ -91,7 +91,7 @@ fn main() {
     let (vk, proof, public) = prove_solvency(&collateral, &performing, &kyc, threshold);
     let commitment = public[1];
 
-    // The mint-gate on Solana requires BOTH:
+    // This host-side decision model requires BOTH:
     //   (a) the ZK proof verifies via alt_bn128  (solvent + KYC + book hashes to `commitment`)
     //   (b) the servicer's ed25519 signature over `commitment` verifies (cheap ed25519 syscall)
     let servicer = SigningKey::generate(&mut OsRng);
@@ -99,11 +99,11 @@ fn main() {
 
     let zk_ok = on_chain_verify(&vk, &proof, &public);
     let sig_ok = servicer.verifying_key().verify(&fr_bytes(&commitment), &sig).is_ok();
-    println!("=== Solana mint-gate: ZK proof + servicer signature ===");
+    println!("=== Native decision model: ZK proof + servicer signature ===");
     println!("book: {n} loans (values hidden)   public threshold: {threshold}");
     println!("(a) alt_bn128 accepts ZK proof      : {zk_ok}");
     println!("(b) servicer signed the commitment  : {sig_ok}");
-    println!("=> MINT {}", if zk_ok && sig_ok { "ALLOWED  \u{2705}" } else { "BLOCKED  \u{26d4}" });
+    println!("=> MODEL DECISION {}", if zk_ok && sig_ok { "ALLOW  \u{2705}" } else { "BLOCK  \u{26d4}" });
 
     // attack: present a DIFFERENT (also-solvent) book, reuse the servicer's signature.
     // The different book has a different commitment, which the servicer never signed -> gate blocks.
@@ -115,8 +115,8 @@ fn main() {
     println!("\n--- attack: swap in a different book, reuse the signature ---");
     println!("(a) attacker's ZK proof valid       : {attack_zk_ok}");
     println!("(b) servicer signature matches it   : {attack_sig_ok}  (expected false)");
-    println!("=> MINT {}", if attack_zk_ok && attack_sig_ok { "ALLOWED" } else { "BLOCKED  \u{26d4}" });
+    println!("=> MODEL DECISION {}", if attack_zk_ok && attack_sig_ok { "ALLOW" } else { "BLOCK  \u{26d4}" });
 
     assert!(zk_ok && sig_ok && !attack_sig_ok, "binding/soundness check failed");
-    println!("\nOK: proof + signature bind the mint to exactly the book the servicer attested.");
+    println!("\nOK: the native model binds its decision to the signed book commitment.");
 }
