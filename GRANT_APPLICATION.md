@@ -2,9 +2,9 @@
 
 Apply at solana.org/grants-funding (rolling, decisions ~3 weeks). Open-source public-good track.
 Fill in contact details before sending. Rescoped after a first-pass rejection (reason: "the dollar
-amount requested exceeds the value of the public good delivered"). This version cuts the ask down to
-only the milestones that are unambiguously ecosystem-wide public good, and drops the paid single-protocol
-integration that likely caused that judgment.
+amount requested exceeds the value of the public good delivered") against a **$300,000 ask**. This
+version cuts the ask down by roughly 12-15x, to only the milestones that are unambiguously ecosystem-wide
+public good, and drops the paid single-protocol integration that likely compounded that judgment.
 NOTE: taking grant money is an earning event. Confirm your visa/entity position first (see end).
 
 ---
@@ -73,10 +73,17 @@ asset class: complementary rather than redundant.
 
 No milestone in this version involves a paid integration with a named business.
 
-## Budget (estimate, to refine with the Foundation)
-Milestone-based, materially smaller than the prior ask since the paid integration milestone is removed.
-Milestone 1 is mostly packaging/docs work on top of what already exists; milestone 2 (the ceremony) is
-the more substantial piece. Exact figures to be set with the Foundation against the two milestones above.
+## Budget
+**$20,000-$25,000 total**, milestone-based:
+- Milestone 1 (open-source release + developer kit): **$5,000-$7,000**. Mostly packaging and
+  documentation work on top of what already exists and is already measured.
+- Milestone 2 (trustless setup ceremony + public write-up): **$15,000-$18,000**. The more substantial
+  piece: real cryptographic/systems engineering work closing the one remaining soundness gap.
+
+This is calibrated against comparable recent Solana Foundation programs for narrowly-scoped open-source
+developer tooling (the Solana Actions/blinks tooling call funded individual grants in the $5k-$25k
+range for similar-shaped work), not guessed. It is roughly 12-15x smaller than the $300,000 previously
+requested for this project, which is the direct fix for the stated rejection reason.
 
 ## Team
 Solo technical founder. Background: from-scratch Rust L1 blockchain; BLS12-381 aggregate signatures,
