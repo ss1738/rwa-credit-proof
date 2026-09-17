@@ -1,0 +1,11 @@
+{
+  "checked": "2026-09-17",
+  "cluster": "devnet",
+  "status": "not_deployed",
+  "reason": "requestAirdrop returned HTTP 429: daily limit or faucet empty; 2, 1 and 0.5 SOL attempts failed",
+  "prospective_program_id": "6vXpHGCL9j94LXtXmNsTvKfAL6DfuWpevpdwSj9487bR",
+  "payer": "8BurHw6PF4n7otsa7b4R6EZo3km6r39XDKbFv159c6AM",
+  "payer_balance_lamports": 0,
+  "program_account_exists": false,
+  "binary_sha256": "7e119a91a30e8446b19c47201038a2d8f0f7704ead8f22d49a93e6122f2fe192"
+}

@@ -1,0 +1,9 @@
+=== on-chain verification (live validator: http://127.0.0.1:18999) ===
+program           : 6vXpHGCL9j94LXtXmNsTvKfAL6DfuWpevpdwSj9487bR
+simulation error  : None
+compute units used: Some(83354)
+  log: Program 6vXpHGCL9j94LXtXmNsTvKfAL6DfuWpevpdwSj9487bR invoke [1]
+  log: Program log: groth16 solvency proof valid: true
+  log: Program 6vXpHGCL9j94LXtXmNsTvKfAL6DfuWpevpdwSj9487bR consumed 83354 of 200000 compute units
+  log: Program 6vXpHGCL9j94LXtXmNsTvKfAL6DfuWpevpdwSj9487bR success
+CONFIRMED on-chain signature: 3h42tZ68Y8Xfw3H4tGKzo4bbxE7DdPc3qTUnLeoXaQWmw78qB9XaosduunATgTEndD99uaverZ2MrEAciwRCKPx1

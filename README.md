@@ -1,10 +1,12 @@
 # Proof-of-Solvency for Tokenized Private Credit
 
 > A fund proves it is solvent and fully KYC'd, over a loan book it cannot fake, **without revealing a
-> single loan**, and a token mints only when that proof and the servicer's signature both check out.
+> single loan**, and the native mint-gate model allows minting only when that proof and the servicer's signature both check out.
 
-Working prototype. Every claim below is reproducible with `./demo.sh`, and the on-chain verifier has
-been deployed to and confirmed on a local Solana test validator (`solana-test-validator`).
+Working research prototype. `./demo.sh` reproduces the core tests and Solana SBF measurement.
+The verifier is confirmed on a local Solana test validator, and an EVM example is live on public
+Ethereum Sepolia. **Solana devnet deployment is pending faucet funding.** See
+[DEPLOYMENTS.md](DEPLOYMENTS.md) for network-specific evidence and reproduction commands.
 
 ## The problem
 
@@ -21,7 +23,7 @@ A zero-knowledge proof attests, over a **private** loan book, that:
 2. **Compliant**: every borrower passed KYC
 3. **Authentic**: the book hashes (Poseidon) to a commitment the **servicer signed**
 
-revealing only the threshold and the commitment. The mint is gated on **both** the ZK proof and the
+revealing only the threshold and the commitment. The native mint-gate model checks **both** the ZK proof and the
 servicer's ed25519 signature over that commitment, so a prover cannot swap in a different book: a
 different book has a different commitment the servicer never signed.
 
@@ -31,9 +33,9 @@ different book has a different commitment the servicer never signed.
 |---|---|
 | Proof size | **128 bytes**, constant regardless of book size |
 | Privacy | individual loans never revealed |
-| On-chain verification | **83,352 compute units** on a local Solana test validator (~6% of the 1.4M cap) |
+| On-chain verification | **83,354 CU** in both the SBF harness and a fresh local validator run (2026-09-17); earlier local-validator result: **83,352 CU**. About 6% of the 1.4M maximum, proof verification only. |
 | On-chain cost vs book size | **constant** (a 10-loan and a 10,000-loan fund cost the same to verify) |
-| Scale | 10,000-loan book proves in ~60s; 1,000 in ~3.5s |
+| Scale | 10,000 loans: **72.17s** proving plus **64.61s** setup; 1,000 loans: **3.82s** proving (2026-09-17 run) |
 | Portability | verifies on Solana (`alt_bn128`) and any EVM chain (`ecPairing`) |
 | Attack (swap book, reuse signature) | blocked |
 
@@ -68,9 +70,12 @@ left to go stale.
 ./demo.sh
 ```
 
-Runs the whole chain: statement soundness, realistic loan-tape decisions, the ZK proof, the on-chain
-mint-gate plus the attack test, the scale benchmark, and (if the Solana toolchain is installed) the real
-on-chain compute-unit measurement. Needs Rust; stage 6 needs the Solana toolchain.
+Runs the whole chain: statement soundness, realistic loan-tape decisions, the ZK proof, the
+native mint-gate model plus the attack test, the 100/1,000-loan benchmark, and (if the Solana toolchain is installed) the real
+on-chain compute-unit measurement. Needs Rust; stage 6 needs the Solana toolchain. Run
+`cargo run --release --bin audit` for the separate adversarial audit and
+`cargo run --release --bin bench -- 10000` for the larger benchmark. Public deployment receipts
+are checked separately; `./demo.sh` does not redeploy to either public network.
 
 ## How it works
 
@@ -79,9 +84,12 @@ on-chain compute-unit measurement. Needs Rust; stage 6 needs the Solana toolchai
 - **The binding** (`commit_book` + `src/onchain_bytes.rs`): the servicer signs the Poseidon commitment;
   the proof proves the private book hashes to it. This is the answer to the "garbage-in" problem: the
   proof certifies the **attested** book, not arbitrary numbers.
-- **The on-chain gate** (`solana-verifier/`): verifies the Groth16 proof via Solana's `alt_bn128`
-  pairing syscalls and gates the mint; the servicer signature is checked with the ed25519 syscall.
-  Because it is BN254 Groth16, the same proof verifies on any EVM chain via the `ecPairing` precompile.
+- **The on-chain verifier** (`solana-verifier/`): verifies a Groth16 pairing equation via Solana's
+  `alt_bn128` syscalls. It accepts a caller-supplied verifying key and does not check the servicer
+  signature or invoke a token mint. `src/onchain.rs` models the combined gate natively with
+  ed25519-dalek. Production integration needs an approved circuit/key, authenticated signature
+  binding, threshold/freshness policy and token authorization. BN254 also permits EVM verification
+  through `ecPairing`; the Sepolia example contains its own baked-in proof.
 
 ## Repo layout
 
@@ -103,22 +111,18 @@ PRIVATE_CREDIT_SPIKE.md   the 60-day plan
 
 ## What is proven, and what is not
 
-**Proven:** the cryptography and the on-chain verification, end to end, on real hardware and a local
-Solana test validator. The proof is sound (insolvent or non-compliant books are unprovable) and private
-(loans never revealed).
+**Reproduced:** honest solvent books satisfy the circuit; insolvent, KYC-failed and wrong-commitment
+books fail the audit checks. Honest proofs verify, while a flipped proof bit or changed public input
+is rejected. The native signature-binding model rejects a swapped book. These checks do not establish
+soundness against an adversary controlling setup parameters or the verifying key.
 
-**Not proven, honestly:** a proof certifies the **attested** data is solvent, not that the data is
-**true**. The security rests on the data-trust anchor: the servicer or custodian signing the loan tape
-(the CSV in `examples/` is exactly where that feed plugs in). This is a prototype verified on our own
-hardware, not a production, audited system. Very large books (>10k loans) will want recursive folding
-(Nova); the current monolithic prover is measured to 10k.
-
-**Soundness caveat (read [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md)):** the Groth16 setup currently
-uses a fixed public seed, so proofs are sound only against an **honest** prover. A malicious prover who
-knows the seed could forge one. A real deployment needs a proper trusted-setup ceremony (or a
-transparent proof system). The commitment is also binding but not hiding, and the pipeline's BLOCKED
-path is a cleartext check. These are honest prototype limitations, flagged by an independent code audit,
-not fabricated results.
+**Limits:** a proof certifies a predicate over supplied data, not whether the off-chain data is true.
+The circuit enforces KYC flags, not an independent real-world KYC assessment. The current setup uses
+secure randomness, but is single-party. The blinded commitment and circuit-based BLOCKED path are
+implemented; older descriptions saying otherwise were stale. The delta-only ceremony experiment is
+not a complete ceremony. The Solana verifier's key is supplied by the caller and it has no on-chain
+servicer-signature or token-mint enforcement. See [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) and
+[AUDIT.md](AUDIT.md). This is not a production or third-party-security-audited system.
 
 *Figures: on-chain market size rwa.xyz; private-credit market size IMF (Apr 2024) and JPMorgan (2024);
 performance measured on Apple M4 hardware and the Solana SBF runtime.*

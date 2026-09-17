@@ -8,6 +8,12 @@ the pitch below is written to survive that filter. **Colosseum requires disclosi
 submission does that explicitly rather than presenting the existing repo as built during the hackathon
 window.
 
+**Evidence update (2026-09-17):** all six demo stages and the separate audit passed. The latest
+local-validator and SBF-harness runs used 83,354 CU; 83,352 CU is retained as the earlier local result.
+Solana devnet is pending free test SOL. The Solana program is a pairing verifier; signature binding
+and the mint decision are currently demonstrated natively. It does not enforce an approved key or
+mint tokens on-chain. See [DEPLOYMENTS.md](DEPLOYMENTS.md) and [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
+
 ---
 
 ## Project name
@@ -25,10 +31,10 @@ change.
 Private credit is the largest tokenized real-world-asset category (around $20B on-chain against a
 $1.8-3.1T off-chain market), but the loan book backing every token lives off-chain, so nobody can verify
 solvency on-chain. We built a zero-knowledge proof that a fund's private loan book is solvent and every
-borrower passed KYC, and gated an on-chain mint on that proof plus the servicer's signature. It's already
+borrower has a KYC flag, and demonstrated the proof-plus-servicer-signature mint decision natively. The proof verifier is
 deployed and confirmed on a local Solana test validator: 83,352 compute units, 6% of the per-transaction
-budget, constant cost no matter how many loans are in the book. The same proof is also live on public
-Ethereum Sepolia testnet (contract `0x8c3DD5E6b660D6aFdCdCa2FB757b2E777d8511Df`, 197,605 gas, publicly
+budget, constant cost no matter how many loans are in the book. The proof system is also live on public
+Ethereum Sepolia testnet (contract `0x8c3DD5E6b660D6aFdCdCa2FB757b2E777d8511Df`, 197,605 verifier-only gas (224,234 total transaction gas), publicly
 inspectable on sepolia.etherscan.io).
 
 ## Prior work disclosure (required, read this before judging the rest)
@@ -38,7 +44,7 @@ this hackathon: [fill in the specific increment you build during the event windo
 options, matched to what the grant applications deliberately left out of their scope, are (a) a real
 reference integration against a live or simulated Solana RWA protocol's loan tape, producing a public,
 independently-verifiable on-chain proof, or (b) the multi-party trusted-setup ceremony, run live and
-published, closing the one soundness gap in `KNOWN_LIMITATIONS.md`]. Judges should evaluate the
+published, addressing the trusted-setup gap in `KNOWN_LIMITATIONS.md`]. Judges should evaluate the
 hackathon submission on that increment, not on the pre-existing core, which is disclosed above.
 
 ## What's already proven (measured, reproducible, not claims)
@@ -46,11 +52,12 @@ hackathon submission on that increment, not on the pre-existing core, which is d
 |---|---|
 | Proof size | 128 bytes, constant regardless of book size |
 | On-chain verification (Solana) | 83,352 compute units on a local test validator |
-| On-chain verification (EVM) | 197,605 gas, live on public Sepolia testnet, Etherscan-verifiable |
-| Scale | 10,000-loan book proves in ~60s |
+| On-chain verification (EVM) | 197,605 verifier-only gas (224,234 total transaction gas), live on public Sepolia testnet, Etherscan-verifiable |
+| Scale | 10,000-loan book proves in ~72s |
 | Attack test (swap book, reuse signature) | blocked |
 
-Reproduce all of it with one command: `./demo.sh`.
+Run `./demo.sh` for the core demo; `cargo run --release --bin bench -- 10000` for the larger
+benchmark. Public network evidence is checked separately in `DEPLOYMENTS.md`.
 
 ## Why Solana
 Continuous, per-mint solvency verification is only economically viable if on-chain verification is cheap

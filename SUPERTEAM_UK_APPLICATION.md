@@ -3,15 +3,20 @@
 Program: **Solana Foundation UK Grants**, run through Superteam UK: https://superteam.fun/earn/grants/solana-foundation-uk-grants
 Eligibility: restricted to applicants based in the United Kingdom. You qualify (Leicester, UK).
 
-**Status check (as of this draft): applications are currently marked "Applications Paused."** Before
-submitting, email **uk@superteam.fun** to ask whether the program is reopening and whether they're
-holding a waitlist. Don't wait for the portal to silently reopen; keep this draft ready to submit the
-moment it does. Average response time when open is ~1 week.
+**Status checked 2026-09-17: Applications Paused.** Submission is through a logged-in
+Superteam Earn profile and requires KYC. The applicant must handle account access and KYC when
+the program reopens. No account was created, no login performed and no message sent.
 
 Program stats for calibration: up to $10,000 USD per grant, average award **$4,707** across 87 funded
 recipients (~$409.5k total approved to date). Categories: Frontend, Blockchain, Backend, Content. This
 application sits squarely in **Blockchain** (primary) and **Backend** (secondary): it is not a frontend
 or content submission, so don't let the form's category list push you toward a mismatched one.
+
+**Evidence update (2026-09-17):** all six demo stages and the separate audit passed. The latest
+local-validator and SBF-harness runs used 83,354 CU; 83,352 CU is retained as the earlier local result.
+Solana devnet is pending free test SOL. The Solana program is a pairing verifier; signature binding
+and the mint decision are currently demonstrated natively. It does not enforce an approved key or
+mint tokens on-chain. See [DEPLOYMENTS.md](DEPLOYMENTS.md) and [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
 
 ---
 
@@ -25,7 +30,7 @@ compliance without revealing its loan book.
 
 ## Links
 - Repo: https://github.com/ss1738/rwa-credit-proof
-- Demo: `./demo.sh` (one command, reproduces every claim below)
+- Demo: `./demo.sh` (core tests and SBF measurement; separate checks in `DEPLOYMENTS.md`)
 - Evidence sheet: `EVIDENCE.html` in the repo (print-to-PDF technical writeup)
 - Live Sepolia deployment: contract `0x8c3DD5E6b660D6aFdCdCa2FB757b2E777d8511Df`, verify tx
   `0x91196bd0a9b6d192733bdc7df7126520c142f2bbda2c146190ebddd75aaae7c7`, publicly inspectable on
@@ -45,14 +50,15 @@ for this.
 - 128-byte ZK proof (Groth16/BN254) that a private loan book is solvent and fully KYC'd.
 - On-chain verifier deployed to and confirmed on a local Solana test validator: 83,352 compute units
   (~6% of the per-transaction budget), constant cost regardless of book size.
-- Same proof is also live on public Ethereum Sepolia testnet (see links above), cross-chain portable.
-- Two independent code audits documented in `AUDIT.md`; honest limitations documented in
+- The proof system is also live on public Ethereum Sepolia testnet (see links above), cross-chain portable.
+- Two independent code reviews documented in `AUDIT.md`; honest limitations documented in
   `KNOWN_LIMITATIONS.md` rather than glossed over.
 
 ## What this grant funds
 One concrete, scoped piece of work: **replacing the current single-party trusted setup with a real
-multi-party ceremony** (or evaluating a transparent proof system as an alternative), which is the one
-soundness gap standing between this being a prototype and being safe for a real integration. Output:
+multi-party ceremony** (or evaluating a transparent proof system as an alternative), which addresses one
+critical soundness dependency; key pinning, authenticated mint/signature integration and external
+review remain separate requirements. Output:
 working ceremony tooling, a public write-up, and an updated audit note, all open source, reusable by
 any Solana ZK project doing a Groth16 setup, not just this one.
 

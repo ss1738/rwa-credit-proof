@@ -77,13 +77,14 @@
 
   <div class="metrics">
     <div class="stat"><div class="n">128 bytes</div><div class="l">Proof size, constant regardless of book size</div></div>
-    <div class="stat"><div class="n">83,354 CU</div><div class="l">On-chain verify, about 6% of Solana's per-transaction limit</div></div>
-    <div class="stat"><div class="n">10,000 loans</div><div class="l">Proven in about 60 seconds</div></div>
+    <div class="stat"><div class="n">83,354 CU</div><div class="l">Local SBF proof verification, about 6% of the 1.4M maximum</div></div>
+    <div class="stat"><div class="n">10,000 loans</div><div class="l">Proved in 72.17s, plus 64.61s setup (2026-09-17)</div></div>
     <div class="stat"><div class="n">0 loans revealed</div><div class="l">Individual loans and borrower data never leave the fund</div></div>
   </div>
   <p class="verifies">Verifies on <b>Solana</b> (alt_bn128 syscalls) and any <b>EVM</b> chain (ecPairing precompile). We meet you on your chain.</p>
 
-  <h2>How the mint-gate works</h2>
+  <p>Public Solana devnet deployment is pending funding. See <a href="DEPLOYMENTS.md">network evidence</a>. The SBF program is a pairing verifier; the combined mint gate below is a native model. Key pinning, signature/policy enforcement and a token integration remain open.</p>
+  <h2>How the native mint-gate model works</h2>
   <ol class="steps">
     <li>The servicer signs a commitment to the current loan book.</li>
     <li>A zero-knowledge proof shows the private book is solvent and fully KYC'd, and hashes to that commitment.</li>

@@ -7,6 +7,12 @@ ask for the sections below). Equity-free, typically $200-$10k, fast turnaround. 
 ask is small, the milestone is concrete, and, unlike most microgrant applicants, there's already a live,
 measured, reproducible prototype to point to instead of a plan.
 
+**Evidence update (2026-09-17):** all six demo stages and the separate audit passed. The latest
+local-validator and SBF-harness runs used 83,354 CU; 83,352 CU is retained as the earlier local result.
+Solana devnet is pending free test SOL. The Solana program is a pairing verifier; signature binding
+and the mint decision are currently demonstrated natively. It does not enforce an approved key or
+mint tokens on-chain. See [DEPLOYMENTS.md](DEPLOYMENTS.md) and [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
+
 ---
 
 ## Project name
@@ -19,7 +25,7 @@ compliance without revealing its loan book.
 
 ## Links
 - Repo: https://github.com/ss1738/rwa-credit-proof
-- Demo: `./demo.sh` (one command, reproduces every claim below)
+- Demo: `./demo.sh` (core tests and SBF measurement; separate checks in `DEPLOYMENTS.md`)
 - Evidence sheet: `EVIDENCE.html` in the repo (print-to-PDF technical writeup)
 - GitHub profile: https://github.com/ss1738
 
@@ -33,16 +39,17 @@ for this.
 - 128-byte ZK proof (Groth16/BN254) that a private loan book is solvent and fully KYC'd.
 - On-chain verifier deployed to and confirmed on a **local Solana test validator**: 83,352 compute units
   (~6% of the per-transaction budget), constant cost regardless of book size.
-- Same proof is also **live on public Ethereum Sepolia testnet** (contract
-  `0x8c3DD5E6b660D6aFdCdCa2FB757b2E777d8511Df`, 197,605 gas, publicly inspectable on
+- The proof system is also **live on public Ethereum Sepolia testnet** (contract
+  `0x8c3DD5E6b660D6aFdCdCa2FB757b2E777d8511Df`, 197,605 verifier-only gas (224,234 total transaction gas), publicly inspectable on
   sepolia.etherscan.io), cross-chain portable.
-- Two independent code audits documented in `AUDIT.md`; honest limitations documented in
+- Two independent code reviews documented in `AUDIT.md`; honest limitations documented in
   `KNOWN_LIMITATIONS.md` rather than glossed over.
 
 ## What this grant funds
 One concrete, scoped piece of work: **replacing the current single-party trusted setup with a real
-multi-party ceremony** (or evaluating a transparent proof system as an alternative), which is the one
-soundness gap standing between this being a prototype and being safe for a real integration. Output:
+multi-party ceremony** (or evaluating a transparent proof system as an alternative), which addresses one
+critical soundness dependency; key pinning, authenticated mint/signature integration and external
+review remain separate requirements. Output:
 working ceremony tooling, a public write-up, and an updated audit note, all open source, reusable by
 any Solana ZK project doing a Groth16 setup, not just this one.
 
@@ -50,7 +57,7 @@ any Solana ZK project doing a Groth16 setup, not just this one.
 It's small, well-defined, and has a clear finish line: the ceremony either closes the soundness gap or it
 doesn't, not an open-ended roadmap item. It doesn't depend on landing a business partner first. And
 because the cryptography, the circuit, and the on-chain verifier already exist and are measured, the
-grant is funding the last mile to production-safety, not R&D risk.
+grant funds a concrete setup improvement; it does not by itself establish production safety.
 
 ## Ask
 In the $5,000-$8,000 range (equity-free), scoped to the ceremony milestone above. Open to adjusting to

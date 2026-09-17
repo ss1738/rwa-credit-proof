@@ -1,0 +1,11 @@
+{
+  "checked": "2026-09-17",
+  "source": "https://sepolia.etherscan.io/tx/0x91196bd0a9b6d192733bdc7df7126520c142f2bbda2c146190ebddd75aaae7c7",
+  "contract": "0x8c3DD5E6b660D6aFdCdCa2FB757b2E777d8511Df",
+  "status": "Success",
+  "event_ok": true,
+  "verifier_gas_from_event": 197605,
+  "total_transaction_gas": 224234,
+  "event_data": "0x000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000303e5",
+  "scope": "Historical baked-in proof example; no new Sepolia transaction sent."
+}

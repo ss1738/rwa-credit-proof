@@ -16,7 +16,9 @@ vacuous predicate, or a no-op verifier). Latest run:
   **rejected** (the verifier is not a no-op).
 - Public inputs are only 2 field elements (threshold + commitment); the loans are **not** public.
 - On-chain verification measured twice and agrees: **83,354 CU** (solana-program-test) and **83,352 CU**
-  (live validator).
+  (earlier local validator). The 2026-09-17 reproduction measured **83,354 CU** in both the SBF
+  harness and a finalized transaction on a fresh local validator. These costs cover proof verification
+  only. Logs and network scope: [DEPLOYMENTS.md](DEPLOYMENTS.md).
 
 ## 2. Independent code audit (first pass)
 
@@ -40,13 +42,33 @@ the same collateral witnesses still feed both the solvency sum and the commitmen
 |---|---------|--------|
 | 1 | Trusted setup used a fixed public seed (forgeable) | **Improved**: now uses secure randomness (no public seed). Full soundness needs a relying-party setup or a multi-party ceremony (a single party cannot self-attest). Documented, not overclaimed. |
 | 2 | Commitment was binding but not hiding | **Fixed**: a random blinding nonce is absorbed natively and in-circuit; the commitment is now hiding. |
-| 3 | No in-circuit range check on collateral | **Accepted with rationale**: the signed commitment pins the values (honest sums ~2^141 are far below the ~2^253 safety bound), so full-system soundness holds. A bit-range check is deferred as prohibitive at scale. |
+| 3 | No in-circuit range check on collateral | **Accepted with rationale**: the signed commitment pins the values (honest sums ~2^141 are far below the ~2^253 safety bound), under the intended honest-feed and authenticated-key model. The SBF verifier alone does not enforce that model (see scope corrections below). A bit-range check is deferred. |
 | 4 | Pipeline BLOCK path was a cleartext check | **Fixed**: the block decision now runs the real circuit (`ConstraintSystem::is_satisfied`). |
+
+## 2026-09-17 reproduction and scope corrections
+
+All six stages of `./demo.sh` passed. The separate adversarial audit reproduced 5,911 constraints
+for the 10-loan circuit and all expected positive/negative outcomes. The 10,000-loan benchmark
+verified successfully: 64.61s setup, 72.17s proving, 128-byte compressed proof. These are one-machine
+measurements, not performance guarantees. See `evidence/2026-09-17/` for logs and the local receipt.
+The demo script now propagates unit-test failures instead of suppressing them with `|| true`.
+
+Reading `solana-verifier/src/lib.rs` and `client/src/main.rs` also confirms that the deployed-program
+example accepts its verifying key from instruction data. It checks the pairing equation, not whether
+that key belongs to an approved solvency circuit. It neither authenticates the servicer nor mints
+SPL tokens. Those combined checks currently exist only in the native demo. Input slices also assume
+a valid encoding. These integration and validation gaps are now recorded in `KNOWN_LIMITATIONS.md`.
+This documentation review is not a new independent security audit.
+
+Sepolia's historical verification transaction is successful. Its event records 197,605 verifier gas;
+the complete transaction used 224,234 gas. The contract verifies a baked-in example proof.
+Solana devnet deployment remains pending faucet funding; no local address is represented as a
+public deployment. See [DEPLOYMENTS.md](DEPLOYMENTS.md).
 
 ## Honest scope
 
-This is a **research prototype**, verified on our own hardware and a live Solana validator. It is not a
-production, third-party-security-audited system. The cryptography is genuine; the remaining gap to a
-deployable mint-gate is a proper trusted-setup ceremony (or relying-party setup) and an external audit,
-both of which belong with a real design partner, not before one. See
-[KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
+This is a research prototype with locally reproduced tests and a public Sepolia verifier example.
+It is not a production, third-party-security-audited system. A production mint gate needs a complete
+trusted setup or suitable transparent proof system, a pinned approved circuit/key, authenticated
+servicer/signature and policy enforcement, a token integration, input validation, and external review.
+See [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).

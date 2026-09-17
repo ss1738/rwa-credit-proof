@@ -1,0 +1,24 @@
+== Is the circuit real, or a vacuous no-op? ==
+constraints in the circuit : 5911   (a vacuous circuit would be ~0)
+[1] solvent + KYC + correct commitment -> satisfied : true   expect TRUE
+Constraint trace requires enabling `ConstraintLayer`
+[2] insolvent (threshold = collateral + 1) -> satisfied : false   expect FALSE
+Constraint trace requires enabling `ConstraintLayer`
+[3] one borrower fails KYC -> satisfied : false   expect FALSE
+Constraint trace requires enabling `ConstraintLayer`
+[4] book with a MISMATCHED commitment -> satisfied : false   expect FALSE
+[5] boundary: threshold == collateral -> satisfied : true   expect TRUE (>= inclusive)
+
+== Can a forged proof or altered claim pass verification? ==
+[6] honest proof verifies : true   expect TRUE
+[7] proof with one flipped bit verifies : false   expect FALSE
+[8] honest proof vs altered public input verifies : false   expect FALSE
+
+== Privacy ==
+[9] public inputs = 2 field elements (threshold + commitment only); 10 loans are NOT public
+[10] proof is 128 bytes, constant; it cannot encode 10 loan records
+
+AUDIT PASSED (honest-prover): constraints are real, verifier is not a no-op, privacy holds.
+CAVEAT: this exercises HONESTLY-generated proofs. The setup now uses secure randomness (no
+public seed), but a single-party setup still requires trusting whoever ran it; production needs
+the relying party to generate the setup, or a multi-party ceremony. See KNOWN_LIMITATIONS.md #1.
