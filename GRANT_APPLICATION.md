@@ -92,9 +92,10 @@ paste the proposal body into Why You. The form asks that links appear only in fi
 - The original $300,000 application was rejected because the ask exceeded the public good delivered.
   This draft funds reusable open-source components and measurable maintenance/adoption. It does not
   fund a bespoke integration for a named commercial protocol.
-- Caledren uses caledren.com. The live site was verified against the site build at commit `f4cf7e6`.
-  Later commits through `1a13d17` changed application copy only; they were pushed to `main` but did
-  not publish a new site deployment.
+- Caledren uses caledren.com. The live site was verified byte-for-byte against the site build at
+  commit `bf3a040` (current `main`). Note: commit hashes on `main` changed on 2026-09-18 when 18
+  commit messages from 2026-09-17 were rewritten for clarity; file contents and history order are
+  unchanged, only the hashes and wording of the messages themselves.
 - No application has been submitted.
 - [General application guidance](https://docs.google.com/document/d/1eK-WNhQmQFyk06XhwWRZJrXn3z_0NDbChZ_Rm8XRoXw/edit)
   permits N/A in the on-chain accounts field.
