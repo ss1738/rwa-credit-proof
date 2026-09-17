@@ -13,8 +13,9 @@ point to instead of a plan.
 Proof-of-Solvency for Tokenized Private Credit (rwa-credit-proof)
 
 ## One-liner
-An open-source zero-knowledge verifier, already deployed and confirmed on a live Solana validator, that
-lets a tokenized private-credit fund prove solvency and KYC compliance without revealing its loan book.
+An open-source zero-knowledge verifier, already deployed and confirmed on a local Solana test validator
+and live on public Ethereum Sepolia, that lets a tokenized private-credit fund prove solvency and KYC
+compliance without revealing its loan book.
 
 ## Links
 - Repo: https://github.com/ss1738/rwa-credit-proof
@@ -30,9 +31,11 @@ for this.
 
 ## What's already working (not a plan — measured and reproducible today)
 - 128-byte ZK proof (Groth16/BN254) that a private loan book is solvent and fully KYC'd.
-- On-chain verifier deployed to and confirmed on a **live Solana validator**: 83,352 compute units (~6%
-  of the per-transaction budget), constant cost regardless of book size.
-- Same proof also verified on a live EVM deployment (197,603 gas) — cross-chain portable.
+- On-chain verifier deployed to and confirmed on a **local Solana test validator**: 83,352 compute units
+  (~6% of the per-transaction budget), constant cost regardless of book size.
+- Same proof is also **live on public Ethereum Sepolia testnet** (contract
+  `0x8c3DD5E6b660D6aFdCdCa2FB757b2E777d8511Df`, 197,605 gas, publicly inspectable on
+  sepolia.etherscan.io) — cross-chain portable.
 - Two independent code audits documented in `AUDIT.md`; honest limitations documented in
   `KNOWN_LIMITATIONS.md` rather than glossed over.
 
