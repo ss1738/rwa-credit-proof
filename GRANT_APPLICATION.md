@@ -93,7 +93,7 @@ paste the proposal body into Why You. The form asks that links appear only in fi
   This draft funds reusable open-source components and measurable maintenance/adoption. It does not
   fund a bespoke integration for a named commercial protocol.
 - Caledren uses caledren.com. The pilot code, evidence and site are pushed to `main` and live at
-  that domain (verified 2026-09-17, commit f4cf7e6, byte-identical to the deployed site).
+  that domain: live site verified against the site build at commit f4cf7e6; current main is a00ae3a.
 - No application has been submitted.
 - [General application guidance](https://docs.google.com/document/d/1eK-WNhQmQFyk06XhwWRZJrXn3z_0NDbChZ_Rm8XRoXw/edit)
   permits N/A in the on-chain accounts field.
