@@ -3,6 +3,12 @@
 Fill `https://github.com/ss1738/rwa-credit-proof`. Honest framing on purpose: a prototype with a working demo beats a hyped claim,
 especially on Hacker News and among ZK people who will check.
 
+**Evidence update (2026-09-17):** all six demo stages and the separate audit passed. The latest
+local-validator and SBF-harness runs used 83,354 CU; 83,352 CU is retained as the earlier local result.
+Solana devnet is pending free test SOL. The Solana program is a pairing verifier; signature binding
+and the mint decision are currently demonstrated natively. It does not enforce an approved key or
+mint tokens on-chain. See [DEPLOYMENTS.md](DEPLOYMENTS.md) and [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
+
 ---
 
 ## Show HN
@@ -12,8 +18,8 @@ especially on Hacker News and among ZK people who will check.
 **Body:**
 
 I built a prototype that lets a tokenized private-credit fund prove, in zero knowledge, that its loan
-book is solvent and fully KYC'd, without revealing a single loan. A token only mints when the proof and
-the servicer's signature both check out.
+book is solvent and fully KYC'd, without revealing a single loan. The native model allows a mint only when the proof and
+the servicer's signature both check out; the SBF program currently verifies the proof only.
 
 Why: private credit is the largest tokenized real-world-asset category (~$20B on-chain), but the loan
 book that backs the token is off-chain and unverifiable. Smart-contract audits check the code, not the
@@ -30,8 +36,9 @@ the whole thing rests on a trusted signed loan-tape feed from the servicer (a pr
 attested data is solvent, not that the data is true). All of that is written down in
 KNOWN_LIMITATIONS.md and AUDIT.md.
 
-One command (`./demo.sh`) reproduces everything: the proof, the on-chain verification, a scale test to
-10k loans, and an adversarial self-audit. Two independent code reviews are in the repo.
+`./demo.sh` reproduces the core tests, SBF verification and 100/1,000-loan benchmarks. Run
+`cargo run --release --bin bench -- 10000` and `cargo run --release --bin audit` separately for
+the larger benchmark and adversarial audit. Two independent code reviews are in the repo.
 
 Repo: https://github.com/ss1738/rwa-credit-proof
 

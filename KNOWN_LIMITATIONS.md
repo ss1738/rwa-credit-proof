@@ -1,8 +1,8 @@
 # Known limitations (honest)
 
 This is a research prototype. The zero-knowledge cryptography is **genuine and verified** (an
-independent code audit plus `cargo run --bin audit` confirm the circuit is real, soundness fails for
-the right reasons on honest proofs, and the Solana verifier does real pairing checks). But it is **not a
+independent code audit plus `cargo run --bin audit` confirm the circuit is real, negative cases fail for
+the expected reasons under honestly generated parameters, and the Solana verifier does real pairing checks). But it is **not a
 deployable, adversarially-sound mint-gate.** The independent audit flagged the following. All must be
 addressed before any external security claim.
 
@@ -16,7 +16,9 @@ party not to have retained the toxic waste. For a real deployment the setup must
 **relying party** (the verifier / LP, who has no incentive to help a fund forge), or by a **multi-party
 ceremony**, or the system must move to a **transparent** proof (no trusted setup). Until one of those,
 soundness holds against an honest prover and against an outsider, but not against a prover who also
-controlled the setup. This is the remaining item before an external soundness claim.
+controlled the setup. A complete ceremony must cover the relevant phase-1/phase-2 parameters and verify contributions;
+the delta-only `src/ceremony.rs` experiment does not do that. Secret destruction cannot be proven
+by this demo. Setup is one of several remaining requirements, alongside the integration gaps below.
 
 ## 2. Commitment hiding: FIXED
 The Poseidon commitment now absorbs a random blinding `nonce` (`commit_book(..., nonce)` and a private
@@ -25,18 +27,41 @@ for low-entropy values. The nonce is a secret shared by servicer and prover.
 
 ## 3. In-circuit range constraint on collateral: accepted with rationale (not fixed)
 Collateral witnesses are not bounded `< 2^128` in-circuit, and `enforce_cmp` is only sound for operands
-`< (p-1)/2`. Full-system soundness is **rescued by the signed commitment**: a prover cannot substitute
+`< (p-1)/2`. Under an honest bounded servicer feed and an authenticated circuit/key, the intended combined
+model relies on the **signed commitment**: a prover cannot substitute
 an out-of-range value without changing the commitment the servicer signed. An explicit in-circuit
 bit-range check is deferred on purpose, it adds ~254 constraints per loan (prohibitive at 10k+ scale)
-for a case the commitment already covers. Revisit if the threat model ever excludes the signed feed.
+for a case the intended signed-feed model covers. The current SBF verifier alone does not enforce
+that model (see section 5). Revisit if the threat model excludes the signed feed.
 
 ## 4. Pipeline BLOCKED path: FIXED
 `pipeline.rs` now decides the block by testing **the actual circuit's satisfiability**
 (`ConstraintSystem::is_satisfied`), not a cleartext comparison. The crypto decides.
 
+## 5. Solana program scope: verifying-key pinning and mint enforcement are missing
+
+The program accepts the verifying key, proof and public inputs from the caller. A successful pairing
+check therefore does not establish that an approved solvency circuit was used. A production consumer
+must pin or authenticate the circuit/key and enforce the intended public-input policy. The client
+currently generates fresh single-party parameters on each run.
+
+The SBF program does not verify a servicer signature, enforce freshness or supply/threshold policy,
+or invoke an SPL token mint. `src/onchain.rs` checks the proof and ed25519 signature in a native
+host-side model. A successful local or devnet verifier transaction must not be described as a deployed
+fund, authenticated loan feed, KYC service or production mint gate.
+
+## 6. Instruction validation and proof encoding
+
+Instruction parsing uses fixed slices and the caller's public-input count without explicit length
+validation. Malformed input can abort the instruction. The 128-byte size refers to the arkworks
+compressed proof, not the transaction: with two public inputs the current Solana instruction carries
+961 bytes including uncompressed proof points, verifying-key points and scalars.
+
+The September 2026 evidence and network status are in [DEPLOYMENTS.md](DEPLOYMENTS.md).
+
 ## Confirmed genuine, not fabricated (independent audit)
 The circuit really enforces solvency + all-KYC + commitment binding over private witnesses; the same
 witnesses tie the collateral sum to the commitment (you cannot commit to one book and prove solvency on
 another); the Solana verifier performs real `alt_bn128` pairing checks; individual loans stay private;
-the swap-book attack is genuinely blocked by the signature-over-commitment. The gap from the marketing
-is **production-readiness, not fabrication.**
+the swap-book attack is genuinely blocked by the signature-over-commitment. These tests establish working prototype arithmetic and honest-parameter behavior, not adversarial
+soundness or production mint authorization.

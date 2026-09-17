@@ -1,0 +1,61 @@
+{
+  "confirmationStatus": "finalized",
+  "transaction": {
+    "signatures": [
+      "3h42tZ68Y8Xfw3H4tGKzo4bbxE7DdPc3qTUnLeoXaQWmw78qB9XaosduunATgTEndD99uaverZ2MrEAciwRCKPx1"
+    ],
+    "message": {
+      "header": {
+        "numRequiredSignatures": 1,
+        "numReadonlySignedAccounts": 0,
+        "numReadonlyUnsignedAccounts": 1
+      },
+      "accountKeys": [
+        "8BurHw6PF4n7otsa7b4R6EZo3km6r39XDKbFv159c6AM",
+        "6vXpHGCL9j94LXtXmNsTvKfAL6DfuWpevpdwSj9487bR"
+      ],
+      "recentBlockhash": "Cu6cbcMDWkX7TKGQx3KfZRU82XcCkd59styUbnWa53x5",
+      "instructions": [
+        {
+          "programIdIndex": 1,
+          "accounts": [],
+          "data": "hKwCky2EwybJx3RLAC6ewvkLuvUbQqKe23v4NHE3LWkLHEL5yQ5DXGbKnJp2YxgQKx7KAA5iG1jh3aAtSi7a239n7ax8NXQnXnshte9csKKbfvxod5YQL5Dj6NfSWtRP69jpBYXSHbk4p96ExDd2f8pvEi2xLcxUkFy8TwTjpvumjcL9fQW9wWLkAuJxdHKgApEmBvv1mc6CnbPK8YiBJ49C3CwuW5qQAjUQAkRUHsJTXEmB4vH99S5KUysCf8K4if1Ah2SdY8fnWRvfoH62RbxZqhnFmK2rAorKHzZUcivNq7PpkV87TcRJ6B2a1K6adVih7q9JAc5kCFrUGn6eQ47XnZCsCKxdrkVbcJhkaHMckfxFY57KhGKqtddZQ3j6qd3UsfbUryxs3jQpSstcr9piuvPUXUQJMMMPvq7rNfJ3HQeCG1AHkUb9A9d8Kqq32RpJf6BGQEuCQK1oWaXG7xR3jChd6qbEXw8gmCn5YX3iyLBeaSFScpu7Pz69iKpM22iWSHgBPRsCjQf7RoQWxVCSnL4rZKeYP1zLZCJfdczEW3NADfjgo1nmkzsroF6JzfMVbGVJKgeQX891P7BXLwyVr7hKUrsymwBwqEQzCs2fzueyVNhK3Cb7gsfH1EE1eymY8DKZjS5dgxKXHZJDe1n4BLYRrJLMtud8juK5WJ16rqaAUB6V7bAwcEMmJGekdnbX4R3NC7RXauUZisKCEL77pL5jyPsPwBZCMUmZjXPLKp1nDhM3JERioH1qTHKJ9FsYHsReqwoicbzzzkCvnx1FZ9vJbSebyNUi2X7Q3DKESmtb51XXZM5WbpWXVPmEQ9G6ZGgBLSJXRRFiQxgdfwtETwvBK3hZWw7mUU1XWJVnXY7G4GT23feopT58ePEs9pB4qVysNptNP14RJ9Vf7PpuUMPdt3e8CqXSQmKTFr3f28jJADsxWzZGajsb4KFvyjoHVcBcpfW3osyzgX3CQywaQpi2oJR1zxGWMvs2QpHVYCnbiuH5K2tAFtUzQvJfUunPg1HK7Nyhx11115FUQGVpUvwr5TV9s2iHxgHVpqsiHsn5vGbak4xQxGCo4JsTLsQeq7Lx9DJA92dzkh7d71XJeVtCpdikDSsX42M8S5xVHAYcBJJNeNmiA5ut4fdWsv6dYTfQSjrj4YFd3pm8S5ezG96gyN9GsHT8m9mV5E7JYueyoLSLp8Z9bu9MdaSr1126S1XpsJ3CTRZGHC1rJ63aRkmZGt9z82ivWmHsRGxuGag2yVYY5qxvSiz9LAHW27acBPECHxRecVeBWU1KQWdid6qr8vZP",
+          "stackHeight": 1
+        }
+      ]
+    }
+  },
+  "meta": {
+    "err": null,
+    "status": {
+      "Ok": null
+    },
+    "fee": 5000,
+    "preBalances": [
+      500000000000000000,
+      1141440
+    ],
+    "postBalances": [
+      499999999999995000,
+      1141440
+    ],
+    "innerInstructions": [],
+    "logMessages": [
+      "Program 6vXpHGCL9j94LXtXmNsTvKfAL6DfuWpevpdwSj9487bR invoke [1]",
+      "Program log: groth16 solvency proof valid: true",
+      "Program 6vXpHGCL9j94LXtXmNsTvKfAL6DfuWpevpdwSj9487bR consumed 83354 of 200000 compute units",
+      "Program 6vXpHGCL9j94LXtXmNsTvKfAL6DfuWpevpdwSj9487bR success"
+    ],
+    "preTokenBalances": [],
+    "postTokenBalances": [],
+    "rewards": [],
+    "loadedAddresses": {
+      "writable": [],
+      "readonly": []
+    },
+    "computeUnitsConsumed": 83354,
+    "costUnits": 84622
+  },
+  "blockTime": 1789635839,
+  "slot": 46
+}

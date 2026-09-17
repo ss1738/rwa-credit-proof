@@ -18,7 +18,10 @@ See [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) for detail. In short:
    multi-party Powers-of-Tau (phase 1) and per-contribution consistency proofs. The secret in the
    ceremony is also not zeroized.
 2. **No third-party security audit.**
-3. **The data-trust anchor is external.** A proof certifies that the *servicer-attested* loan tape is
+3. **No approved verifying-key or mint authorization enforcement in the SBF example.** The caller
+   supplies the key; signature and mint policy checks exist only in the native model. Malformed
+   instructions also lack explicit length validation. See `KNOWN_LIMITATIONS.md` sections 5 and 6.
+4. **The data-trust anchor is external.** A proof certifies that the *servicer-attested* loan tape is
    solvent, not that the data is *true*. Security depends on a real, authenticated signed loan-tape feed
    that does not exist yet.
 

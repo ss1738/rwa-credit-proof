@@ -3,6 +3,12 @@
 
 *(product name TBD)*
 
+**Evidence update (2026-09-17):** all six demo stages and the separate audit passed. The latest
+local-validator and SBF-harness runs used 83,354 CU; 83,352 CU is retained as the earlier local result.
+Solana devnet is pending free test SOL. The Solana program is a pairing verifier; signature binding
+and the mint decision are currently demonstrated natively. It does not enforce an approved key or
+mint tokens on-chain. See [DEPLOYMENTS.md](DEPLOYMENTS.md) and [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
+
 ---
 
 ## The problem
@@ -30,7 +36,7 @@ The zero-knowledge proof attests, over a **private** loan book, that:
 ...while revealing only the threshold and the commitment. Individual loans, balances, and borrower data
 never leave the fund.
 
-The mint is gated on **both** the ZK proof *and* the servicer's signature over the commitment. That is
+The native mint-gate model checks **both** the ZK proof *and* the servicer's signature over the commitment. That is
 the answer to the "garbage-in" objection every proof-of-reserves scheme hits: **you cannot prove a
 different book than the one the servicer attested**. A swapped book has a different commitment, which
 the servicer never signed, and the gate blocks it.
@@ -43,7 +49,7 @@ the servicer never signed, and the gate blocks it.
 | Book privacy | individual loans never revealed |
 | Verification | on **Solana** natively (Groth16 / BN254 via `alt_bn128`) |
 | **On-chain cost** | **constant regardless of book size**: a 10-loan and a 10,000-loan fund cost the same to verify |
-| Scale | a **10,000-loan** book proves in **~60s**; 1,000 loans in ~3.5s |
+| Scale | a **10,000-loan** book proves in **~72s**; 1,000 loans in ~3.8s |
 | Binding attack (swap book, reuse signature) | **blocked** |
 
 This is a working prototype, verified end-to-end on our own machines, not yet a production, audited
