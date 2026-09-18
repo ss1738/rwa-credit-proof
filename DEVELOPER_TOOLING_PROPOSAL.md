@@ -2,9 +2,8 @@
 
 Solana Foundation: Proof-of-Solvency for Tokenized Private Credit
 
-**Draft for applicant review, 2026-09-17.** Prepared in the order of the Foundation's Developer
-Tooling template. Confirm the commitments in section 5 and add a Telegram/X handle if desired
-before copying this into a shared Google Doc. Deployment status is in `DEPLOYMENTS.md`.
+Prepared in the order of the Foundation's Developer Tooling template. Commitments in section 5
+are confirmed by Satyawan Singh as of 2026-09-18. Deployment status is in `DEPLOYMENTS.md`.
 
 ## 1. Applicant Information
 
