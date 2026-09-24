@@ -7,8 +7,8 @@ proof of a deployment on Solana devnet or mainnet.
 
 **Not deployed.** On 2026-09-24, the devnet RPC returned `value: null` for the intended program
 account and a zero balance for the test payer. A request for 1 free devnet SOL returned HTTP 200
-with JSON-RPC error `-32603` (`Internal error`) and `x-ratelimit-airdrop-remaining: 0`. No devnet
-transaction signature exists yet.
+with JSON-RPC error `-32603` (`Internal error`); the recorded `airdropRateLimit` fields show
+`limit: 1`, `remaining: 0` and `tier: free`. No devnet transaction signature exists yet.
 
 - Intended program ID, **not yet deployed**: `6vXpHGCL9j94LXtXmNsTvKfAL6DfuWpevpdwSj9487bR`
 - Devnet fee payer / intended upgrade authority: `8BurHw6PF4n7otsa7b4R6EZo3km6r39XDKbFv159c6AM`

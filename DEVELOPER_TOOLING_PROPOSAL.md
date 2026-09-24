@@ -182,8 +182,8 @@ security certification. The funded work has two acceptance gates:
 release. Each month covers public issue triage, bug fixes, dependency/Solana compatibility checks,
 reproduction of the documented test suite, documentation corrections and a public maintenance
 report. Security fixes use the repository's disclosure process. Payment for each month is due once
-that month's public maintenance report documents the completed triage, fixes and compatibility
-checks described above.
+the Foundation confirms that month's public maintenance report documents the completed triage,
+fixes and compatibility checks described above.
 
 ### 4c. User Adoption
 
@@ -198,6 +198,9 @@ test results, date and any devnet transaction. Each accepted team reaches 25% of
 unlocks $500 at the reporting period's end. Provide common documentation and issue support to all
 participants rather than funding a private integration. This measures adoption of tooling, not
 financial TVL or a claim of production safety.
+
+If Component 2b is rescoped, maintenance and adoption begin only after revised gates are agreed in
+writing with the Foundation.
 
 ### Milestone Summary Table
 
@@ -219,7 +222,7 @@ financial TVL or a claim of production safety.
 
 **Confirmed by Satyawan Singh, 2026-09-18.**
 
-- Yes: Publish a production version of the developer tooling by the end of the grant agreement.
+- Yes: Publish the production tooling release defined above by the agreement's end.
 - Yes: Keep the project completely public and open-source.
 - Yes: Provide at least six months of maintenance.
 - Yes: Meet the quantifiable user-adoption milestones above.
