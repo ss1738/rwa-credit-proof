@@ -92,8 +92,8 @@ DEVELOPER_TOOLING_PROPOSAL.md as of this commit.
 - The original $300,000 application was rejected because the ask exceeded the public good delivered.
   This draft funds reusable open-source components and measurable maintenance/adoption. It does not
   fund a bespoke integration for a named commercial protocol.
-- Caledren uses caledren.com. The live site was verified byte-for-byte against the site build at
-  commit `bf3a040` (current `main`). Note: commit hashes on `main` changed on 2026-09-18 when 18
+- Caledren uses caledren.com. The live site was verified byte-for-byte against the site build from
+  the current clean `main` during the final audit on 2026-09-24. Note: commit hashes on `main` changed on 2026-09-18 when 18
   commit messages from 2026-09-17 were rewritten for clarity; file contents and history order are
   unchanged, only the hashes and wording of the messages themselves.
 - No application has been submitted.
