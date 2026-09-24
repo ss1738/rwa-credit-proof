@@ -79,9 +79,9 @@ customer traction claimed.
 
 ## 11. Developer Tooling Instructions (conditional required field)
 
-https://docs.google.com/document/d/1ASQ3GGkMozcpvlCdlipWubl9inVm2iJpd7n7wVwJQc0/edit?usp=sharing
+https://docs.google.com/document/d/1hDGZkvoA2V7QMYRSB4cbMTBPKZroGx6L_HzHlIXSZw8/edit?usp=sharing
 
-Shared 2026-09-18, "Anyone with the link" set to Viewer. Contents match
+Shared 2026-09-24, "Anyone with the link" set to Viewer. Contents match
 DEVELOPER_TOOLING_PROPOSAL.md as of this commit.
 
 ## Internal preparation notes (not form answers)
