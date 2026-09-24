@@ -81,8 +81,9 @@ customer traction claimed.
 
 https://docs.google.com/document/d/1hDGZkvoA2V7QMYRSB4cbMTBPKZroGx6L_HzHlIXSZw8/edit?usp=sharing
 
-Shared 2026-09-24, "Anyone with the link" set to Viewer. Contents match
-DEVELOPER_TOOLING_PROPOSAL.md as of this commit.
+Shared 2026-09-24, "Anyone with the link" set to Viewer. Proposal text matches
+DEVELOPER_TOOLING_PROPOSAL.md as of this commit; the Google Doc adds two explanatory diagrams
+without adding technical or deployment claims.
 
 ## Internal preparation notes (not form answers)
 
