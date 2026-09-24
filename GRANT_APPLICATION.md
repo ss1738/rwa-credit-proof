@@ -67,7 +67,7 @@ privately checks the servicer's book commitment and writes an authenticated appr
 local Solana validator. The compiled program pins the approved key and servicer and enforces
 minimum threshold, freshness and sequence. Its runtime suite accepts successive approvals and
 rejects 26 invalid requests without changing state. A fresh finalized local approval used 85,529
-compute units with two signers (a repeat run measured 85,538 CU); a separate verifier example is
+compute units with two signers; measured CU may vary slightly. A separate verifier example is
 confirmed on public Ethereum Sepolia.
 
 My edge is a working, inspectable reference implementation with explicit trust boundaries. It
@@ -103,4 +103,4 @@ without adding technical or deployment claims.
 - [Developer Tooling template](https://docs.google.com/document/d/1S28sq80-1Nz5FnD2yepEaldrmbRDB-2Q7g0CilNdHOA/edit)
   requires component betas, at least six months of maintenance, quantifiable adoption milestones,
   and a published production version by the end of the agreement. These are proposed commitments
-  for the applicant to approve, not statements that the present prototype is production-safe.
+  for the applicant to approve, not statements that the present pilot alpha is production-safe.

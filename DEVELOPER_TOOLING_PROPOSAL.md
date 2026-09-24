@@ -28,8 +28,8 @@ bundles, a private servicer commitment check, and a separate stateful Solana app
 stores an approved key and servicer, enforces threshold/freshness/sequence policy, and records the
 latest receipt. Its compiled SBF suite accepts two successive approvals and rejects 26 invalid
 requests while preserving state. A finalized local 12-loan approval used 85,529 CU in a 672-byte
-legacy transaction signed by separate payer and servicer keys (a repeat run measured 85,538 CU).
-`./pilot-demo.sh` reproduces the workflow; measured CU may vary slightly.
+legacy transaction signed by separate payer and servicer keys. `./pilot-demo.sh` reproduces the
+workflow; measured CU may vary slightly.
 
 The existing six-stage demo and separate adversarial audit also pass. Their 10-loan circuit has
 5,911 constraints and legacy pairing-only SBF harness uses 83,354 CU. A separate verifier example
@@ -132,7 +132,7 @@ Solidity/EVM example demonstrates portability; this grant's deliverables focus o
 
 ## 4. Budget Breakdown (Milestones)
 
-Amounts below are proposed, payable on acceptance of the stated outcomes. Existing prototype work
+Amounts below are proposed, payable on acceptance of the stated outcomes. Existing pilot-alpha work
 is the starting point, not a request for retroactive payment. Proposed implementation window is
 12 weeks from agreement, followed by six months of maintenance. No paid bespoke integration with
 a named protocol is included. Adoption targets are future outcomes, not existing traction.
@@ -151,7 +151,10 @@ the beta and integration guide. Existing pilot features are the baseline, not un
 **Component 2: Verified setup workflow, $12,000.** Target: weeks 1-12. The concrete tool is
 iden3/snarkjs 0.7.6, pinned in `ceremony-toolchain/package-lock.json`, with the Rust bridge and
 Solana compatibility test in this repository. The existing local rehearsal is baseline evidence,
-not retroactive billing. The funded work has two acceptance gates:
+not retroactive billing. For this proposal, "production tooling release" means a tagged public
+release of the developer library, integration example, verified setup artifacts and reproducible
+tests that meets the acceptance criteria below; it is not a production fund/token deployment or
+security certification. The funded work has two acceptance gates:
 
 1. **Compatibility and launch gate, $2,000, weeks 1-3.** A clean checkout reproduces the pinned
    phase-1/phase-2 local rehearsal (power 13, sufficient for the current 6,648-constraint fixture),
@@ -178,8 +181,9 @@ not retroactive billing. The funded work has two acceptance gates:
 **Total: $3,000, paid as six monthly milestones of $500.** Start after the production tooling
 release. Each month covers public issue triage, bug fixes, dependency/Solana compatibility checks,
 reproduction of the documented test suite, documentation corrections and a public maintenance
-report. Security fixes use the repository's disclosure process. Payment requires the month's
-maintenance work to the Foundation's satisfaction.
+report. Security fixes use the repository's disclosure process. Payment for each month is due once
+that month's public maintenance report documents the completed triage, fixes and compatibility
+checks described above.
 
 ### 4c. User Adoption
 
@@ -220,7 +224,7 @@ financial TVL or a claim of production safety.
 - Yes: Provide at least six months of maintenance.
 - Yes: Meet the quantifiable user-adoption milestones above.
 
-The current prototype is not production-safe. A tooling release does not certify any particular
+The current pilot alpha is not production-safe. A tooling release does not certify any particular
 loan book, feed provider, token policy or third-party deployment. A proper setup reduces one
 soundness risk; it does not replace key pinning, authenticated feeds, integration testing or an
 external security audit.

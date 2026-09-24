@@ -1,0 +1,44 @@
+{
+  "checkedAt": "2026-09-24",
+  "rpc": "https://api.devnet.solana.com",
+  "intendedProgramId": "6vXpHGCL9j94LXtXmNsTvKfAL6DfuWpevpdwSj9487bR",
+  "feePayer": "8BurHw6PF4n7otsa7b4R6EZo3km6r39XDKbFv159c6AM",
+  "programAccountResponse": {
+    "jsonrpc": "2.0",
+    "result": {
+      "context": {
+        "apiVersion": "4.3.0",
+        "slot": 503403395
+      },
+      "value": null
+    },
+    "id": 1
+  },
+  "payerBalanceResponse": {
+    "jsonrpc": "2.0",
+    "result": {
+      "context": {
+        "apiVersion": "4.3.0",
+        "slot": 503403397
+      },
+      "value": 0
+    },
+    "id": 2
+  },
+  "airdropRequestLamports": 1000000000,
+  "airdropHttpStatus": 200,
+  "airdropResponse": {
+    "jsonrpc": "2.0",
+    "error": {
+      "code": -32603,
+      "message": "Internal error"
+    },
+    "id": 3
+  },
+  "airdropRateLimit": {
+    "limit": 1,
+    "remaining": 0,
+    "tier": "free"
+  },
+  "conclusion": "No devnet program account or funded fee payer was present, and no airdrop transaction signature was returned."
+}
