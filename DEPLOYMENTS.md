@@ -1,18 +1,20 @@
 # Deployments and reproducible evidence
 
-Checked 2026-09-17. Network names below are part of each claim. A local validator address is not
+Checked 2026-09-24. Network names below are part of each claim. A local validator address is not
 proof of a deployment on Solana devnet or mainnet.
 
 ## Solana devnet: pending funding
 
-**Not deployed.** The devnet RPC reported no program account at the intended address and a zero
-balance for the new test payer. Requests for 2, 1 and 0.5 free devnet SOL failed; the RPC returned
-HTTP 429 with a daily-limit-or-empty-faucet message. No devnet transaction signature exists yet.
+**Not deployed.** On 2026-09-24, the devnet RPC returned `value: null` for the intended program
+account and a zero balance for the test payer. A request for 1 free devnet SOL returned HTTP 200
+with JSON-RPC error `-32603` (`Internal error`) and `x-ratelimit-airdrop-remaining: 0`. No devnet
+transaction signature exists yet.
 
 - Intended program ID, **not yet deployed**: `6vXpHGCL9j94LXtXmNsTvKfAL6DfuWpevpdwSj9487bR`
 - Devnet fee payer / intended upgrade authority: `8BurHw6PF4n7otsa7b4R6EZo3km6r39XDKbFv159c6AM`
 - RPC: `https://api.devnet.solana.com`
-- Status and compiled binary hash: [devnet-status.json](evidence/2026-09-17/devnet-status.json)
+- Current status: [devnet-status.json](evidence/2026-09-24/devnet-status.json)
+- Compiled binary hash from the original deployment attempt: [devnet-status.json](evidence/2026-09-17/devnet-status.json)
 
 Request 1 free **devnet** SOL for the payer using https://faucet.solana.com. The fee payer was
 created in `target/devnet/payer.json`; the existing program keypair is in
