@@ -215,10 +215,10 @@ financial TVL or a claim of production safety.
 
 **Confirmed by Satyawan Singh, 2026-09-18.**
 
-- [x] Publish a production version of the developer tooling by the end of the grant agreement.
-- [x] Keep the project completely public and open-source.
-- [x] Provide at least six months of maintenance.
-- [x] Meet the quantifiable user-adoption milestones above.
+- Yes: Publish a production version of the developer tooling by the end of the grant agreement.
+- Yes: Keep the project completely public and open-source.
+- Yes: Provide at least six months of maintenance.
+- Yes: Meet the quantifiable user-adoption milestones above.
 
 The current prototype is not production-safe. A tooling release does not certify any particular
 loan book, feed provider, token policy or third-party deployment. A proper setup reduces one
