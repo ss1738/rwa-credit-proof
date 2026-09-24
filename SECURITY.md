@@ -1,6 +1,6 @@
 # Security
 
-**This is an experimental research prototype, not a production system.** Do not use it to secure real
+**This is an experimental research pilot alpha, not a production system.** Do not use it to secure real
 funds, gate a real mint, or make a solvency claim to investors or regulators without a third-party
 security audit and the fixes noted below. The cryptography is genuine and independently reviewed (see
 [AUDIT.md](AUDIT.md)), but the trust model is not yet production-grade.
@@ -34,4 +34,4 @@ See [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) for detail. In short:
 
 ## Reporting
 Found a security issue? Email `satyawansinghinuk@gmail.com` before public disclosure; do not include
-exploitable details in a public GitHub issue. This is a prototype and responsible feedback is welcome.
+exploitable details in a public GitHub issue. This is a pilot alpha and responsible feedback is welcome.
