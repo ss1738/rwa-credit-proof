@@ -50,6 +50,10 @@ The grant funds an MIT-licensed developer kit and a reproducible setup workflow,
 source, tests, documentation and release artifacts. It is available to any protocol and requires
 no proprietary service or paid agreement with the applicant.
 
+**Why Solana:** The funded public good is the Solana integration layer: an SBF verifier using the
+`alt_bn128` syscall, approvals bound to account state and signer privileges, measured compute and
+transaction limits, and a consuming-program example—not the portable Groth16 circuit or EVM demo.
+
 **Specific benefits to Solana developers**
 
 - Start from a tested Groth16/BN254 reference for solvency, KYC flags and a blinded book commitment.
