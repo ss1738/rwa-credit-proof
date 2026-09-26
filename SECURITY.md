@@ -2,8 +2,9 @@
 
 **This is an experimental research pilot alpha, not a production system.** Do not use it to secure real
 funds, gate a real mint, or make a solvency claim to investors or regulators without a third-party
-security audit and the fixes noted below. The cryptography is genuine and independently reviewed (see
-[AUDIT.md](AUDIT.md)), but the trust model is not yet production-grade.
+security audit and the fixes noted below. The repository contains developer-run cryptographic tests and
+historical code-review findings documented in [AUDIT.md](AUDIT.md); these do not constitute an external
+security audit, and the trust model is not yet production-grade.
 
 ## What is verified
 - The ZK circuit enforces coverage + all-KYC + a blinded Poseidon commitment over private witnesses

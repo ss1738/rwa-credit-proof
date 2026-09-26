@@ -1,8 +1,8 @@
 # Audit trail
 
-This project was checked for fabrication and soundness three independent ways. This file is the honesty
-record: what was verified, what was fixed, and what is still open. Reproduce the empirical part with
-`cargo run --release --bin audit`.
+This file records developer-run empirical checks and two historical code-review passes: what was
+verified, what was fixed, and what is still open. These reviews were not a formal external security
+audit. Reproduce the empirical part with `cargo run --release --bin audit`.
 
 ## 1. Empirical adversarial audit (`src/audit.rs`, run on hardware)
 
@@ -20,21 +20,20 @@ vacuous predicate, or a no-op verifier). Latest run:
   harness and a finalized transaction on a fresh local validator. These costs cover proof verification
   only. Logs and network scope: [DEPLOYMENTS.md](DEPLOYMENTS.md).
 
-## 2. Independent code audit (first pass)
+## 2. Historical code review (first pass)
 
-An independent reviewer read every source file and judged: **"genuine, working ZK cryptography, not
-fabricated or hollow."** It confirmed the circuit really enforces solvency + all-KYC + commitment
-binding over private witnesses (the same witnesses tie the collateral sum to the commitment), the Solana
-verifier does real `alt_bn128` pairing checks, and the swap-book attack is genuinely blocked.
+A historical reviewer read the source and found that the circuit enforces solvency + all-KYC +
+commitment binding over private witnesses, that the same witnesses tie the collateral sum to the
+commitment, that the Solana verifier performs `alt_bn128` pairing checks, and that the native
+signature-binding model rejects the tested swap-book attack.
 
 It also caught four issues the author had not flagged (see below).
 
-## 3. Independent code audit (second pass, verifying the fixes)
+## 3. Historical code review (second pass, checking the fixes)
 
-After the four issues were addressed, a second independent review re-read the source and confirmed the
-fixes are real and introduced no new bugs: *"genuinely in a more honest and sounder state than before...
-documentation matches what the code enforces."* In particular it verified the critical property held:
-the same collateral witnesses still feed both the solvency sum and the commitment after the nonce change.
+After the four issues were addressed, a follow-up review re-read the relevant source and found that
+the same collateral witnesses still feed both the solvency sum and the commitment after the nonce
+change. This historical review record is supporting context, not an external security assurance.
 
 ## Findings and their status
 
