@@ -12,17 +12,17 @@ Start with [PILOT_GUIDE.md](PILOT_GUIDE.md) and [PILOT_EVALUATION.md](PILOT_EVAL
 The gate pins an immutable verification key, servicer, minimum threshold and validity policy.
 It enforces sequence and freshness and records the latest accepted commitment. It does not mint
 tokens or derive a threshold from live supply. Single-party setup and external validation remain open.
-The older `./demo.sh` reproduces the pairing-only benchmark and native mint model; its **83,354 CU**
+The older `./demo.sh` reproduces the pairing-only benchmark and native proof/signature model; its **83,354 CU**
 measurement is a different program. The EVM example is live on public Ethereum Sepolia.
 **Solana devnet deployment is pending faucet funding.** See
 [DEPLOYMENTS.md](DEPLOYMENTS.md) for network-specific evidence and reproduction commands.
 
 ## The problem
 
-Private credit is the largest tokenized real-world-asset category (~$20.5B on-chain, on a $1.8 to $3.14
-trillion off-chain market), but the loan book that backs the token lives off-chain. So the question that
-matters most, *"prove this token is over-collateralised right now without showing me the private book"*,
-has no good answer today. Smart-contract audits verify the code, not the asset state.
+Tokenized private-credit systems depend on loan books and servicing data that live off-chain. A protocol
+may need evidence that a supplied private book meets a coverage policy without publishing individual
+loans. Smart-contract audits can inspect program logic, but they do not establish the truth or current
+state of those off-chain assets.
 
 ## What it proves
 
@@ -52,28 +52,11 @@ decisions and the relationship between threshold and token supply require separa
 
 ## Related work
 
-ZK-based solvency and compliance proofs for RWA are an active, recognized need in the ecosystem, not a
-novel idea invented here: see Chainlink's and zk.me's write-ups on ZK compliance for institutional
-finance, and zkVerify/zkOrigo's compliance-scoring work. The contribution here is not the concept; it's
-a concrete, working, narrowly-scoped implementation of it for one specific asset class.
-
-The closest adjacent project is **Zyga** (formerly Darklake, now developed under SOL Strategies since
-its April 2026 acquisition), a dynamic zero-knowledge proof system for Solana with a published
-construction (IACR ePrint 2025/1802) that lists solvency attestation among several use cases (alongside
-FATF travel-rule proofs and MEV-resistant private execution). It's a different bet than this project:
-
-| | This project | Zyga |
-|---|---|---|
-| Scope | One asset class: private-credit loan-book solvency | General institutional privacy layer |
-| License | Open source (MIT), integrate today | Commercial, institution-facing |
-| Status | Concrete Groth16 circuit, deployed and measured on a local Solana test validator and live on public Ethereum Sepolia | Published research construction; no shipped private-credit reference integration found at time of writing |
-| Who it's for | Any RWA/private-credit protocol wanting a drop-in primitive | Large institutions adopting Solana broadly |
-
-These aren't mutually exclusive: a protocol could use Zyga's general privacy rails for MEV protection or
-travel-rule compliance while using this narrow, open-source primitive specifically for per-mint solvency
-verification, or use this as the lightweight, inspectable alternative if a general commercial platform
-isn't the right fit yet. If that competitive picture changes, this section should be updated rather than
-left to go stale.
+This repository does not claim to originate zero-knowledge solvency or compliance proofs. Broader
+systems explore institutional privacy and multiple proof use cases; for example, the published
+[Zyga construction](https://eprint.iacr.org/2025/1802) includes solvency attestation among its examples.
+Caledren is narrower: an MIT-licensed reference implementation for one private-credit coverage
+predicate, an authenticated local approval receipt and explicit consumer-side policy boundaries.
 
 ## Run it
 
@@ -89,11 +72,31 @@ the compiled Solana gate. All rehearsal contributions are local; this is compati
 not the externally contributed production ceremony funded in Milestone 2b.
 
 The legacy demo runs statement soundness, realistic loan-tape decisions, the ZK proof, the
-native mint-gate model plus the attack test, the 100/1,000-loan benchmark, and (if the Solana toolchain is installed) the real
+native proof/signature model plus the attack test, the 100/1,000-loan benchmark, and (if the Solana toolchain is installed) the real
 on-chain compute-unit measurement. Needs Rust; stage 6 needs the Solana toolchain. Run
 `cargo run --release --bin audit` for the separate adversarial audit and
 `cargo run --release --bin bench -- 10000` for the larger benchmark. Public deployment receipts
 are checked separately; `./demo.sh` does not redeploy to either public network.
+
+## Architecture and trust boundaries
+
+```mermaid
+flowchart LR
+    A[Private loan CSV<br/>and blinding nonce] --> B[Pilot SDK and<br/>Groth16 prover]
+    B --> C[Public proof bundle<br/>threshold + commitment + proof]
+    A --> D[Authorized servicer<br/>checks source data]
+    C --> D
+    D -->|signs exact transaction| E[Solana pilot approval gate<br/>local validator only]
+    E --> F[Approval receipt<br/>key + signer + freshness + sequence]
+    F --> G[Consumer program<br/>applies its own action policy]
+    H[External trust boundary:<br/>asset values, KYC and completeness] -.-> D
+    G -.-> I[No token mint or production<br/>deployment in this repository]
+```
+
+The circuit proves a predicate over supplied witnesses. The servicer remains responsible for source
+data, the gate authenticates a configured signer and policy, and a consumer must independently decide
+what an unexpired receipt authorizes. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the component,
+data and trust boundaries.
 
 ## How it works
 
@@ -133,6 +136,8 @@ solana-verifier/      on-chain Groth16 verifier program (SBF) + compute-unit tes
 client/               RPC client: sends a real proof tx to a deployed program
 examples/             realistic loan-tape CSVs (solvent, insolvent)
 DESIGN_PARTNER_BRIEF.md  design-partner one-pager
+docs/ARCHITECTURE.md     component, data-flow and trust-boundary reference
+CONTRIBUTING.md          local development and evidence-submission guidance
 ```
 
 ## What is proven, and what is not
@@ -150,8 +155,8 @@ complete ceremony. The legacy pairing program still accepts a caller-supplied ke
 gate adds stored-key, signer and policy enforcement, but neither program mints tokens. See [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) and
 [AUDIT.md](AUDIT.md). This is not a production or third-party-security-audited system.
 
-*Figures: on-chain market size rwa.xyz; private-credit market size IMF (Apr 2024) and JPMorgan (2024);
-performance measured on Apple M4 hardware and the Solana SBF runtime.*
+*Performance figures are dated observations from Apple M4 hardware and the Solana SBF runtime, not
+performance guarantees.*
 
 ## Website and deployments
 
@@ -174,7 +179,8 @@ vercel promote <reviewed-preview-url> --scope satyawansinghs-projects
 ```
 
 The website source lives in `site/`; `scripts/build-site.mjs` generates `dist/` using the dated
-receipt/log files linked by `DEPLOYMENTS.md`. It checks those facts against the deployment and
+core receipt/log bundle and the latest separately dated devnet-status record linked by
+`DEPLOYMENTS.md`. It checks those facts against the deployment and
 limitation records and stops if they disagree. `EVIDENCE.html` remains the separate printable
 technical sheet and is copied into the built site unchanged. Only the generated `dist/` is served;
 the deployment upload is restricted by `.vercelignore` to website source and public evidence inputs.

@@ -10,7 +10,7 @@ for (const button of scenarioButtons) {
     signature.textContent = swapped ? 'Fail' : 'Pass';
     signature.classList.toggle('fail', swapped);
     document.querySelector('#decision').classList.toggle('blocked', swapped);
-    document.querySelector('#decision-result').textContent = swapped ? 'Mint blocked' : 'Mint allowed ↗';
+    document.querySelector('#decision-result').textContent = swapped ? 'Model blocks' : 'Model allows ↗';
     document.querySelector('#scenario-explanation').textContent = swapped
       ? 'The different book can have a valid proof, but the original servicer signature does not match its commitment.'
       : 'The proof and signature bind the decision to the same attested book.';

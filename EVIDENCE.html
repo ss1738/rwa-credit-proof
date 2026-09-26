@@ -36,7 +36,7 @@
   <header>
     <div class="kick">Technical Evidence</div>
     <h1>Proof-of-Solvency for Tokenized Private Credit</h1>
-    <p class="sub">A fund proves a coverage and KYC predicate over a supplied private loan book without revealing individual loans. Research prototype with reproducible tests and explicitly scoped network evidence.</p>
+    <p class="sub">A fund proves a coverage and KYC predicate over a supplied private loan book without revealing individual loans. Local pilot alpha with reproducible tests and explicitly scoped network evidence.</p>
   </header>
 
   <h2>What it is</h2>
@@ -70,10 +70,10 @@
     <ul>
       <li><b>Trusted setup is not yet fully multi-party.</b> The pinned compatibility rehearsal checks locally generated phase-1 and phase-2 artifacts, but all contributors are controlled by one operator. A production ceremony needs independently operated contributors and reviewed parameter provenance.</li>
       <li><b>On-chain mint integration is incomplete.</b> The legacy example accepts a caller-supplied key. The separate local pilot gate pins the key and servicer and enforces threshold, freshness and sequence, but it does not use live token supply, mint SPL tokens or prevent repeated downstream use of one receipt.</li>
-      <li><b>Not third-party security-audited.</b> Independently code-reviewed, but not a formal security audit.</li>
+      <li><b>Not third-party security-audited.</b> Historical review findings are recorded in the repository, but no formal third-party security audit has been performed.</li>
       <li><b>The data-trust anchor is external.</b> A proof certifies that the servicer-attested data is solvent, not that the data is true. It depends on an authenticated signed loan-tape feed.</li>
     </ul>
-    <p style="margin:6px 0 0">Full detail: <a href="https://github.com/ss1738/rwa-credit-proof/blob/main/KNOWN_LIMITATIONS.md">KNOWN_LIMITATIONS.md</a>. This is a research prototype, not a production system.</p>
+    <p style="margin:6px 0 0">Full detail: <a href="https://github.com/ss1738/rwa-credit-proof/blob/main/KNOWN_LIMITATIONS.md">KNOWN_LIMITATIONS.md</a>. This is a local pilot alpha, not a production system.</p>
   </div>
 
   <footer>

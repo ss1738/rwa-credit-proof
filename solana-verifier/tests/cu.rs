@@ -18,7 +18,7 @@ async fn measure_compute_units() {
     // third arg None -> load solana_verifier.so from SBF_OUT_DIR and run it in the SBF VM
     let pt = ProgramTest::new("solana_verifier", program_id, None);
     let ctx = pt.start_with_context().await;
-    let mut banks = ctx.banks_client;
+    let banks = ctx.banks_client;
     let payer = ctx.payer;
     let recent = ctx.last_blockhash;
 

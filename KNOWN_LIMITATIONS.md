@@ -95,5 +95,6 @@ The September 2026 evidence and network status are in [DEPLOYMENTS.md](DEPLOYMEN
 The recorded checks show that the circuit enforces solvency + all-KYC + commitment binding over private
 witnesses; the same witnesses tie the collateral sum to the commitment (you cannot commit to one book
 and prove solvency on another); the Solana verifier performs real `alt_bn128` pairing checks; individual loans stay private;
-the swap-book attack is genuinely blocked by the signature-over-commitment. These tests establish working prototype arithmetic and honest-parameter behavior, not adversarial
+the tested swap-book attack is blocked by the signature-over-commitment. These tests establish pilot
+arithmetic and honest-parameter behavior, not adversarial
 soundness or production mint authorization.

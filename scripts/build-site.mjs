@@ -10,10 +10,15 @@ const read = path => readFile(resolve(root, path), 'utf8');
 const deployments = await read('DEPLOYMENTS.md');
 const limitations = await read('KNOWN_LIMITATIONS.md');
 const auditRecord = await read('AUDIT.md');
-const evidenceDate = deployments.match(/^Checked (\d{4}-\d{2}-\d{2})\./m)?.[1];
-assert(evidenceDate, 'DEPLOYMENTS.md must declare its evidence date.');
+const checkedDate = deployments.match(/^Checked (\d{4}-\d{2}-\d{2})\./m)?.[1];
+assert(checkedDate, 'DEPLOYMENTS.md must declare its status-check date.');
+const evidenceDate = deployments.match(/evidence\/(\d{4}-\d{2}-\d{2})\/local-receipt\.json/)?.[1];
+assert(evidenceDate, 'DEPLOYMENTS.md must link the dated local receipt.');
 const evidenceDir = `evidence/${evidenceDate}`;
 assert(deployments.includes(`${evidenceDir}/local-receipt.json`), 'Deployment record must link the dated receipt.');
+const devnetStatusPath = deployments.match(/\((evidence\/(\d{4}-\d{2}-\d{2})\/devnet-status\.json)\)/)?.[1];
+assert(devnetStatusPath, 'DEPLOYMENTS.md must link the current dated devnet status.');
+const devnetStatusDate = devnetStatusPath.match(/evidence\/(\d{4}-\d{2}-\d{2})\//)[1];
 const inputs = new Map();
 async function source(path) {
   const value = await read(path);
@@ -22,7 +27,10 @@ async function source(path) {
 }
 const local = JSON.parse(await source(`${evidenceDir}/local-receipt.json`));
 const sepolia = JSON.parse(await source(`${evidenceDir}/sepolia-summary.json`));
-const devnet = JSON.parse(await source(`${evidenceDir}/devnet-status.json`));
+const devnet = JSON.parse(await source(devnetStatusPath));
+const devnetChecked = devnet.checked ?? devnet.checkedAt;
+const devnetProgramExists = devnet.program_account_exists ?? devnet.programAccountResponse?.result?.value !== null;
+const devnetStatus = devnet.status ?? (devnetProgramExists ? 'deployed' : 'not_deployed');
 const audit = await source(`${evidenceDir}/audit.log`);
 const benchmark = await source(`${evidenceDir}/bench-10000.log`);
 const demo = await source(`${evidenceDir}/demo.log`);
@@ -43,7 +51,8 @@ assert(demo.includes('All stages passed.') && audit.includes('AUDIT PASSED'), 'R
 assert.equal(Number(match(demo, /COMPUTE_UNITS_CONSUMED: (\d+)/, 'SBF compute units')[1]), local.meta.computeUnitsConsumed, 'SBF and local CU evidence differ; update the site wording.');
 assert.equal(proofBytes, bench[4], 'Audit and benchmark compressed proof sizes differ.');
 assert(bench[1] === '10000', 'Update the benchmark description when its fixture changes.');
-assert(sepolia.checked === evidenceDate && devnet.checked === evidenceDate, 'Evidence dates differ; refresh the deployment record.');
+assert(sepolia.checked === evidenceDate, 'Core evidence dates differ; refresh the deployment record.');
+assert(devnetChecked === devnetStatusDate && checkedDate === devnetStatusDate, 'Devnet status date and deployment check date differ.');
 for (const value of [format(local.meta.computeUnitsConsumed), format(constraints), bench[2], bench[3], format(sepolia.verifier_gas_from_event), format(sepolia.total_transaction_gas), sepolia.contract]) {
   assert(deployments.includes(value), `DEPLOYMENTS.md disagrees with evidence value ${value}.`);
 }
@@ -51,17 +60,17 @@ assert(auditRecord.includes(format(constraints)) && auditRecord.includes(format(
 assert(limitations.includes('key') && limitations.includes('does not verify a servicer signature') && limitations.includes('or invoke an SPL token mint'), 'Revisit website scope copy when the on-chain implementation changes.');
 
 let devnetLabel, devnetDescription, devnetClass, devnetSource, devnetSourceLabel;
-if (devnet.status === 'not_deployed') {
-  assert(deployments.includes('## Solana devnet: pending funding') && devnet.program_account_exists === false, 'Devnet prose/status disagree.');
+if (devnetStatus === 'not_deployed') {
+  assert(deployments.includes('## Solana devnet: pending funding') && devnetProgramExists === false, 'Devnet prose/status disagree.');
   devnetLabel = 'Pending funding';
   devnetDescription = 'Not deployed. Public faucet requests were rate-limited; no devnet verification transaction is claimed.';
   devnetClass = 'pending';
-  devnetSource = `/${evidenceDir}/devnet-status.json`;
+  devnetSource = `/${devnetStatusPath}`;
   devnetSourceLabel = 'Status record';
-} else if (devnet.status === 'deployed') {
+} else if (devnetStatus === 'deployed') {
   assert(deployments.includes('## Solana devnet: deployed'), 'Update the devnet deployment heading before publishing.');
-  assert(devnet.program_account_exists === true && devnet.program_id && devnet.verification_signature && devnet.receipt_path, 'Deployed status requires actual program and transaction evidence.');
-  assert(devnet.receipt_path.startsWith(`${evidenceDir}/`) && !devnet.receipt_path.includes('..'), 'Devnet receipt must be in the dated evidence directory.');
+  assert(devnetProgramExists === true && devnet.program_id && devnet.verification_signature && devnet.receipt_path, 'Deployed status requires actual program and transaction evidence.');
+  assert(devnet.receipt_path.startsWith(`evidence/${devnetStatusDate}/`) && !devnet.receipt_path.includes('..'), 'Devnet receipt must be in the dated status directory.');
   const receipt = JSON.parse(await source(devnet.receipt_path));
   assert(receipt.confirmationStatus === 'finalized' && receipt.meta.err === null, 'Devnet receipt must be finalized and successful.');
   assert(receipt.transaction.signatures.includes(devnet.verification_signature), 'Devnet receipt signature mismatch.');
@@ -73,7 +82,7 @@ if (devnet.status === 'not_deployed') {
   devnetSource = `https://explorer.solana.com/tx/${devnet.verification_signature}?cluster=devnet`;
   devnetSourceLabel = 'Transaction';
 } else {
-  throw new Error(`Unsupported devnet state ${devnet.status}; review its evidence and website wording.`);
+  throw new Error(`Unsupported devnet state ${devnetStatus}; review its evidence and website wording.`);
 }
 
 const escapeHtml = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
@@ -119,19 +128,29 @@ for (const name of ['styles.css', 'site.js', 'favicon.svg']) {
   await source(`site/${name}`);
   await cp(resolve(root, 'site', name), resolve(output, name));
 }
-for (const name of ['EVIDENCE.html', 'DEPLOYMENTS.md', 'KNOWN_LIMITATIONS.md', 'AUDIT.md', 'README.md', 'DESIGN_PARTNER_BRIEF.md', 'PILOT_GUIDE.md', 'PILOT_EVALUATION.md', 'LICENSE']) {
+for (const name of ['EVIDENCE.html', 'DEPLOYMENTS.md', 'KNOWN_LIMITATIONS.md', 'AUDIT.md', 'README.md', 'CONTRIBUTING.md', 'DESIGN_PARTNER_BRIEF.md', 'PILOT_GUIDE.md', 'PILOT_EVALUATION.md', 'LICENSE']) {
   await source(name);
   await cp(resolve(root, name), resolve(output, name));
 }
+await mkdir(resolve(output, 'docs'), { recursive: true });
+await source('docs/ARCHITECTURE.md');
+await cp(resolve(root, 'docs', 'ARCHITECTURE.md'), resolve(output, 'docs', 'ARCHITECTURE.md'));
 await cp(resolve(root, evidenceDir), resolve(output, evidenceDir), { recursive: true });
+if (devnetStatusDate !== evidenceDate) {
+  const destination = resolve(output, devnetStatusPath);
+  await mkdir(dirname(destination), { recursive: true });
+  await cp(resolve(root, devnetStatusPath), destination);
+}
 const provenance = {
   evidence_date: evidenceDate,
+  status_checked: checkedDate,
+  devnet_status_source: devnetStatusPath,
   source_repository: 'https://github.com/ss1738/rwa-credit-proof',
   source_files_sha256: Object.fromEntries(inputs),
   measurements: { local_compute_units: local.meta.computeUnitsConsumed, constraints: Number(constraints), compressed_proof_bytes: Number(proofBytes), instruction_bytes: Number(instructionBytes), loans: Number(bench[1]), setup_seconds: Number(bench[2]), proving_seconds: Number(bench[3]), sepolia_verifier_gas: sepolia.verifier_gas_from_event, sepolia_total_transaction_gas: sepolia.total_transaction_gas },
-  devnet_status: devnet.status,
+  devnet_status: devnetStatus,
 };
 await writeFile(resolve(output, 'provenance.json'), JSON.stringify(provenance, null, 2) + '\n');
 await writeFile(resolve(output, 'robots.txt'), 'User-agent: *\nAllow: /\nSitemap: https://caledren.com/sitemap.xml\n');
 await writeFile(resolve(output, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://caledren.com/</loc></url><url><loc>https://caledren.com/EVIDENCE.html</loc></url></urlset>\n');
-console.log(`Built ${relative(root, output)}/ from verified ${evidenceDate} evidence. Devnet: ${devnet.status}.`);
+console.log(`Built ${relative(root, output)}/ from verified ${evidenceDate} evidence. Devnet: ${devnetStatus}.`);

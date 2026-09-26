@@ -9,7 +9,8 @@ ceremony_node_major=$("$ceremony_node" -p 'process.versions.node.split(".")[0]')
 if [[ "$ceremony_node_major" != 24 ]]; then
   printf 'Requires Node 24 LTS; this pinned snarkjs rehearsal does not support Node %s. Set CEREMONY_NODE_BIN to a Node 24 executable.\n' "$ceremony_node_major" >&2; exit 1
 fi
-export PATH="$(dirname "$ceremony_node"):$PATH"
+ceremony_node_dir=$(dirname "$ceremony_node")
+export PATH="$ceremony_node_dir:$PATH"
 mkdir -p target
 run_dir=$(mktemp -d "$PWD/target/ceremony-compat.XXXXXX")
 printf 'Ceremony compatibility run: %s\n' "$run_dir"
