@@ -1,6 +1,6 @@
-# Solana Foundation grant application: form answers
+# Solana Foundation grant application: submitted answers
 
-Authoritative form draft, checked against the live form on 2026-09-17.
+Submitted application record, checked against the live form on 2026-09-17.
 Applicant name confirmed by Satyawan Singh. Funding request: **USD 22,000**.
 
 Apply through [Foundation Grants](https://share.hsforms.com/1GE1hYdApQGaDiCgaiWMXHA5lohw),
@@ -9,11 +9,8 @@ Selecting Developer Tooling reveals an additional required field for a shared Go
 Use `DEVELOPER_TOOLING_PROPOSAL.md` for that document. This replaces the earlier milestone-only
 application; the supporting proposal is a separate required attachment, not a competing form draft.
 
-**Status: ready to submit.** The Google Doc for field 11 is created and shared (see section 11
-below). Satyawan Singh confirmed the release, maintenance, and adoption commitments in
-DEVELOPER_TOOLING_PROPOSAL.md section 5 on 2026-09-18. Devnet deployment is still pending free
-test SOL; the Foundation's application guide explicitly permits `N/A` for on-chain accounts when
-not applicable, so this does not block submission. Nothing else is outstanding.
+**Status: submitted.** The Google Doc for field 11 is shared (see section 11 below). No public
+Solana deployment is claimed; deployment status and evidence remain documented in `DEPLOYMENTS.md`.
 
 ## 1. Company name
 
@@ -42,9 +39,6 @@ satyawansinghinuk@gmail.com
 ## 7. Solana On-Chain Accounts
 
 N/A
-
-*Preparation note, do not paste: replace this with the confirmed devnet program ID and fee payer,
-comma-separated, after deployment. No public Solana deployment is claimed yet. See `DEPLOYMENTS.md`.*
 
 ## 8. Funding Amount
 
@@ -84,23 +78,3 @@ https://docs.google.com/document/d/1hDGZkvoA2V7QMYRSB4cbMTBPKZroGx6L_HzHlIXSZw8/
 Shared 2026-09-24, "Anyone with the link" set to Viewer. Proposal text matches
 DEVELOPER_TOOLING_PROPOSAL.md as of this commit; the Google Doc adds two explanatory diagrams
 without adding technical or deployment claims.
-
-## Internal preparation notes (not form answers)
-
-- Proposed budget: $5,000 developer kit; $12,000 setup tooling ($2,000 compatibility and launch gate,
-  $10,000 externally contributed ceremony and release); $3,000 maintenance ($500/month for six
-  months); $2,000 adoption. Total: $22,000. Full acceptance criteria are in the supporting proposal.
-- The original $300,000 application was rejected because the ask exceeded the public good delivered.
-  This draft funds reusable open-source components and measurable maintenance/adoption. It does not
-  fund a bespoke integration for a named commercial protocol.
-- Caledren uses caledren.com. The live site was verified byte-for-byte against the site build from
-  the current clean `main` during the final audit on 2026-09-24. Note: commit hashes on `main` changed on 2026-09-18 when 18
-  commit messages from 2026-09-17 were rewritten for clarity; file contents and history order are
-  unchanged, only the hashes and wording of the messages themselves.
-- No application has been submitted.
-- [General application guidance](https://docs.google.com/document/d/1eK-WNhQmQFyk06XhwWRZJrXn3z_0NDbChZ_Rm8XRoXw/edit)
-  permits N/A in the on-chain accounts field.
-- [Developer Tooling template](https://docs.google.com/document/d/1S28sq80-1Nz5FnD2yepEaldrmbRDB-2Q7g0CilNdHOA/edit)
-  requires component betas, at least six months of maintenance, quantifiable adoption milestones,
-  and a published production version by the end of the agreement. These are proposed commitments
-  for the applicant to approve, not statements that the present pilot alpha is production-safe.

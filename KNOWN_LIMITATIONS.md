@@ -91,9 +91,9 @@ asset values, absence of undisclosed liabilities, complete loan-book coverage or
 
 The September 2026 evidence and network status are in [DEPLOYMENTS.md](DEPLOYMENTS.md).
 
-## Confirmed genuine, not fabricated (independent audit)
-The circuit really enforces solvency + all-KYC + commitment binding over private witnesses; the same
-witnesses tie the collateral sum to the commitment (you cannot commit to one book and prove solvency on
-another); the Solana verifier performs real `alt_bn128` pairing checks; individual loans stay private;
+## Developer-run checks and historical code-review findings
+The recorded checks show that the circuit enforces solvency + all-KYC + commitment binding over private
+witnesses; the same witnesses tie the collateral sum to the commitment (you cannot commit to one book
+and prove solvency on another); the Solana verifier performs real `alt_bn128` pairing checks; individual loans stay private;
 the swap-book attack is genuinely blocked by the signature-over-commitment. These tests establish working prototype arithmetic and honest-parameter behavior, not adversarial
 soundness or production mint authorization.

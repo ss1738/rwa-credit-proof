@@ -55,9 +55,9 @@
     <tr><th>Attack test</th><td>swap in a different book and reuse the signature → <b>blocked</b></td></tr>
   </table>
 
-  <h2>Independent verification (audited three ways)</h2>
+  <h2>Developer-run verification and historical code reviews</h2>
   <p><b>1. Empirical adversarial audit</b> (<code>cargo run --bin audit</code>): checks that fail if the ZK claims were fabricated. Result: the circuit genuinely enforces solvency, all-KYC, and commitment binding; insolvent, KYC-fail, and wrong-commitment books each fail the constraint system; a proof with one flipped bit or an altered public input is rejected. <span class="ok">Passed.</span></p>
-  <p><b>2 &amp; 3. Historical independent code reviews.</b> Two separate reviewers examined the source and their findings and follow-up are recorded in <a href="https://github.com/ss1738/rwa-credit-proof/blob/main/AUDIT.md">AUDIT.md</a>. These reviews found real cryptography and prompted documented fixes; they were not a formal third-party security audit. The newer pilot evidence is developer-run regression evidence.</p>
+  <p><b>2 &amp; 3. Historical code-review passes.</b> Their findings and follow-up are recorded in <a href="https://github.com/ss1738/rwa-credit-proof/blob/main/AUDIT.md">AUDIT.md</a>. These reviews prompted documented fixes; they were not a formal third-party security audit. The newer pilot evidence is developer-run regression evidence.</p>
 
   <h2>Public Solana deployment</h2>
   <p>Devnet deployment is pending faucet funding. The local program ID is not evidence of a public deployment. See <a href="DEPLOYMENTS.md">deployment status and receipts</a>.</p>
