@@ -9,17 +9,17 @@
 //!   [neg_a:64][b:128][c:64][alpha:64][beta:128][gamma:128][delta:128][ic0:64][n_pub:1]
 //!   then n_pub × ([ic_i:64][scalar_i:32])
 //!
-//! This is what a real mint-gate program calls; the point of the crate is to MEASURE its actual
+//! This is what a consumer program can call; the point of the crate is to MEASURE its actual
 //! on-chain compute-unit cost under the SBF VM.
 
 use solana_bn254::prelude::{alt_bn128_addition, alt_bn128_multiplication, alt_bn128_pairing};
 use solana_program::{
-    account_info::AccountInfo, entrypoint, entrypoint::ProgramResult, msg,
+    account_info::AccountInfo, entrypoint::ProgramResult, msg,
     program_error::ProgramError, pubkey::Pubkey,
 };
 
 #[cfg(not(feature = "no-entrypoint"))]
-entrypoint!(process_instruction);
+solana_program::entrypoint!(process_instruction);
 
 pub fn process_instruction(_program_id: &Pubkey, _accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
     let neg_a = &data[0..64];
