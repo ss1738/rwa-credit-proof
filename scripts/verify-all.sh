@@ -10,6 +10,8 @@ mkdir -p "$out"
 summary="$out/summary.txt"
 : > "$summary"
 log() { printf '%s\n' "$*" | tee -a "$summary"; }
+skipped=0
+trap 'log "FAILED: a command exited non-zero near line $LINENO; see logs in $out"' ERR
 have() { command -v "$1" >/dev/null 2>&1; }
 
 log "verify-all started $(date -u +%FT%TZ)"
@@ -36,6 +38,7 @@ if have node && have npm; then
   npm run check 2>&1 | tee "$out/site-check.log" | tail -n 2 | tee -a "$summary"
 else
   log "SKIPPED: node/npm not installed"
+  skipped=1
 fi
 
 step "4. Solana gate: compiled SBF suite and local validator"
@@ -44,7 +47,13 @@ if have cargo-build-sbf && have solana-test-validator && have solana-keygen && h
 else
   log "SKIPPED: needs cargo-build-sbf, solana-test-validator, solana-keygen and curl."
   log "         The 26-rejection SBF suite and the local-validator approval were NOT run."
+  skipped=1
 fi
 
 log ""
+if [[ "$skipped" == 1 ]]; then
+  log "RESULT: PARTIAL. Everything that ran passed; some stages were skipped (see above)."
+else
+  log "RESULT: PASS. All stages ran."
+fi
 log "verify-all finished $(date -u +%FT%TZ). Logs: $out"
