@@ -431,3 +431,178 @@ async fn compiled_gate_enforces_policy_and_preserves_failed_state() {
     println!("GATE_ACCEPTED sequence=2 compute_units={cu} transaction_bytes={size}");
     println!("GATE_SUITE_PASSED");
 }
+
+/// Additional negative and boundary cases. Added after review; like the suite above it runs the compiled
+/// SBF program and needs SBF_OUT_DIR (see ./pilot-demo.sh).
+#[tokio::test]
+async fn compiled_gate_extra_negative_and_boundary_cases() {
+    assert!(
+        std::env::var_os("SBF_OUT_DIR").is_some(),
+        "run through ./pilot-demo.sh or set SBF_OUT_DIR to compiled program directory"
+    );
+    let pid = Pubkey::new_unique();
+    let config = Keypair::new();
+    let servicer = Keypair::new();
+    let attacker = Keypair::new();
+    let no_rent = Keypair::new();
+    let short = Keypair::new();
+    let bad_inits: Vec<(&str, Keypair, Vec<u8>)> = {
+        let pk = setup_only(3);
+        let base = Policy {
+            servicer: servicer.pubkey().to_bytes(),
+            minimum_threshold: 240,
+            max_age_seconds: 300,
+            verifying_key: gate_key(&pk.vk).unwrap(),
+        }
+        .instruction()
+        .unwrap();
+        let mut cases: Vec<(&str, Keypair, Vec<u8>)> = vec![];
+        let mut data = base.clone();
+        data[4..36].fill(0);
+        cases.push(("init_zero_servicer", Keypair::new(), data));
+        let mut data = base.clone();
+        data[36..52].fill(0);
+        cases.push(("init_zero_threshold", Keypair::new(), data));
+        let mut data = base.clone();
+        data[52..60].fill(0);
+        cases.push(("init_zero_max_age", Keypair::new(), data));
+        let mut data = base.clone();
+        data[52..60].copy_from_slice(&86_401u64.to_le_bytes());
+        cases.push(("init_max_age_over_limit", Keypair::new(), data));
+        let mut data = base;
+        data[60..700].fill(0);
+        cases.push(("init_all_zero_key", Keypair::new(), data));
+        cases
+    };
+    let pk = setup_only(3);
+    let (proof, public) = prove_with_pk(&pk, &[100, 100, 100], &[true; 3], &[true; 3], 240);
+    let policy = Policy {
+        servicer: servicer.pubkey().to_bytes(),
+        minimum_threshold: 240,
+        max_age_seconds: 300,
+        verifying_key: gate_key(&pk.vk).unwrap(),
+    };
+    let first = Approval {
+        sequence: 1,
+        observed_at: NOW,
+        expires_at: NOW + 120,
+        threshold: 240,
+        commitment: fr_be(&public[1]),
+        proof: gate_proof(&proof),
+    };
+    let mut pt = ProgramTest::new("caledren_solana_gate", pid, None);
+    let zeroed = |lamports: u64, len: usize| Account {
+        lamports,
+        data: vec![0; len],
+        owner: pid,
+        ..Account::default()
+    };
+    pt.add_account(config.pubkey(), zeroed(Rent::default().minimum_balance(CONFIG_LEN), CONFIG_LEN));
+    pt.add_account(no_rent.pubkey(), zeroed(1, CONFIG_LEN));
+    pt.add_account(short.pubkey(), zeroed(Rent::default().minimum_balance(100), 100));
+    for (_, key, _) in &bad_inits {
+        pt.add_account(key.pubkey(), zeroed(Rent::default().minimum_balance(CONFIG_LEN), CONFIG_LEN));
+    }
+    for key in [servicer.pubkey(), attacker.pubkey()] {
+        pt.add_account(
+            key,
+            Account {
+                lamports: 1_000_000_000,
+                owner: system_program::id(),
+                ..Account::default()
+            },
+        );
+    }
+    let mut ctx = pt.start_with_context().await;
+    ctx.set_sysvar(&Clock {
+        unix_timestamp: NOW,
+        slot: 42,
+        ..Clock::default()
+    });
+    let payer = ctx.payer.pubkey();
+    let init_metas = |account: Pubkey| {
+        vec![
+            AccountMeta::new(account, true),
+            AccountMeta::new_readonly(payer, true),
+        ]
+    };
+    let mut case = 100;
+    // Invalid policy fields are rejected at initialization and leave the account untouched.
+    for (name, key, data) in &bad_inits {
+        reject(&mut ctx, pid, key.pubkey(), init_metas(key.pubkey()), data.clone(), &[key], case, name, GateError::Encoding).await;
+        case += 1;
+    }
+    reject(
+        &mut ctx, pid, no_rent.pubkey(), init_metas(no_rent.pubkey()), policy.instruction().unwrap(),
+        &[&no_rent], case, "init_not_rent_exempt", GateError::Rent,
+    )
+    .await;
+    case += 1;
+    // A program-owned account with the wrong data length is not a configuration account.
+    reject(
+        &mut ctx, pid, short.pubkey(), approve_accounts(short.pubkey(), servicer.pubkey(), true),
+        first.instruction(), &[&servicer], case, "wrong_data_length_config", GateError::Encoding,
+    )
+    .await;
+    case += 1;
+    // Initialize the real configuration.
+    let (result, _, _) = send(&mut ctx, pid, init_metas(config.pubkey()), policy.instruction().unwrap(), &[&config], case).await;
+    case += 1;
+    assert!(result.is_ok(), "initialize: {result:?}");
+    // Wrong account counts.
+    reject(
+        &mut ctx, pid, config.pubkey(), vec![AccountMeta::new(config.pubkey(), false)],
+        first.instruction(), &[], case, "one_account_only", GateError::AccountCount,
+    )
+    .await;
+    case += 1;
+    reject(
+        &mut ctx, pid, config.pubkey(),
+        vec![
+            AccountMeta::new(config.pubkey(), false),
+            AccountMeta::new_readonly(servicer.pubkey(), true),
+            AccountMeta::new_readonly(attacker.pubkey(), false),
+        ],
+        first.instruction(), &[&servicer], case, "three_accounts", GateError::AccountCount,
+    )
+    .await;
+    case += 1;
+    // The configuration account itself passed as the servicer signer is not the configured servicer.
+    reject(
+        &mut ctx, pid, config.pubkey(),
+        vec![
+            AccountMeta::new(config.pubkey(), false),
+            AccountMeta::new_readonly(config.pubkey(), true),
+        ],
+        first.instruction(), &[&config], case, "config_account_as_servicer", GateError::Unauthorized,
+    )
+    .await;
+    case += 1;
+    let (result, _, _) = send(&mut ctx, pid, approve_accounts(config.pubkey(), servicer.pubkey(), true), first.instruction(), &[&servicer], case).await;
+    case += 1;
+    assert!(result.is_ok(), "first approval: {result:?}");
+    // Expiry of the stored receipt does not block the next valid approval.
+    ctx.set_sysvar(&Clock {
+        unix_timestamp: NOW + 1_000,
+        slot: 43,
+        ..Clock::default()
+    });
+    let mut second = first.clone();
+    second.sequence = 2;
+    second.observed_at = NOW + 990;
+    second.expires_at = NOW + 1_090;
+    let (result, _, _) = send(&mut ctx, pid, approve_accounts(config.pubkey(), servicer.pubkey(), true), second.instruction(), &[&servicer], case).await;
+    case += 1;
+    assert!(result.is_ok(), "approval after the previous receipt expired: {result:?}");
+    // Boundary: an observation time equal to the stored one is accepted. This also pins a documented
+    // limitation: the proof is not bound to sequence or time, so the same proof and commitment can be
+    // approved again with fresh times. Only the servicer signature prevents that.
+    let mut third = second.clone();
+    third.sequence = 3;
+    let (result, _, _) = send(&mut ctx, pid, approve_accounts(config.pubkey(), servicer.pubkey(), true), third.instruction(), &[&servicer], case).await;
+    assert!(result.is_ok(), "same proof re-approved with equal observation time: {result:?}");
+    let accepted = Config::decode(&state(&mut ctx, config.pubkey()).await).unwrap();
+    assert_eq!(accepted.sequence, 3);
+    assert_eq!(accepted.commitment, first.commitment);
+    println!("GATE_EXTRA_SUITE_PASSED");
+}

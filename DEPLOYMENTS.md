@@ -1,20 +1,30 @@
 # Deployments and reproducible evidence
 
-Checked 2026-09-24. Network names below are part of each claim. A local validator address is not
+Checked 2026-11-11. Network names below are part of each claim. A local validator address is not
 proof of a deployment on Solana devnet or mainnet.
 
 ## Solana devnet: pending funding
 
-**Not deployed.** On 2026-09-24, the devnet RPC returned `value: null` for the intended program
-account and a zero balance for the test payer. A request for 1 free devnet SOL returned HTTP 200
-with JSON-RPC error `-32603` (`Internal error`); the recorded `airdropRateLimit` fields show
+**Not deployed.** On 2026-11-11, read-only devnet RPC calls returned `value: null` for the intended
+legacy-verifier program account and for the local gate program ID, and a zero balance for the test
+payer. No faucet request was made on that date. On 2026-09-24 a request for 1 free devnet SOL returned
+HTTP 200 with JSON-RPC error `-32603` (`Internal error`); the recorded `airdropRateLimit` fields show
 `limit: 1`, `remaining: 0` and `tier: free`. No devnet transaction signature exists yet.
 
 - Intended program ID, **not yet deployed**: `6vXpHGCL9j94LXtXmNsTvKfAL6DfuWpevpdwSj9487bR`
+  (this is the legacy pairing verifier; see the plan below, which makes the gate the primary program)
 - Devnet fee payer / intended upgrade authority: `8BurHw6PF4n7otsa7b4R6EZo3km6r39XDKbFv159c6AM`
 - RPC: `https://api.devnet.solana.com`
-- Current status: [devnet-status.json](evidence/2026-09-24/devnet-status.json)
+- Current status: [devnet-status.json](evidence/2026-11-11/devnet-status.json)
+- Earlier status: [devnet-status.json](evidence/2026-09-24/devnet-status.json)
 - Compiled binary hash from the original deployment attempt: [devnet-status.json](evidence/2026-09-17/devnet-status.json)
+
+**Planned primary program: `solana-gate`, not the legacy verifier.** The legacy verifier accepts a
+caller-supplied verifying key, so a successful call proves nothing about an approved circuit. The gate
+pins the key. A public deployment should record, in this file and in a new dated status record: the
+program ID, the `.so` SHA-256, the repository commit, the deploy transaction, `solana program show`
+output, the configuration address, one accepted approval and at least two rejected requests, and who
+holds the upgrade authority. None of these exist yet.
 
 Request 1 free **devnet** SOL for the payer using https://faucet.solana.com. The fee payer was
 created in `target/devnet/payer.json`; the existing program keypair is in
@@ -22,8 +32,11 @@ created in `target/devnet/payer.json`; the existing program keypair is in
 Keep a private backup before cleaning build directories, particularly once the payer controls an
 upgradeable deployment. The addresses above are public; keypair files are not grant attachments.
 
-The built RPC client already accepts an explicit cluster URL, program ID and keypair path.
-No global Solana configuration or Git identity was changed. After funding, run from the repo:
+The built RPC client already accepts an explicit cluster URL, program ID and keypair path in its
+legacy mode. The commands below are the original plan for the **legacy verifier** and are kept for
+the record; the gate's `pilot-demo` client mode is restricted to localhost and needs a devnet mode
+before the gate can be exercised publicly. No global Solana configuration or Git identity was
+changed. After funding, the legacy plan was:
 
 ```bash
 (cd solana-verifier && cargo-build-sbf)

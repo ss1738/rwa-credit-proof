@@ -89,6 +89,24 @@ a threshold from the supplied principal total, but the circuit only proves cover
 threshold. The consumer must approve the policy independently. The proof cannot establish real
 asset values, absence of undisclosed liabilities, complete loan-book coverage or actual KYC checks.
 
+## 8. The servicer signature is the root of trust
+
+The gate requires the configured servicer to sign each approval, and the pilot workflow has the
+servicer privately recompute the book commitment from the full plaintext book before signing. The
+servicer therefore already holds the whole book and vouches for the claim. The proof keeps loans out
+of the transaction and the chain; it does not remove trust in the servicer. A compromised or careless
+servicer key can approve any commitment, and can re-approve an old commitment with fresh timestamps,
+because the proof is not bound to the observation time. See [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md)
+for the open design question this raises.
+
+## 9. One loan count per key, and the statement is coverage, not solvency
+
+The circuit and its key are built for an exact loan count (`setup_only(n)`), and a gate policy pins one
+key immutably. A different loan count needs a new setup and a new configuration. No padding scheme
+exists. The statement proves that performing collateral in the supplied book is at least a public
+threshold. It does not involve liabilities, token supply or any measure of solvency, and the gate
+compares the threshold with a fixed configured minimum, not a live figure.
+
 The September 2026 evidence and network status are in [DEPLOYMENTS.md](DEPLOYMENTS.md).
 
 ## Developer-run checks and historical code-review findings

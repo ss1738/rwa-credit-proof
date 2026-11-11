@@ -228,4 +228,60 @@ mod tests {
         assert_eq!(config.encode().len(), CONFIG_LEN);
         assert_eq!(config, Config::decode(&config.encode()).unwrap());
     }
+    /// Deterministic xorshift so the test needs no dependency and is reproducible.
+    struct Xs(u64);
+    impl Xs {
+        fn next(&mut self) -> u64 {
+            self.0 ^= self.0 << 13;
+            self.0 ^= self.0 >> 7;
+            self.0 ^= self.0 << 17;
+            self.0
+        }
+        fn fill(&mut self, out: &mut [u8]) {
+            for byte in out.iter_mut() {
+                *byte = (self.next() >> 24) as u8;
+            }
+        }
+    }
+    #[test]
+    fn random_buffers_never_panic_and_accepted_ones_round_trip() {
+        let mut rng = Xs(0x9E37_79B9_7F4A_7C15);
+        let (mut policies, mut approvals, mut configs) = (0u32, 0u32, 0u32);
+        for i in 0..20_000u32 {
+            let mut policy = vec![0u8; INIT_LEN];
+            let mut approval = vec![0u8; APPROVE_LEN];
+            let mut config = vec![0u8; CONFIG_LEN];
+            rng.fill(&mut policy);
+            rng.fill(&mut approval);
+            rng.fill(&mut config);
+            // Half the cases get a valid header so the field checks are actually exercised.
+            if i % 2 == 0 {
+                policy[..4].copy_from_slice(&[1, 0, 0, 0]);
+                approval[..4].copy_from_slice(&[1, 1, 0, 0]);
+                config[..8].copy_from_slice(&MAGIC);
+                // Keep the policy fields plausible: nonzero servicer, small positive limits.
+                policy[4] |= 1;
+                policy[36..52].copy_from_slice(&1u128.to_le_bytes());
+                policy[52..60].copy_from_slice(&300u64.to_le_bytes());
+                config[40] |= 1;
+                config[72..88].copy_from_slice(&1u128.to_le_bytes());
+                config[88..96].copy_from_slice(&300u64.to_le_bytes());
+                approval[44] = 0; // keep the commitment below the field modulus
+            }
+            if let Ok(value) = Policy::decode_instruction(&policy) {
+                policies += 1;
+                assert_eq!(value.instruction().unwrap(), policy);
+            }
+            if let Ok(value) = Approval::decode_instruction(&approval) {
+                approvals += 1;
+                assert_eq!(value.instruction(), approval);
+            }
+            if let Ok(value) = Config::decode(&config) {
+                configs += 1;
+                assert_eq!(value.encode(), config);
+            }
+        }
+        // The valid-header half must reach the accept path, or the test is vacuous.
+        assert!(policies > 1_000 && approvals > 1_000 && configs > 1_000, "{policies} {approvals} {configs}");
+    }
 }

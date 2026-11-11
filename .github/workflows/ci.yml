@@ -1,0 +1,31 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  host-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rust toolchain versions
+        run: |
+          rustup show
+          cargo --version
+      - name: gate-protocol tests
+        run: cargo test --release --locked --manifest-path gate-protocol/Cargo.toml
+      - name: root crate tests (circuit, native model, SDK, ceremony bridge)
+        run: cargo test --release --locked
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm run build
+      - run: npm run check
+# Not run here: the compiled SBF gate suite, the local-validator approval and the ceremony rehearsal.
+# They need the Solana toolchain (and Node 24 for the rehearsal). Run ./pilot-demo.sh locally.

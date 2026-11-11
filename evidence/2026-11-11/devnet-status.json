@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-11-11",
+  "rpc": "https://api.devnet.solana.com",
+  "intendedProgramId": "6vXpHGCL9j94LXtXmNsTvKfAL6DfuWpevpdwSj9487bR",
+  "feePayer": "8BurHw6PF4n7otsa7b4R6EZo3km6r39XDKbFv159c6AM",
+  "programAccountResponse": {
+    "jsonrpc": "2.0",
+    "result": {
+      "context": {
+        "apiVersion": "4.4.0",
+        "slot": 521040055
+      },
+      "value": null
+    },
+    "id": 1
+  },
+  "payerBalanceResponse": {
+    "jsonrpc": "2.0",
+    "result": {
+      "context": {
+        "apiVersion": "4.4.0",
+        "slot": 521040057
+      },
+      "value": 0
+    },
+    "id": 2
+  },
+  "localGateProgramIdResponse": {
+    "jsonrpc": "2.0",
+    "result": {
+      "context": {
+        "apiVersion": "4.4.0",
+        "slot": 521040057
+      },
+      "value": null
+    },
+    "id": 3
+  },
+  "localGateProgramId": "kWitTf3ZRSVJyKpf6gwzG17JEvLsUKf6XCRJSahURtW",
+  "airdropRequested": false,
+  "note": "Read-only getAccountInfo/getBalance checks. No faucet request was made on this date. No devnet transaction exists."
+}

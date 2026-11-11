@@ -1,12 +1,19 @@
-# Caledren: private-credit proof and approval tooling
+# Private-credit coverage gate for Solana (Caledren)
 
-> Prove coverage of a configured threshold over a private loan book, have the authorized servicer
-> approve the exact claim, and record the result on Solana without publishing individual loans.
+> A Groth16 (BN254) circuit and a Solana program that record, on-chain, that a servicer approved a
+> proof that the performing collateral in a private loan book covers a public threshold, without
+> publishing the loans.
 
-Working pilot alpha. `./pilot-demo.sh` reproduces the SDK, persisted parameters, private servicer
-commitment check and stateful Solana approval gate. A finalized local approval used **85,529 CU**
-in a **672-byte legacy transaction**, with separate payer and servicer signatures. The compiled
-gate suite accepts two successive approvals and rejects 26 invalid requests without changing state.
+**Status: local-validator pilot.** Not deployed on devnet or mainnet. Not audited. Setup is single-party.
+
+| | |
+|---|---|
+| **Proves** | Coverage of a stated threshold by performing collateral; every supplied KYC flag is set; the commitment to the book |
+| **Does not prove** | That the loan data is true, liabilities, token supply, or that any real KYC happened |
+| **Run it** | `./pilot-demo.sh` (needs Rust and the Solana toolchain; see [PILOT_GUIDE.md](PILOT_GUIDE.md)) |
+| **Evidence** | A finalized local approval used **85,529 CU** in a **672-byte legacy transaction** with separate payer and servicer signatures. The compiled gate suite accepts two successive approvals and rejects 26 invalid requests without changing state. |
+| **Threat model** | [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md), including an open design question |
+
 Start with [PILOT_GUIDE.md](PILOT_GUIDE.md) and [PILOT_EVALUATION.md](PILOT_EVALUATION.md).
 
 The gate pins an immutable verification key, servicer, minimum threshold and validity policy.
@@ -47,8 +54,8 @@ decisions and the relationship between threshold and token supply require separa
 | On-chain verification | **83,354 CU** in both the SBF harness and a fresh local validator run (2026-09-17); earlier local-validator result: **83,352 CU**. About 6% of the 1.4M maximum, proof verification only. |
 | On-chain cost vs book size | **constant** (a 10-loan and a 10,000-loan fund cost the same to verify) |
 | Scale | 10,000 loans: **72.17s** proving plus **64.61s** setup; 1,000 loans: **3.82s** proving (2026-09-17 run) |
-| Portability | verifies on Solana (`alt_bn128`) and any EVM chain (`ecPairing`) |
-| Attack (swap book, reuse signature) | blocked |
+| Portability | verifies through Solana's `alt_bn128` syscalls (local validator only so far) and EVM `ecPairing` (public Sepolia example) |
+| Attack (swap book, reuse signature) | blocked in the native host-side model only; the legacy on-chain program does not check the signature |
 
 ## Related work
 
@@ -63,6 +70,7 @@ predicate, an authenticated local approval receipt and explicit consumer-side po
 ```bash
 ./pilot-demo.sh  # current product workflow, local only
 ./demo.sh        # legacy cryptography and pairing benchmark
+./scripts/verify-all.sh  # host tests, site checks and, if the Solana toolchain is installed, the pilot demo; writes a summary under target/
 ```
 
 The setup compatibility rehearsal is pinned to Node 24 LTS and `iden3/snarkjs` 0.7.6:
@@ -160,44 +168,5 @@ performance guarantees.*
 
 ## Website and deployments
 
-The public site is https://caledren.com (also https://www.caledren.com), hosted by the existing
-Vercel project `satyawansinghs-projects/rwa-credit-proof`. This repository is linked directly to that
-project. Deployments are manual from the repository root; GitHub auto-deploy is not configured.
-A push does not publish a reviewed release automatically.
-
-```bash
-cd ~/rwa-credit-proof
-# Once per fresh checkout, using the already authenticated Vercel CLI:
-vercel link --yes --scope satyawansinghs-projects --project rwa-credit-proof
-# Build and inspect locally:
-npm run build
-python3 -m http.server 8765 --bind 127.0.0.1 --directory dist
-# Create a preview from this checkout:
-vercel deploy --scope satyawansinghs-projects
-# Only after checking the preview and receiving explicit production approval:
-vercel promote <reviewed-preview-url> --scope satyawansinghs-projects
-```
-
-The website source lives in `site/`; `scripts/build-site.mjs` generates `dist/` using the dated
-core receipt/log bundle and the latest separately dated devnet-status record linked by
-`DEPLOYMENTS.md`. It checks those facts against the deployment and
-limitation records and stops if they disagree. `EVIDENCE.html` remains the separate printable
-technical sheet and is copied into the built site unchanged. Only the generated `dist/` is served;
-the deployment upload is restricted by `.vercelignore` to website source and public evidence inputs.
-`.vercel/`, local environment files and generated output are ignored by Git.
-
-The animated proof sphere uses local Canvas and CSS, with no external rendering dependencies.
-It illustrates the private-input/public-proof flow; it does not represent live network activity.
-Motion can be paused, respects the operating system's reduced-motion setting, and stops rendering
-the sphere when the hero is off screen or the tab is hidden. Core content remains available without
-JavaScript. Run `npm run check` after building to validate links, source evidence and public output.
-
-The other sections use SVG/CSS motion: evidence traces, a Commit/Prove/Verify path, an illustrated
-native gate that responds to the chosen scenario, audit graphics, execution-scope boundaries and
-a design-partner invitation. Recorded measurements stay fixed. Each section pauses its decorative
-animations off screen, and the global motion control applies to the whole page. The sticky navigation
-includes an Explore menu on smaller screens.
-
-Do not deploy from a scratch copy, connect other Vercel projects, or promote production or push to
-GitHub without explicit approval. To update a network claim, update `DEPLOYMENTS.md` and its
-receipt/status evidence together, then rebuild and check a new preview.
+The public site is https://caledren.com, built from `site/`. Build, preview and deploy steps are in
+[CONTRIBUTING.md](CONTRIBUTING.md). Deployments are manual; a push does not publish the site.
